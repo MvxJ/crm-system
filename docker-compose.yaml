@@ -1,0 +1,65 @@
+version: '3.4'
+
+services:
+  admin:
+    container_name: crm_admin
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - ./admin/:/app
+      - /app/node_modules
+    ports:
+      - 80:3000
+
+  api:
+    container_name: symfony_api
+    ports:
+      - '8000:80'
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html/api/public
+    build:
+      context: ./api
+    volumes:
+      - .:/var/www/html
+      - ./config/vhost.conf:/etc/apache2/sites-enabled/000-default.conf
+      - cache:/var/www/html/api/var/cache
+      - log:/var/www/html/api/var/log
+
+  database:
+    container_name: database
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: symfony
+      MYSQL_USER: app
+      MYSQL_PASSWORD: app
+    ports:
+      - '4406:3306'
+    volumes:
+      - ./mysql:/var/lib/mysql
+      - ./config/vhost.conf:/etc/apache2/sites-available/000-default.conf
+      - cache:/var/www/html/api/var/cache
+      - log:/var/www/html/api/log
+
+  adminer:
+    container_name: database_adminer
+    image: adminer
+    ports:
+      - '8001:8080'
+
+  mailhog:
+    container_name: mailhog
+    image: mailhog/mailhog
+    logging:
+      driver: "none"
+    ports:
+      - "8002:8025"
+      - "1025:1025"
+
+volumes:
+  cache:
+  log:
