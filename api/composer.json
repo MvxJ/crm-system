@@ -8,11 +8,15 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "doctrine/doctrine-bundle": "^2.9",
+        "doctrine/doctrine-fixtures-bundle": "^3.4",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.15",
         "friendsofsymfony/rest-bundle": "^3.5",
+        "gesdinet/jwt-refresh-token-bundle": "^1.1",
         "jms/serializer-bundle": "^5.2",
         "lexik/jwt-authentication-bundle": "*",
+        "scheb/2fa-bundle": "^6.8",
+        "scheb/2fa-email": "^6.8",
         "symfony/console": "6.2.*",
         "symfony/dotenv": "6.2.*",
         "symfony/flex": "^2",
@@ -20,7 +24,9 @@
         "symfony/mailer": "6.2.*",
         "symfony/maker-bundle": "^1.48",
         "symfony/runtime": "6.2.*",
-        "symfony/yaml": "6.2.*"
+        "symfony/twig-bundle": "6.2.*",
+        "symfony/yaml": "6.2.*",
+        "symfonycasts/verify-email-bundle": "^1.13"
     },
     "config": {
         "allow-plugins": {

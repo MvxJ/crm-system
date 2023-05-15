@@ -1,0 +1,9 @@
+.side-navigation {
+    height: 100vh;
+    width: 15vw;
+    background-color: lightskyblue;
+}
+
+ul {
+    margin: 0px;
+}
