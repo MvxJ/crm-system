@@ -1,21 +1,25 @@
-import './Navigation.css';
+import './Navigation.scss';
 
 function Navigation() {
     return (
-        <aside className="side-navigation">
-            <div className="compoany-details">
-
+        <div className="side-navigation">
+            <div className='style-container'>
+                <div className="company-details">
+                    <h3>CRM System</h3>
+                </div>
+                <div className="navigation-links">
+                    <ul>
+                        <li>Dashboard</li>
+                        <li>Users</li>
+                    </ul>
+                </div>
+                <div className="user-actions">
+                    <div>
+                        Logout
+                    </div>
+                </div>  
             </div>
-            <div className="navigation-links">
-                <ul>
-                    <li>Dashboard</li>
-                    <li>Users</li>
-                </ul>
-            </div>
-            <div className="user-actions">
-            
-            </div>    
-        </aside>
+        </div>
     );
 }
 

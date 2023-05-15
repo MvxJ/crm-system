@@ -5,7 +5,7 @@ import UsersListPage from "./pages/users/UsersList";
 import Navigation from "./components/navigation/Navigation";
 import Footer from "./components/footer/Footer";
 import LoginPage from "./pages/login/LoginPage";
-import './App.css'; 
+import './App.scss'; 
 
 export interface IAppProps {}
 
@@ -19,6 +19,10 @@ const App: React.FunctionComponent<IAppProps> = (props) => {
                         <Navigation />
                     </div>
                     <div className="app-content-container">
+                        <div className="header-sticky">
+                            Search...
+                        </div>
+                        <div className="card">
                         <BrowserRouter>
                             <Routes>
                                 <Route path="/" element={<Dashboard />} />
@@ -26,6 +30,7 @@ const App: React.FunctionComponent<IAppProps> = (props) => {
                                 <Route path="login" element={<LoginPage/>} />
                             </Routes>
                         </BrowserRouter>
+                        </div>
                     </div>
                 </div>
             </>
