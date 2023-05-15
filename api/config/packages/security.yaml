@@ -10,15 +10,30 @@ security:
     firewalls:
         login:
             pattern: ^/api/login
-            stateless: true
+            stateless: false
+            two_factor:
+                prepare_on_login: true
+                prepare_on_access_denied: true
+                auth_form_path: 2fa_login    # /api/login/2fa
+                check_path: 2fa_login_check # /api/login/2fa_check
+                post_only: true
+                authentication_required_handler: App\Security\Authentication\TwoFactorAuthenticationRequiredHandler
+                success_handler: App\Security\Authentication\TwoFactorAuthenticationSuccessHandler
+                failure_handler: App\Security\Authentication\TwoFactorAuthenticationFailureHandler
+                auth_code_parameter_name: authCode
             json_login:
-                check_path: /api/login_check
-                success_handler: lexik_jwt_authentication.handler.authentication_success
+                check_path: api_login_check
+                success_handler: App\Security\Authentication\AuthenticationSuccessHandler
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
+        refresh_token:
+            pattern: ^/api/token/refresh
+            stateless: true
+            refresh_jwt:
+                check_path: /api/token/refresh
         api:
             pattern:   ^/api
             stateless: true
-            jwt: ~        
+            jwt: ~
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
@@ -35,9 +50,14 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/api/registration, roles: PUBLIC_ACCESS  }
-        - { path: ^/api/login, roles: PUBLIC_ACCESS  }
-        - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/register, roles: PUBLIC_ACCESS }
+        - { path: ^/api/register/confirm, roles: PUBLIC_ACCESS }
+        - { path: ^/api/register/resend, roles: PUBLIC_ACCESS }
+        - { path: ^/api/login/check, roles: PUBLIC_ACCESS }
+        - { path: ^/api/login/2fa, roles: IS_AUTHENTICATED_2FA_IN_PROGRESS  }
+        - { path: ^/api/login/2fa_check, roles: IS_AUTHENTICATED_2FA_IN_PROGRESS }
+        - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
+        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
     security:
