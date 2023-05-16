@@ -1,0 +1,61 @@
+.side-navigation {
+    height: 100vh;
+    width: 100%;
+}
+
+.style-container {
+    background-color: #fff;
+    display: block;
+    border-bottom-right-radius: 15px;
+    border-top-right-radius: 15px;
+    height: 100%;
+}
+
+.company-details {
+    height: 75px;
+    width: 100%;
+    background-color: #248afd;
+    border-top-right-radius: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.user-actions {
+    position: absolute;
+    bottom: 0px;
+}
+
+.user-actions div {
+    height: 35px;
+    padding-left: 45px;
+    line-height: 35px;
+    cursor: pointer;
+    min-width: 100%;
+}
+
+.company-details h3 {
+    color: #fff;
+    padding-left: 45px;
+}
+
+.style-container .usser-actions {
+    position: absolute;
+}
+
+ul {
+    margin: 0px;
+}
+
+ul li {
+    display: block;
+    height: 35px;
+    width: 100%;
+    padding: 5px;
+    font-size: 16px;
+    line-height: 35px;
+}
+
+ul li:hover {
+    cursor: pointer;
+    color: #248afd;
+}
