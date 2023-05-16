@@ -1,7 +1,9 @@
+import './Footer.scss';
+
 function Footer() {
     return (
-        <div>
-            <p>Footer</p>
+        <div className='footer-container'>
+            <p> &copy; CRM System</p>
         </div>
     );
 }

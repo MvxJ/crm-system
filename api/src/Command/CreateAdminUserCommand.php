@@ -73,6 +73,7 @@ class CreateAdminUserCommand extends Command
             $user->setIsVerified(true);
             $user->addRole($roleAdmin);
             $user->addRole($roleAccessAdminPanel);
+            $user->setEmailAuth(false);
 
             $this->userRepository->save($user, true);
 

@@ -41,6 +41,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\Column(nullable: true)]
     private ?string $authCode;
 
+    #[ORM\Column]
+    private bool $emailAuth = false;
+
     public function __construct()
     {
         $this->roles = new ArrayCollection();
@@ -216,9 +219,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         return $this;
     }
 
+    /**
+     * @return bool
+     */
     public function isEmailAuthEnabled(): bool
     {
-        return true;
+        return $this->emailAuth;
+    }
+
+    /**
+     * @param bool $emailAuth
+     * @return $this
+     */
+    public function setEmailAuth(bool $emailAuth): self
+    {
+        $this->emailAuth = $emailAuth;
+
+        return $this;
     }
 
     /**

@@ -1,9 +1,11 @@
+@import './Variables.scss';
+
 .app-container {
     display: flex;
     flex-direction: row;
     height: 100vh;
     overflow: hidden;
-    background-color: #EDECEC;
+    background-color: $lightGrayColor;
 
     .app-navigation-container {
         overflow: hidden;
@@ -12,36 +14,35 @@
         width: 17.5vw;
     }
 
-    .app-content-container {
-        overflow-y: auto;
+    .app-main-container {
         height: 100vh;
-        width: 82.5vw;
-        padding: 15px;
-        background-color: #EDECEC;
+        width: 100%;
 
-        .header-sticky {
-            height: 45px;
-            width: 80.5%;
-            background-color: #fff;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            padding: 5px;
-            border-radius: 15px;
-            box-shadow: 0px 5px 15px lightgray;
-            position: fixed;
-            z-index: 100;
-        }
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        overflow-x: hidden;
 
-        .card {
-            position: relative;
-            z-index: 1;
-            top: 75px;
-            width: 100%;
-            border-radius: 15px;
-            background-color: #fff;
-            padding: 5px;
-            margin-bottom: 30px;
+        .app-content-container {
+            padding: 15px;
+            background-color: $lightGrayColor;
+
+            .app-content-wrapper {
+                width: 100%;
+        
+                .card {
+                    position: relative;
+                    z-index: 1;
+                    border-radius: 15px;
+                    background-color: $white;
+                    padding: 15px;
+                    min-height: 90vh;
+
+                    p {
+                        margin: 0px;
+                    }
+                }
+            }
         }
     }
 }

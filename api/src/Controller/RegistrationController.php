@@ -77,6 +77,7 @@ class RegistrationController extends AbstractController
                 $requestContent['password']
             ));
             $user->addRole($roleClient);
+            $user->setEmailAuth(true);
 
             $this->entityManager->persist($user);
             $this->entityManager->flush();

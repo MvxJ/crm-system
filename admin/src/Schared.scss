@@ -1,0 +1,52 @@
+@import './Variables.scss';
+
+.button-standard {
+    height: 35px;
+    min-width: 200px;
+    width: auto;
+    border-radius: 15px;
+    border: 2px solid $mainSchemaColor;
+    background-color: $white;
+    color: $mainSchemaColor;
+    font-size: medium;
+    font-weight: 400;
+    transition: 0.3s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        transform: scale(1.05);
+        cursor: pointer;
+        background-color: $mainSchemaColor;
+        color: $white;
+    }
+}
+
+form {
+    label {
+        color: $mainSchemaColor;
+        font-size: medium;
+        font-weight: 300;
+    }
+
+    input {
+        border: none;
+        outline: none;
+        border-bottom: 1px solid $grayColor;
+        padding-left: 5px;
+        height: 35px;
+        min-width: 200px;
+        transition: 0.3s ease-in-out;
+
+        &:focus {
+            border-bottom: 2px solid $mainSchemaColor;
+        }
+    }
+}
+
+h3 {
+    color: $mainSchemaColor;
+    font-weight: 600;
+    font-size: larger;
+}

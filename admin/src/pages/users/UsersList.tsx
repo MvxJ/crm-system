@@ -4,7 +4,7 @@ export interface IUsersListPageProps {};
 
 const UsersListPage: React.FunctionComponent<IUsersListPageProps> = (props) => {
     return (
-        <div>
+        <div className="card">
             <p>Users list</p>
         </div>
     );
