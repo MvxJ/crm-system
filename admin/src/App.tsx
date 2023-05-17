@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import UsersListPage from "./pages/users/UsersList";
@@ -8,12 +8,13 @@ import LoginPage from "./pages/login/LoginPage";
 import './App.scss'; 
 import CustomersList from "./pages/customers/CustomersList";
 import { ProtectedRoute } from "./components/protected-route/protectedRoute";
+import AuthService from "./service/auth.service";
 
 export interface IAppProps {}
 
 const App: React.FunctionComponent<IAppProps> = (props) => {
-    const user = localStorage.getItem("user");
-    const authenticated = user ? true : false;
+    const authenticated = AuthService.isAuthenticated();
+    const [isAuthenticated, setAuthenticated] = useState(authenticated);
 
         return (
             <>
@@ -35,7 +36,7 @@ const App: React.FunctionComponent<IAppProps> = (props) => {
                                             <Route path="users" element={<UsersListPage />} />
                                             <Route path="customers" element={<CustomersList />} />
                                         </Route>
-                                        <Route path="login" element={<LoginPage/>} />
+                                        <Route path="login" element={<LoginPage setIsAuthenticated={setAuthenticated} />} />
                                     </Routes>
                                 </div>
                             </div>

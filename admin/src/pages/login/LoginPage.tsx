@@ -1,15 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import './LoginPage.scss';
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import AuthService from "../../service/auth.service";
 
-export interface ILoginPageProps {};
+export interface ILoginPageProps {
+    setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
 const LoginPage: React.FunctionComponent<ILoginPageProps> = (props) => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
-    
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const authenticated = AuthService.isAuthenticated();
+        
+        if (authenticated) {
+          navigate("/");
+        }
+    }, [navigate]);
 
     const handleLogin = (event: React.FormEvent) => {
         event.preventDefault();
@@ -19,8 +30,10 @@ const LoginPage: React.FunctionComponent<ILoginPageProps> = (props) => {
                 username: username, 
                 password: password
             }).then(response => {
-                console.log(response.data);
+                AuthService.login(response.data.token, response.data.refres_token, response.data.user);
                 setErrorMessage("");
+                props.setIsAuthenticated(AuthService.isAuthenticated());
+                navigate("/");
             }).catch(e => {
                 if (e.response.status == 403) {
                     setErrorMessage("You don't have permission to access this resources.")
