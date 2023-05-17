@@ -8,23 +8,28 @@ export interface ILoginPageProps {};
 const LoginPage: React.FunctionComponent<ILoginPageProps> = (props) => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const navigate = useNavigate();
+    const [errorMessage, setErrorMessage] = useState("");
+    
 
     const handleLogin = (event: React.FormEvent) => {
         event.preventDefault();
 
-        axios.post('http://localhost:8000/api/login/check', {
-            username: "mvxj", 
-            password: "password"
-        }).then(res => {
-            localStorage.setItem("user", 'true');
-            navigate("/");
-        }).catch(e => {
-            console.log(e)
-        });
-
         if (username != '' && password != '') {
+            axios.post('http://localhost:8000/api/login/check', {
+                username: username, 
+                password: password
+            }).then(response => {
+                console.log(response.data);
+                setErrorMessage("");
+            }).catch(e => {
+                if (e.response.status == 403) {
+                    setErrorMessage("You don't have permission to access this resources.")
+                } else {
+                    setErrorMessage(e.response.data.message);
+                }
+            });
         } else {
+        
         }
     }
     
@@ -56,6 +61,9 @@ const LoginPage: React.FunctionComponent<ILoginPageProps> = (props) => {
                     </div>
                     <div className="form-row">
                         <button className="button-standard">Login</button>
+                    </div>
+                    <div className="form-row">
+                        {errorMessage && <p className="error-message">{errorMessage}</p>}
                     </div>
                 </form>
             </div>
