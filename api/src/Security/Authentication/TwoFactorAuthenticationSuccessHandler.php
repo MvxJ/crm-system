@@ -27,17 +27,9 @@ class TwoFactorAuthenticationSuccessHandler implements AuthenticationSuccessHand
     public function onAuthenticationSuccess(Request $request, TokenInterface $token): Response
     {
         $response = $this->baseHandler->onAuthenticationSuccess($request, $token);
-        $responseContent = json_decode($response->getContent(), true);
-        $userName = $token->getUser()->getUserIdentifier();
-        $user = $this->userRepository->findOneBy(['username' => $userName]);
+        $responseContent = $this->responseService->addUserContent($response, $token);
 
-        $responseContent['user'] = [
-            'username' => $userName,
-            'profile' => $user->getProfile(),
-            'email' => $user->getEmail()
-        ];
-
-        $response->setContent(json_encode($responseContent));
+        $response->setContent($responseContent);
 
         return $response;
     }

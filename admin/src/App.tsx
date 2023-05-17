@@ -12,7 +12,8 @@ import { ProtectedRoute } from "./components/protected-route/protectedRoute";
 export interface IAppProps {}
 
 const App: React.FunctionComponent<IAppProps> = (props) => {
-    const authenticated = true
+    const user = localStorage.getItem("user");
+    const authenticated = user ? true : false;
 
         return (
             <>

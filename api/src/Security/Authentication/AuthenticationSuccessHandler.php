@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Security\Authentication;
 
+use App\Repository\UserRepository;
+use App\Service\AuthenticationResponseService;
 use Scheb\TwoFactorBundle\Security\Authentication\Token\TwoFactorTokenInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,10 +17,14 @@ use Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Authentication\Authentica
 class AuthenticationSuccessHandler implements AuthenticationSuccessHandlerInterface
 {
     private AuthenticationSuccessHandlerInterface $baseHandler;
+    private AuthenticationResponseService $responseService;
 
-    public function __construct(BaseAuthenticationSuccessHandler $baseHandler)
-    {
+    public function __construct(
+        BaseAuthenticationSuccessHandler $baseHandler,
+        AuthenticationResponseService $responseService
+    ) {
         $this->baseHandler = $baseHandler;
+        $this->responseService = $responseService;
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token): JsonResponse|null|Response
@@ -43,6 +49,11 @@ class AuthenticationSuccessHandler implements AuthenticationSuccessHandlerInterf
             );
         }
 
-        return $this->baseHandler->onAuthenticationSuccess($request, $token);
+        $response = $this->baseHandler->onAuthenticationSuccess($request, $token);
+        $responseContent = $this->responseService->addUserContent($response, $token);
+
+        $response->setContent($responseContent);
+
+        return $response;
     }
 }

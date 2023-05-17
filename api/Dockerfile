@@ -3,7 +3,7 @@ FROM php:8.2-apache
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
     && apt-get update && apt-get install -y git libzip-dev unzip \
     && docker-php-ext-install zip \
-    && a2enmod rewrite headers \
+    && a2enmod headers && a2enmod rewrite && service apache2 restart\
 
 RUN curl -sS https://get.symfony.com/cli/installer | bash
 

@@ -1,25 +1,31 @@
 import React, { useState } from "react";
 import './LoginPage.scss';
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 export interface ILoginPageProps {};
 
 const LoginPage: React.FunctionComponent<ILoginPageProps> = (props) => {
-    const navigate = useNavigate();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const navigate = useNavigate();
 
     const handleLogin = (event: React.FormEvent) => {
         event.preventDefault();
 
-        if (username != '' && password != '') {
-            const response = false;
-            
+        axios.post('http://localhost:8000/api/login/check', {
+            username: "mvxj", 
+            password: "password"
+        }).then(res => {
+            localStorage.setItem("user", 'true');
             navigate("/");
-        } else {
+        }).catch(e => {
+            console.log(e)
+        });
 
+        if (username != '' && password != '') {
+        } else {
         }
-        console.log(username, password);
     }
     
     return (
