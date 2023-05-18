@@ -1,7 +1,19 @@
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import './Navigation.scss';
+import AuthService from '../../service/auth.service';
 
-function Navigation() {
+export interface INavigationProps {
+    setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const Navigation: React.FunctionComponent<INavigationProps> = (props) => {
+    const navigate = useNavigate();
+    const logOut = ()  => {
+        AuthService.logout();
+        props.setIsAuthenticated(AuthService.isAuthenticated());
+        navigate("/login");
+    }
+
     return (
         <div className="side-navigation">
             <div className='style-container'>
@@ -26,7 +38,7 @@ function Navigation() {
                     </Link>
                 </div>
                 <div className="user-actions">
-                    <div className='action-container'>
+                    <div className='action-container' onClick={logOut}>
                         Logout
                     </div>
                 </div>  

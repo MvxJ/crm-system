@@ -30,7 +30,7 @@ const LoginPage: React.FunctionComponent<ILoginPageProps> = (props) => {
                 username: username, 
                 password: password
             }).then(response => {
-                AuthService.login(response.data.token, response.data.refres_token, response.data.user);
+                AuthService.login(response.data.token, response.data.refresh_token, response.data.user);
                 setErrorMessage("");
                 props.setIsAuthenticated(AuthService.isAuthenticated());
                 navigate("/");

@@ -23,7 +23,7 @@ const App: React.FunctionComponent<IAppProps> = (props) => {
                         { authenticated 
                             ?
                                 <div className="app-navigation-container">
-                                    <Navigation />
+                                    <Navigation setIsAuthenticated={setAuthenticated} />
                                 </div>
                             : ''
                         }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Administration;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -7,12 +9,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/api/clients', name: 'api_clients_')]
-class ClientController extends AbstractController
+#[Route('/api', name: 'api_')]
+class AnalyticsController extends AbstractController
 {
-    #[Route("/list", name: "list")]
     public function index(): JsonResponse
     {
-        return new JsonResponse(['message' => 'Clients list'], Response::HTTP_OK);
+        return new JsonResponse(['message' => 'Dashboard index'], Response::HTTP_OK);
     }
 }

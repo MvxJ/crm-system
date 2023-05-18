@@ -9,8 +9,6 @@ use App\Entity\User;
 use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
-use App\Service\Logger\AuthenticationLogger;
-use App\Service\Logger\CustomLoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
