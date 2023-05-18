@@ -3,6 +3,7 @@
 namespace App\Security\Authentication;
 
 use App\Repository\UserRepository;
+use App\Service\AuthenticationResponseService;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Authentication\AuthenticationSuccessHandler as BaseAuthenticationSuccessHandler;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,12 +14,12 @@ use \Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandler
 class TwoFactorAuthenticationSuccessHandler implements AuthenticationSuccessHandlerInterface
 {
     private AuthenticationSuccessHandlerInterface $baseHandler;
-    private UserRepository $userRepository;
+    private AuthenticationResponseService $responseService;
 
-    public function __construct(BaseAuthenticationSuccessHandler $baseHandler, UserRepository $userRepository)
+    public function __construct(BaseAuthenticationSuccessHandler $baseHandler, AuthenticationResponseService $responseService)
     {
         $this->baseHandler = $baseHandler;
-        $this->userRepository = $userRepository;
+        $this->responseService = $responseService;
     }
 
     /**
