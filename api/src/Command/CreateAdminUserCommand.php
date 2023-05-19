@@ -49,8 +49,8 @@ class CreateAdminUserCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $roleAdmin = $this->roleRepository->findOneBy(['id' => Role::ROLE_ADMIN]);
-        $roleAccessAdminPanel = $this->roleRepository->findOneBy(['id' => Role::ROLE_ACCESS_ADMIN_PANEL]);
+        $roleAdmin = $this->roleRepository->findOneBy(['role' => Role::ROLE_ADMIN]);
+        $roleAccessAdminPanel = $this->roleRepository->findOneBy(['role' => Role::ROLE_ACCESS_ADMIN_PANEL]);
         $helper = $this->getHelper('question');
         $question = new Question('Please enter the user password: ');
         $io = new SymfonyStyle($input, $output);

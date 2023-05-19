@@ -13,12 +13,12 @@ use Symfony\Component\Security\Core\Role\Role as CoreRole;
 #[ORM\Entity(repositoryClass: RoleRepository::class)]
 class Role extends CoreRole
 {
-    const ROLE_ADMIN = 1;
-    const ROLE_CUSTOMER = 2;
-    const ROLE_MARKETING = 3;
-    const ROLE_SERVICE = 4;
-    const ROLE_ACCOUNTMENT = 5;
-    const ROLE_ACCESS_ADMIN_PANEL = 6;
+    const ROLE_ADMIN = 'ROLE_ADMIN';
+    const ROLE_CUSTOMER = 'ROLE_CUSTOMER';
+    const ROLE_MARKETING = 'ROLE_MARKETING';
+    const ROLE_SERVICE = 'ROLE_SERVICE';
+    const ROLE_ACCOUNTMENT = 'ROLE_ACCOUNTMENT';
+    const ROLE_ACCESS_ADMIN_PANEL = 'ROLE_ACCESS_ADMIN_PANEL';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]

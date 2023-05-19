@@ -64,7 +64,7 @@ class RegistrationController extends AbstractController
     public function index(Request $request): JsonResponse
     {
         try {
-            $roleClient = $this->roleRepository->findOneBy(['id' => Role::ROLE_CUSTOMER]);
+            $roleClient = $this->roleRepository->findOneBy(['role' => Role::ROLE_CUSTOMER]);
             $user = new User();
             $requestContent = json_decode($request->getContent(), true);
 
