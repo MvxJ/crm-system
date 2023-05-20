@@ -13,6 +13,7 @@ const LoginPage: React.FunctionComponent<ILoginPageProps> = (props) => {
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
+    const loader = document.getElementById("loader");
 
     useEffect(() => {
         const authenticated = AuthService.isAuthenticated();
@@ -26,6 +27,10 @@ const LoginPage: React.FunctionComponent<ILoginPageProps> = (props) => {
         event.preventDefault();
 
         if (username != '' && password != '') {
+            if (loader) {
+                loader.style.display="flex";
+            }
+
             axios.post('http://localhost:8000/api/login/check', {
                 username: username, 
                 password: password
@@ -34,15 +39,23 @@ const LoginPage: React.FunctionComponent<ILoginPageProps> = (props) => {
                 setErrorMessage("");
                 props.setIsAuthenticated(AuthService.isAuthenticated());
                 navigate("/");
+                
+                if (loader) {
+                    loader.style.display="none";
+                }
             }).catch(e => {
                 if (e.response.status == 403) {
                     setErrorMessage("You don't have permission to access this resources.")
                 } else {
                     setErrorMessage(e.response.data.message);
                 }
+                
+                if (loader) {
+                    loader.style.display="none";
+                }
             });
         } else {
-        
+            setErrorMessage("Please provide user data.");
         }
     }
     

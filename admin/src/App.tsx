@@ -9,6 +9,7 @@ import './App.scss';
 import CustomersList from "./pages/customers/CustomersList";
 import { ProtectedRoute } from "./components/protected-route/protectedRoute";
 import AuthService from "./service/auth.service";
+import NotFound from "./components/not-found/NotFound";
 
 export interface IAppProps {}
 
@@ -37,6 +38,7 @@ const App: React.FunctionComponent<IAppProps> = (props) => {
                                             <Route path="customers" element={<CustomersList />} />
                                         </Route>
                                         <Route path="login" element={<LoginPage setIsAuthenticated={setAuthenticated} />} />
+                                        <Route path="*" element={<NotFound />} />
                                     </Routes>
                                 </div>
                             </div>

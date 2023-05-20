@@ -1,0 +1,22 @@
+@import '../../Variables.scss';
+
+.not-found-container {
+    width: 100%;
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    display: flex;
+    flex-direction: column-reverse;
+    
+
+    a {
+        color: $mainSchemaColor;
+        font-weight: 600;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+}

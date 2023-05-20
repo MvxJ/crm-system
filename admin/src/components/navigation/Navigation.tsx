@@ -24,23 +24,23 @@ const Navigation: React.FunctionComponent<INavigationProps> = (props) => {
                 <div className="navigation-links">
                     <Link to={"/"} >
                         <div className='link-container'>
-                            <span><FaThLarge /></span>Dashboard
+                            <span className='nav-el-icon'><FaThLarge /></span>Dashboard
                         </div>
                     </Link>
                     <Link to={"/users"} >
                         <div className='link-container'>
-                            <span><FaUsersCog /></span> Users
+                            <span className='nav-el-icon'><FaUsersCog /></span> Users
                         </div>
                     </Link>
                     <Link to={"/customers"} >
                         <div className='link-container'>
-                           <span><FaUsers /></span> Customers
+                           <span className='nav-el-icon'><FaUsers /></span> Customers
                         </div>
                     </Link>
                 </div>
                 <div className="user-actions">
                     <div className='action-container' onClick={logOut}>
-                        <span><FaPowerOff /></span>Logout
+                        <span className='nav-el-icon'><FaPowerOff /></span>Logout
                     </div>
                 </div>  
             </div>

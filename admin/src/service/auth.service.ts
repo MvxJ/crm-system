@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const login = (token: string, refreshToken: string, user: any) => {
-    localStorage.setItem("user", user);
+    localStorage.setItem("user", JSON.stringify(user));
     localStorage.setItem("token", token);
     localStorage.setItem("refresh_token", refreshToken);
 };
