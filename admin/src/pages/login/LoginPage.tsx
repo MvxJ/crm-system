@@ -23,6 +23,15 @@ const LoginPage: React.FunctionComponent<ILoginPageProps> = (props) => {
         }
     }, [navigate]);
 
+    useEffect(() => {
+        const queryParams = new URLSearchParams(location.search);
+        const errorParam = queryParams.get("error");
+    
+        if (errorParam === 'JWT_EXPIRED') {
+          setErrorMessage("User token expired please login again.");
+        }
+      }, [location.search]);
+
     const handleLogin = (event: React.FormEvent) => {
         event.preventDefault();
 

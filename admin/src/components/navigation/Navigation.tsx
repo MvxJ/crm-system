@@ -24,7 +24,7 @@ const Navigation: React.FunctionComponent<INavigationProps> = (props) => {
                 <div className="navigation-links">
                     <Link to={"/"} >
                         <div className='link-container'>
-                            <span className='nav-el-icon'><FaThLarge /></span>Dashboard
+                            <span className='nav-el-icon'><FaThLarge /></span> Dashboard
                         </div>
                     </Link>
                     <Link to={"/users"} >
@@ -34,13 +34,13 @@ const Navigation: React.FunctionComponent<INavigationProps> = (props) => {
                     </Link>
                     <Link to={"/customers"} >
                         <div className='link-container'>
-                           <span className='nav-el-icon'><FaUsers /></span> Customers
+                           <span className='nav-el-icon'><FaUsers /></span> Clients
                         </div>
                     </Link>
                 </div>
                 <div className="user-actions">
                     <div className='action-container' onClick={logOut}>
-                        <span className='nav-el-icon'><FaPowerOff /></span>Logout
+                        <span className='nav-el-icon'><FaPowerOff /></span> Logout
                     </div>
                 </div>  
             </div>
