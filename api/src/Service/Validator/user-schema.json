@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "username": {
+      "type": "string"
+    },
+    "password": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    }
+  },
+  "required": ["username", "password", "email"],
+  "errorMessage": {
+    "required.username": "Title is required. Please provide a value.",
+    "required.password": "Description is required. Please provide a value.",
+    "required.email": "Email is required. Please provide a value."
+  }
+}

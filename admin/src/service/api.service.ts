@@ -13,6 +13,10 @@ const instance = axios.create({
 let isRefreshing = false;
 let failedRequests: Array<[]> = [];
 
+const navigateToLogin = () => {
+    window.location.href = "/login?error=JWT_EXPIRED";
+};
+
 instance.interceptors.request.use(
     (config) => {
         const loader = document.getElementById("loader");
@@ -51,7 +55,6 @@ instance.interceptors.response.use(
 
         if (
             originalConfig.url !== "/login/check" &&
-            err.response &&
             err.response.status === 401
         ) {
             if (!isRefreshing) {
@@ -73,30 +76,26 @@ instance.interceptors.response.use(
                     return instance(originalConfig);
                 } catch (_error) {
                     AuthService.logout();
-                    const navigateToLogin = () => {
-                        window.location.href = "/login?error=JWT_EXPIRED";
-                    };
                     navigateToLogin();
 
                     if (loader) {
                         loader.style.display = "none";
                     }
-
-                    return Promise.reject(_error);
                 } finally {
                     isRefreshing = false;
                 }
             } else {
-                if (loader) {
-                    loader.style.display = "none";
-                }
+                if (originalConfig.url !== "/login/check" && err.response.status === 401) {
+                    console.log(err.response.status, originalConfig.url);
+                    AuthService.logout();
+                    navigateToLogin();
 
-                return new Promise((resolve, reject) => {
-                    failedRequests.push({ resolve, reject });
-                }).then((config) => instance(config)).catch((error) => Promise.reject(error));
+                    if (loader) {
+                        loader.style.display = "none";
+                    }
+                }
             }
         }
-
 
         if (loader) {
             loader.style.display = "none";

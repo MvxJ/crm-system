@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Administration;
 
-use App\Entity\User;
-use App\Service\UserService;
+use App\Entity\Offer;
+use App\Service\OfferService;
 use App\Service\Validator\JsonValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -11,30 +13,30 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/api/users', name: 'api_users_')]
-class UserController extends AbstractController
+#[Route('/api/offer', name: 'api_offer_')]
+class OfferController extends AbstractController
 {
-    private UserService $userService;
+    private OfferService $offerService;
     private JsonValidator $validator;
 
-    public function __construct(UserService $userService, JsonValidator $validator)
+    public function __construct(OfferService $offerService, JsonValidator $validator)
     {
-        $this->userService = $userService;
+        $this->offerService = $offerService;
         $this->validator = $validator;
     }
 
-    #[Route("/list", name: "list", methods: ["GET"])]
+    #[Route('/list', name: 'list', methods: ['GET'])]
     public function index(Request $request): JsonResponse
     {
         try {
-            $usersArray = $this->userService->getUsers($request);
+            $response = $this->offerService->getOffers($request);
 
             return new JsonResponse(
                 [
                     'status' => 'success',
-                    'items' => $usersArray['users'],
-                    'page' => $usersArray['page'],
-                    'limit' => $usersArray['limit']
+                    'offers' => $response['items'],
+                    'totalItems' => $response['totalItems'],
+
                 ],
                 Response::HTTP_OK
             );
@@ -49,27 +51,29 @@ class UserController extends AbstractController
         }
     }
 
-    #[Route("/add", name: "add", methods: ["POST"])]
-    public function addUser(Request $request): JsonResponse
+    #[Route('/add', name: 'add', methods: ['POST'])]
+    public function addOffer(Request $request): JsonResponse
     {
-        $errors = $this->validator->validateRequest('user-schema.json');
+        $errors = $this->validator->validateRequest('offer-schema.json');
 
         if (count($errors) > 0) {
             return new JsonResponse(
                 [
-
+                    'status' => 'error',
+                    'message' => 'Bad request.',
+                    'errors' => $errors
                 ],
                 Response::HTTP_BAD_REQUEST
             );
         }
 
         try {
-            $userId = $this->userService->addUser($request);
+            $offerId = $this->offerService->addOffer($request);
 
             return new JsonResponse(
                 [
                     'status' => 'success',
-                    'userId' => $userId
+                    'offerId' => $offerId
                 ],
                 Response::HTTP_OK
             );
@@ -84,49 +88,25 @@ class UserController extends AbstractController
         }
     }
 
-    #[Route("/delete/{user}", name: "delete", methods: ["DELETE"])]
-    public function deleteUser(User $user): JsonResponse
+    #[Route('/edit/{offer}', name: 'edit', methods: ['POST', 'PUT', 'PATCH'])]
+    public function editOffer(Offer $offer, Request $request): JsonResponse
     {
-        try {
-            $this->userService->deleteUser($user);
-
-            return new JsonResponse(
-                [
-                    'status' => 'success',
-                    'message' => 'User was deleted'
-                ],
-                Response::HTTP_OK
-            );
-        } catch (\Exception $exception) {
+        if (!$offer) {
             return new JsonResponse(
                 [
                     'status' => 'error',
-                    'message' => $exception->getMessage()
-                ],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
-        }
-    }
-
-    #[Route("/edit/{user}", name: "edit", methods: ["POST", "PUT", "PATCH"])]
-    public function editUser(User $user, Request $request): JsonResponse
-    {
-        if (!$user) {
-            return new JsonResponse(
-                [
-                    'status' => 'error',
-                    'message' => 'User not found.'
+                    'message' => 'Offer not found.'
                 ],
                 Response::HTTP_NOT_FOUND
             );
         }
 
         try {
-            $this->userService->editUser($user, $request);
+            $this->offerService->editOffer($offer, $request);
 
             return new JsonResponse(
                 [
-                    'status' => 'success',
+                    'status' => 'success'
                 ],
                 Response::HTTP_OK
             );
@@ -141,27 +121,53 @@ class UserController extends AbstractController
         }
     }
 
-    #[Route("/{user}", name: "detail", methods: ["GET"])]
-    public function getUserDetail(User $user): JsonResponse
+    #[Route('/{offer}', name: 'detail', methods: ['GET'])]
+    public function getOfferDetail(Offer $offer): JsonResponse
     {
-        if ($user) {
+        if (!$offer) {
+            return new JsonResponse(
+                [
+                    'status' => 'error',
+                    'message' => 'Offer was not found.'
+                ],
+                Response::HTTP_NOT_FOUND
+            );
+        } else {
             return new JsonResponse(
                 [
                     'status' => 'success',
-                    'user' => $user,
-                    'user_profile' => $user->getProfile(),
-                    'user_roles' => $user->getRoles()
+                    'offer' => [
+                        'title' => $offer->getTitle(),
+                        'description' => $offer->getDescription(),
+                        'price' => $offer->getPrice()
+                    ],
                 ],
                 Response::HTTP_OK
             );
         }
+    }
 
-        return new JsonResponse(
-            [
-                'status' => 'error',
-                'message' => 'User not found'
-            ],
-            Response::HTTP_NOT_FOUND
-        );
+    #[Route('/delete/{offer}', name: 'delete', methods: ['DELETE'])]
+    public function deleteOffer(Offer $offer): JsonResponse
+    {
+        try {
+            $this->offerService->deleteOffer($offer);
+
+            return new JsonResponse(
+                [
+                    'status' => 'success',
+                    'message' => 'Offer was deleted.'
+                ],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $exception) {
+            return new JsonResponse(
+                [
+                    'status' => 'error',
+                    'message' => $exception->getMessage()
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
     }
 }

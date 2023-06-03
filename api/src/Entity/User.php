@@ -157,29 +157,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     /**
      * @return UserProfile|null
      */
-    public function getUserProfile(): ?UserProfile
-    {
-        return $this->userProfile;
-    }
-
-    /**
-     * @param UserProfile $userProfile
-     * @return $this
-     */
-    public function setUserProfile(UserProfile $userProfile): self
-    {
-        if ($userProfile->getUser() !== $this) {
-            $userProfile->setUser($this);
-        }
-
-        $this->userProfile = $userProfile;
-
-        return $this;
-    }
-
-    /**
-     * @return UserProfile|null
-     */
     public function getProfile(): ?UserProfile
     {
         return $this->profile;

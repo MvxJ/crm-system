@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\User;
+use App\Entity\UserProfile;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -54,6 +56,17 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $user->setPassword($newHashedPassword);
 
         $this->save($user, true);
+    }
+
+    public function getUsersWithPagination(int $limit = 25, int $page = 1)
+    {
+        return $this->createQueryBuilder('u')
+            ->setMaxResults($limit)
+            ->setFirstResult(($page - 1) * $limit)
+            ->orderBy('u.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+
     }
 
 //    /**

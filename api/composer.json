@@ -14,6 +14,7 @@
         "friendsofsymfony/rest-bundle": "^3.5",
         "gesdinet/jwt-refresh-token-bundle": "^1.1",
         "jms/serializer-bundle": "^5.2",
+        "justinrainbow/json-schema": "^5.2",
         "lexik/jwt-authentication-bundle": "*",
         "nelmio/cors-bundle": "^2.3",
         "scheb/2fa-bundle": "^6.8",

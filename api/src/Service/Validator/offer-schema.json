@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "price": {
+      "type": "number"
+    },
+    "download_speed": {
+      "type": "number"
+    },
+    "upload_speed": {
+      "type": "number"
+    },
+    "new_users": {
+      "type": "boolean"
+    },
+    "discount": {
+      "type": "number"
+    }
+  },
+  "required": ["title", "description", "price"],
+  "errorMessage": {
+    "required.title": "Title is required. Please provide a value.",
+    "required.description": "Description is required. Please provide a value.",
+    "type.price": "Price should be a number. Please provide a valid number.",
+    "type.download_speed": "Download speed should be a number. Please provide a valid number.",
+    "type.upload_speed": "Upload speed should be a number. Please provide a valid number.",
+    "type.discount": "Discount should be a number. Please provide a valid number.",
+    "type.new_users": "New users offer should be a bool. Please provide a valid value."
+  }
+}
