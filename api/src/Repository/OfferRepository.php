@@ -43,7 +43,7 @@ class OfferRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('o')
             ->setMaxResults($limit)
-            ->setFirstResult(($page - 1) * $limit)
+            ->setFirstResult(($page) * $limit)
             ->orderBy('o.id', 'ASC')
             ->getQuery()
             ->getResult();

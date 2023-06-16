@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\DataFixtures;
 
 use App\Entity\Role;
+use App\Entity\Settings;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -36,12 +37,15 @@ class AppFixtures extends Fixture
         $roleAccessAdminPanel->setRole('ROLE_ACCESS_ADMIN_PANEL');
         $roleAccessAdminPanel->setName('Dostęp do panelu administracyjnego');
 
+        $companySettings = new Settings();
+
         $manager->persist($roleAdmin);
         $manager->persist($roleClient);
         $manager->persist($roleMarketing);
         $manager->persist($roleService);
         $manager->persist($roleAccountant);
         $manager->persist($roleAccessAdminPanel);
+        $manager->persist($companySettings);
 
         $manager->flush();
     }

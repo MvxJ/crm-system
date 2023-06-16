@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Entity\Role;
 use App\Entity\User;
-use App\Entity\UserProfile;
+use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
+use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -16,15 +18,21 @@ class UserService
     private EntityManagerInterface $entityManager;
     private UserRepository $userRepository;
     private UserPasswordHasherInterface $userPasswordHasher;
+    private EmailVerifier $emailVerifier;
+    private RoleRepository $roleRepository;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         UserRepository $userRepository,
-        UserPasswordHasherInterface $userPasswordHasher
+        UserPasswordHasherInterface $userPasswordHasher,
+        EmailVerifier $emailVerifier,
+        RoleRepository $roleRepository
     ) {
         $this->entityManager = $entityManager;
         $this->userRepository = $userRepository;
         $this->userPasswordHasher = $userPasswordHasher;
+        $this->emailVerifier = $emailVerifier;
+        $this->roleRepository = $roleRepository;
     }
 
     public function getUsers(Request $request): array
@@ -62,15 +70,22 @@ class UserService
 
     public function addUser(Request $request): int
     {
+        $roleAdmin = $this->roleRepository->findOneBy(['role' => Role::ROLE_ADMIN]);
         $content = json_decode($request->getContent(), true);
         $user = new User();
 
         $user->setUsername($content['username']);
         $user->setPassword($this->userPasswordHasher->hashPassword($user, $content['password']));
         $user->setEmail($content['email']);
+        $user->addRole($roleAdmin);
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
+
+        $this->emailVerifier->sendEmailConfirmation(
+            'api_register_confirm',
+            $user
+        );
 
         return $user->getId();
     }

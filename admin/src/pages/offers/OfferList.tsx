@@ -4,12 +4,13 @@ import { Link } from "react-router-dom";
 import { DataGrid } from '@mui/x-data-grid';
 import { BsEye } from "react-icons/bs";
 import { FiMoreVertical, FiTrash2 } from "react-icons/fi";
-import { Alert, Menu, MenuItem, Snackbar } from "@mui/material";
-import UsersService from "../../service/users.service";
+import { Alert, Menu, MenuItem, Snackbar, SnackbarOrigin } from "@mui/material";
+import MuiAlert from '@mui/material/Alert';
+import OfferService from "../../service/offer.service";
 
-export interface IUsersListPageProps {};
+export interface IOffersListPageProps {};
 
-const UsersListPage: React.FunctionComponent<IUsersListPageProps> = (props) => {
+const OffersList: React.FunctionComponent<IOffersListPageProps> = (props) => {
     const [data, setData] = useState([]);
     const [totalRows, setTotalRows] = useState(0);
     const [paginationModel, setPaginationModel] = useState({
@@ -26,12 +27,22 @@ const UsersListPage: React.FunctionComponent<IUsersListPageProps> = (props) => {
         fetchData();
     }, [paginationModel]);
 
+    const fetchData = async () => {
+        try {
+            const { page, pageSize } = paginationModel;
+            const response = await instance.get(`/offer/list?page=${page}&items=${pageSize}`);
+            setData(response.data.offers);
+            setTotalRows(response.data.totalItems);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+
     const columns = [
         { field: 'id', headerName: 'ID', width: 100 },
-        { field: 'username', headerName: 'Username', width: 200 },
-        { field: 'email', headerName: 'Email', width: 300 },
-        { field: 'name', headerName: 'Name', width: 300 },
-        { field: 'surname', headerName: 'Surname', width: 300 },
+        { field: 'title', headerName: 'Name', width: 200 },
+        { field: 'description', headerName: 'Description', width: 300 },
+        { field: 'price', headerName: 'Price', width: 300 },
         {
             field: 'actions',
             headerName: 'Actions',
@@ -46,7 +57,7 @@ const UsersListPage: React.FunctionComponent<IUsersListPageProps> = (props) => {
                         onClick={handleClose}
                     >
                         <MenuItem>
-                            <Link to={`/users/detail/${params.row.id}`} className="text-decoration-none">
+                            <Link to={`/offers/detail/${params.row.id}`} className="text-decoration-none">
                                 <BsEye /> View Details
                             </Link>
                         </MenuItem>
@@ -65,20 +76,12 @@ const UsersListPage: React.FunctionComponent<IUsersListPageProps> = (props) => {
 
     const handleDelete = async (id) => {
         try {
-            await UsersService.deleteUser(id);
+            await OfferService.deleteOffer(id);
             fetchData();
-            showNotification('User deleted successfully', 'success');
+            showNotification('Offer deleted successfully', 'success');
         } catch (error) {
-            showNotification('Failed to delete user', 'error');
+            showNotification('Failed to delete offer', 'error');
         }
-    };
-
-    const [anchorEl, setAnchorEl] = useState(null);
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
     };
 
     const showNotification = (message, type) => {
@@ -89,8 +92,6 @@ const UsersListPage: React.FunctionComponent<IUsersListPageProps> = (props) => {
         });
     };
 
-    const snackbarPosition: SnackbarOrigin = { vertical: 'bottom', horizontal: 'right' };
-
     const closeNotification = () => {
         setNotification(prevState => ({
             ...prevState,
@@ -98,33 +99,32 @@ const UsersListPage: React.FunctionComponent<IUsersListPageProps> = (props) => {
         }));
     };
 
-    const fetchData = async () => {
-        try {
-            const { page, pageSize } = paginationModel;
-            const response = await instance.get(`/users/list?page=${page}&items=${pageSize}`);
-            setData(response.data.items);
-            setTotalRows(response.data.totalItems);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
+    const [anchorEl, setAnchorEl] = useState(null);
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
     };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const snackbarPosition: SnackbarOrigin = { vertical: 'bottom', horizontal: 'right' };
 
     return (
         <div className="card">
             <div className="card-header">
                 <div className="card-title">
-                    <h3>Users list</h3>
+                    <h3>Offers list</h3>
                 </div>
                 <div className="card-actions">
-                    <Link to="/users/add" className="text-decoration-none">
+                    <Link to="/offers/add" className="text-decoration-none">
                         <button className="button-standard">
-                            Add user
+                            Add offer
                         </button>
                     </Link>
                 </div>
             </div>
             <div className="card-body">
-            <div style={{ height: '85vh', width: '100%' }}>
+                <div style={{ height: '85vh', width: '100%' }}>
                     <DataGrid
                         rows={data}
                         columns={columns}
@@ -156,4 +156,4 @@ const UsersListPage: React.FunctionComponent<IUsersListPageProps> = (props) => {
     );
 }
 
-export default UsersListPage;
+export default OffersList;

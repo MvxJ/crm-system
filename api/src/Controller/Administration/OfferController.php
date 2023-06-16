@@ -12,17 +12,23 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/api/offer', name: 'api_offer_')]
 class OfferController extends AbstractController
 {
     private OfferService $offerService;
     private JsonValidator $validator;
+    private SerializerInterface $serializer;
 
-    public function __construct(OfferService $offerService, JsonValidator $validator)
-    {
+    public function __construct(
+        OfferService $offerService,
+        JsonValidator $validator,
+        SerializerInterface $serializer
+    ) {
         $this->offerService = $offerService;
         $this->validator = $validator;
+        $this->serializer = $serializer;
     }
 
     #[Route('/list', name: 'list', methods: ['GET'])]
@@ -136,11 +142,7 @@ class OfferController extends AbstractController
             return new JsonResponse(
                 [
                     'status' => 'success',
-                    'offer' => [
-                        'title' => $offer->getTitle(),
-                        'description' => $offer->getDescription(),
-                        'price' => $offer->getPrice()
-                    ],
+                    'offer' => $this->serializer->normalize($offer)
                 ],
                 Response::HTTP_OK
             );

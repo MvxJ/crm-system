@@ -1,7 +1,8 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import './Navigation.scss';
 import AuthService from '../../service/auth.service';
-import { FaUsers, FaUsersCog, FaThLarge, FaPowerOff } from 'react-icons/fa';
+import { FaUsers, FaUsersCog, FaThLarge, FaPowerOff, FaGlobe } from 'react-icons/fa';
+import { GoGear } from "react-icons/all";
 
 export interface INavigationProps {
     setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
@@ -32,9 +33,19 @@ const Navigation: React.FunctionComponent<INavigationProps> = (props) => {
                             <span className='nav-el-icon'><FaUsersCog /></span> Users
                         </div>
                     </Link>
+                    <Link to={"/offers"}>
+                        <div className='link-container'>
+                             <span className='nav-el-icon'><FaGlobe /></span> Offers
+                        </div>
+                    </Link>
                     <Link to={"/customers"} >
                         <div className='link-container'>
                            <span className='nav-el-icon'><FaUsers /></span> Clients
+                        </div>
+                    </Link>
+                    <Link to={"/settings"}>
+                        <div className={'link-container'}>
+                            <span className='nav-el-icon'><GoGear /></span> Settings
                         </div>
                     </Link>
                 </div>

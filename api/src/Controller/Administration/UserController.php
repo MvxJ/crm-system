@@ -10,17 +10,24 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/api/users', name: 'api_users_')]
 class UserController extends AbstractController
 {
     private UserService $userService;
     private JsonValidator $validator;
+    private SerializerInterface $serializer;
 
-    public function __construct(UserService $userService, JsonValidator $validator)
-    {
+    public function __construct(
+        UserService $userService,
+        JsonValidator $validator,
+        SerializerInterface $serializer
+    ) {
         $this->userService = $userService;
         $this->validator = $validator;
+        $this->serializer = $serializer;
     }
 
     #[Route("/list", name: "list", methods: ["GET"])]
@@ -148,9 +155,21 @@ class UserController extends AbstractController
             return new JsonResponse(
                 [
                     'status' => 'success',
-                    'user' => $user,
-                    'user_profile' => $user->getProfile(),
-                    'user_roles' => $user->getRoles()
+                    'user' => [
+                        'id' => $user->getId(),
+                        'email' => $user->getEmail(),
+                        'username' => $user->getUsername(),
+                        'is_verified' => $user->isVerified(),
+                        'email_auth' => $user->isEmailAuthEnabled(),
+                        'roles' => $user->getRoles(),
+                        'profile' => $this->serializer->normalize(
+                            $user->getProfile(),
+                            null,
+                            [
+                                AbstractNormalizer::IGNORED_ATTRIBUTES => ['user', 'id']
+                            ]
+                        )
+                    ]
                 ],
                 Response::HTTP_OK
             );
