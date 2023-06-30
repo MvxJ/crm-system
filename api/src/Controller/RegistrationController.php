@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Customer;
 use App\Entity\Role;
 use App\Entity\User;
+use App\Repository\CustomerRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
@@ -38,9 +40,9 @@ class RegistrationController extends AbstractController
     private $roleRepository;
 
     /**
-     * @var UserRepository
+     * @var CustomerRepository
      */
-    private $userRepository;
+    private $customerRepository;
 
     /**
      * @var EmailVerifier
@@ -56,16 +58,16 @@ class RegistrationController extends AbstractController
         UserPasswordHasherInterface $userPasswordHasher,
         EntityManagerInterface $entityManager,
         RoleRepository $roleRepository,
-        UserRepository $userRepository,
         EmailVerifier $emailVerifier,
-        MailerService $mailerService
+        MailerService $mailerService,
+        CustomerRepository $customerRepository
     ) {
         $this->userPasswordHasher = $userPasswordHasher;
         $this->entityManager = $entityManager;
         $this->roleRepository = $roleRepository;
-        $this->userRepository = $userRepository;
         $this->emailVerifier = $emailVerifier;
         $this->mailerService = $mailerService;
+        $this->customerRepository = $customerRepository;
     }
 
     #[Route('/register', name: 'register_customer', methods: ['POST'])]
@@ -73,24 +75,23 @@ class RegistrationController extends AbstractController
     {
         try {
             $roleClient = $this->roleRepository->findOneBy(['role' => Role::ROLE_CUSTOMER]);
-            $user = new User();
+            $customer = new Customer();
             $requestContent = json_decode($request->getContent(), true);
 
-            $user->setUsername($requestContent['username']);
-            $user->setEmail($requestContent['email']);
-            $user->setPassword($this->userPasswordHasher->hashPassword(
-                $user,
+            $customer->setEmail($requestContent['email']);
+            $customer->setPassword($this->userPasswordHasher->hashPassword(
+                $customer,
                 $requestContent['password']
             ));
-            $user->addRole($roleClient);
-            $user->setEmailAuth(true);
+            $customer->addRole($roleClient);
+            $customer->setEmailAuthEnabled(true);
 
-            $this->entityManager->persist($user);
+            $this->entityManager->persist($customer);
             $this->entityManager->flush();
 
             $this->mailerService->sendConfirmationEmail(
                 'api_register_confirm',
-                $user
+                $customer
             );
         } catch (\Exception $exception) {
             return new JsonResponse(
@@ -113,20 +114,20 @@ class RegistrationController extends AbstractController
     public function confirmRegistration(Request $request): JsonResponse
     {
         $requestContent = json_decode($request->getContent(), true);
-        $username = $requestContent['username'];
+        $email = $requestContent['email'];
 
-        if (!$username) {
+        if (!$email) {
             return new JsonResponse(
                 [
-                    'message' => 'Bad request, username parameter missing.'
+                    'message' => 'Bad request, email parameter missing.'
                 ],
                 Response::HTTP_BAD_REQUEST
             );
         }
 
         try {
-            $user = $this->userRepository->findOneBy(['username' => $username]);
-            $this->emailVerifier->handleEmailConfirmation($request, $user);
+            $customer = $this->customerRepository->findOneBy(['email' => $email]);
+            $this->emailVerifier->handleEmailConfirmation($request, $customer);
         } catch (VerifyEmailExceptionInterface $exception) {
             return new JsonResponse(
                 [
@@ -149,11 +150,11 @@ class RegistrationController extends AbstractController
     {
         $requestContent = json_decode($request->getContent(), true);
 
-        if (array_key_exists('username', $requestContent)) {
+        if (array_key_exists('email', $requestContent)) {
             try {
-                $user = $this->userRepository->findOneBy(['username' => $requestContent['username']]);
+                $customer = $this->customerRepository->findOneBy(['email' => $requestContent['email']]);
 
-                if ($user->isVerified()) {
+                if ($customer->isVerified()) {
                     return new JsonResponse(
                         [
                             'message' => 'Account already verified.'
@@ -164,7 +165,7 @@ class RegistrationController extends AbstractController
 
                 $this->mailerService->sendConfirmationEmail(
                     'api_register_confirm',
-                    $user
+                    $customer
                 );
 
                 return new JsonResponse(

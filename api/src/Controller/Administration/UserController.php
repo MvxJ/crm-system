@@ -162,13 +162,6 @@ class UserController extends AbstractController
                         'is_verified' => $user->isVerified(),
                         'email_auth' => $user->isEmailAuthEnabled(),
                         'roles' => $user->getRoles(),
-                        'profile' => $this->serializer->normalize(
-                            $user->getProfile(),
-                            null,
-                            [
-                                AbstractNormalizer::IGNORED_ATTRIBUTES => ['user', 'id']
-                            ]
-                        )
                     ]
                 ],
                 Response::HTTP_OK

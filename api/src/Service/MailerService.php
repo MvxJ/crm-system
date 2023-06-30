@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Customer;
 use App\Entity\User;
 use App\Repository\SettingsRepository;
 use Scheb\TwoFactorBundle\Model\Email\TwoFactorInterface;
@@ -41,24 +42,24 @@ class MailerService
         $this->urlGenerator = $urlGenerator;
     }
 
-    public function sendConfirmationEmail(string $verifyEmailRouteName, User $user)
+        public function sendConfirmationEmail(string $verifyEmailRouteName, Customer $customer)
     {
         $signatureComponents = $this->verifyEmailHelper->generateSignature(
             $verifyEmailRouteName,
-            $user->getId(),
-            $user->getEmail()
+            $customer->getId(),
+            $customer->getEmail()
         );
 
         $email = $this->createEmailMessage(
             'Account Confirmation',
             [
-                'user' => $user,
+                'customer' => $customer,
                 'signedUrl' => $this->generateFeUrl($signatureComponents->getSignedUrl()),
                 'expiresAtMessageKey' => $signatureComponents->getExpirationMessageKey(),
                 'expiresAtMessageData' => $signatureComponents->getExpirationMessageData()
             ],
             'emails/registration-confirmation-email.html.twig',
-            $user->getEmail()
+            $customer->getEmail()
         );
 
         $this->mailer->send($email);

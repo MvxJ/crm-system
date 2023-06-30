@@ -23,10 +23,6 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    App\Security\EmailVerifier:
-        arguments:
-            $clientVerifyAddress: '%app.client_verify_address%'
-
     App\Security\TwoFactorCodeMailer:
         arguments:
             $noReplyAddress: '%app.no_reply_address%'

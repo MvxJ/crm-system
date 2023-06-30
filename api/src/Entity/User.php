@@ -32,9 +32,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\ManyToMany(targetEntity: Role::Class, inversedBy: "users")]
     private Collection $roles;
 
-    #[ORM\OneToOne(targetEntity: UserProfile::class, mappedBy: "user", cascade: ['persist', 'remove'])]
-    private $profile;
-
     #[ORM\Column(type: 'boolean')]
     private bool $isVerified = false;
 
@@ -43,6 +40,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
     #[ORM\Column]
     private bool $emailAuth = false;
+
+    #[ORM\Column]
+    private ?string $name = null;
+
+    #[ORM\Column]
+    private ?string $surname = null;
+
+    #[ORM\Column]
+    private ?string $phoneNumber = null;
 
     public function __construct()
     {
@@ -144,35 +150,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         return array_unique($roleNames);
     }
 
-
     public function removeRole(Role $role): self
     {
         if ($this->roles->contains($role)) {
             $this->roles->removeElement($role);
         }
-
-        return $this;
-    }
-
-    /**
-     * @return UserProfile|null
-     */
-    public function getProfile(): ?UserProfile
-    {
-        return $this->profile;
-    }
-
-    /**
-     * @param UserProfile $userProfile
-     * @return $this
-     */
-    public function setProfile(UserProfile $userProfile): self
-    {
-        if ($userProfile->getUser() !== $this) {
-            $userProfile->setUser($this);
-        }
-
-        $this->profile = $userProfile;
 
         return $this;
     }
@@ -237,6 +219,42 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     public function setEmailAuthCode(string $authCode): void
     {
         $this->authCode = $authCode;
+    }
+
+    public function setName(string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setSurname(string $surname): self
+    {
+        $this->surname = $surname;
+
+        return $this;
+    }
+
+    public function getSurname(): ?string
+    {
+        return $this->surname;
+    }
+
+    public function setPhoneNumber(string $phoneNumber): self
+    {
+        $this->phoneNumber = $phoneNumber;
+
+        return $this;
+    }
+
+    public function getPhoneNumber(): ?string
+    {
+        return $this->phoneNumber;
     }
 
     /**

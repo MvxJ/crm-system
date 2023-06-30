@@ -7,6 +7,13 @@ security:
             entity:
                 class: App\Entity\User
                 property: username
+        app_customer_provider:
+            entity:
+                class: App\Entity\Customer
+                property: email
+        chain_provider:
+            chain:
+                providers: [ app_user_provider, app_customer_provider ]
     firewalls:
         login:
             pattern: ^/api/login
@@ -21,11 +28,14 @@ security:
                 success_handler: App\Security\Authentication\TwoFactorAuthenticationSuccessHandler
                 failure_handler: App\Security\Authentication\TwoFactorAuthenticationFailureHandler
                 auth_code_parameter_name: authCode
+                provider: chain_provider
             json_login:
                 check_path: api_login_check
                 success_handler: App\Security\Authentication\AuthenticationSuccessHandler
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
+                provider: chain_provider
         refresh_token:
+            provider: chain_provider
             pattern: ^/api/token/refresh
             stateless: true
             refresh_jwt:
@@ -33,13 +43,14 @@ security:
         api:
             pattern:   ^/api
             stateless: true
-            jwt: ~
+            jwt:
+                provider: chain_provider
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
             lazy: true
-            provider: app_user_provider
+            provider: chain_provider
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall

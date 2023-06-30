@@ -2,6 +2,7 @@
 
 namespace App\Security;
 
+use App\Entity\Customer;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -14,7 +15,6 @@ use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
 class EmailVerifier
 {
     public function __construct(
-        private string $clientVerifyAddress,
         private VerifyEmailHelperInterface $verifyEmailHelper,
         private EntityManagerInterface $entityManager
     ) {
@@ -23,18 +23,13 @@ class EmailVerifier
     /**
      * @throws VerifyEmailExceptionInterface
      */
-    public function handleEmailConfirmation(Request $request, User $user): void
+    public function handleEmailConfirmation(Request $request, Customer $customer): void
     {
-        $this->verifyEmailHelper->validateEmailConfirmation($request->getUri(), $user->getId(), $user->getEmail());
+        $this->verifyEmailHelper->validateEmailConfirmation($request->getUri(), $customer->getId(), $customer->getEmail());
 
-        $user->setIsVerified(true);
+        $customer->setAuthenticated(true);
 
-        $this->entityManager->persist($user);
+        $this->entityManager->persist($customer);
         $this->entityManager->flush();
-    }
-
-    private function generateFeUrl(string $verifyUrl):string
-    {
-        return $this->clientVerifyAddress . substr($verifyUrl, strpos($verifyUrl, '?'));
     }
 }

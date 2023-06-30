@@ -51,7 +51,6 @@ class AuthenticationSuccessHandler implements AuthenticationSuccessHandlerInterf
 
         $response = $this->baseHandler->onAuthenticationSuccess($request, $token);
         $responseContent = $this->responseService->addUserContent($response, $token);
-
         $response->setContent($responseContent);
 
         return $response;

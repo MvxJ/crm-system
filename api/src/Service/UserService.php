@@ -18,20 +18,17 @@ class UserService
     private UserRepository $userRepository;
     private UserPasswordHasherInterface $userPasswordHasher;
     private RoleRepository $roleRepository;
-    private MailerService $mailerService;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         UserRepository $userRepository,
         UserPasswordHasherInterface $userPasswordHasher,
-        RoleRepository $roleRepository,
-        MailerService $mailerService
+        RoleRepository $roleRepository
     ) {
         $this->entityManager = $entityManager;
         $this->userRepository = $userRepository;
         $this->userPasswordHasher = $userPasswordHasher;
         $this->roleRepository = $roleRepository;
-        $this->mailerService = $mailerService;
     }
 
     public function getUsers(Request $request): array
@@ -48,8 +45,6 @@ class UserService
                 'username' => $user->getUsername(),
                 'id' => $user->getId(),
                 'email' => $user->getEmail(),
-                'name' => $user->getProfile() ? $user->getProfile()->getFirstName() : '',
-                'surname' => $user->getProfile() ? $user->getProfile()->getSurname() : ''
             ];
         }
 
@@ -81,11 +76,6 @@ class UserService
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
-        $this->mailerService->sendConfirmationEmail(
-            'api_register_confirm',
-            $user
-        );
-
         return $user->getId();
     }
 
@@ -102,7 +92,7 @@ class UserService
         }
 
         if (array_key_exists('password', $content)) {
-            $user->setEmail($this->userPasswordHasher->hashPassword($user, $content['password']));
+            $user->setPassword($this->userPasswordHasher->hashPassword($user, $content['password']));
         }
 
         $this->entityManager->persist($user);

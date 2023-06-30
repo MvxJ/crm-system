@@ -53,11 +53,11 @@ const UserDetailPage: React.FunctionComponent<IUserDetailPageProps> = (props) =>
                 <div className="row">
                     <div className="col">
                         <h4>Name:</h4>
-                        <p>{user.profile?.firstName}</p>
+                        <p></p>
                     </div>
                     <div className="col">
                         <h4>Surname:</h4>
-                        <p>{user.profile?.surname}</p>
+                        <p></p>
                     </div>
                 </div>
                 <div className="row">

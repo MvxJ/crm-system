@@ -34,9 +34,13 @@ class Role extends CoreRole
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: "roles")]
     private Collection $users;
 
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: "roles")]
+    private Collection $customers;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
+        $this->customers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -116,5 +120,41 @@ class Role extends CoreRole
     public function getUsers(): Collection
     {
         return $this->users;
+    }
+
+    /**
+     * @param User $user
+     * @return $this
+     */
+    public function addCustomer(Customer $customer): self
+    {
+        if (!$this->customers->contains($customer)) {
+            $this->customers->add($customer);
+            $customer->addRole($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param User $user
+     * @return $this
+     */
+    public function removeCustomer(Customer $customer): self
+    {
+        if ($this->customers->contains($customer)) {
+            $this->customers->removeElement($customer);
+            $customer->removeRole($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getCustomers(): Collection
+    {
+        return $this->customers;
     }
 }
