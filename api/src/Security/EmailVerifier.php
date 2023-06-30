@@ -15,36 +15,9 @@ class EmailVerifier
 {
     public function __construct(
         private string $clientVerifyAddress,
-        private string $noReplyAddress,
-        private string $mailerName,
         private VerifyEmailHelperInterface $verifyEmailHelper,
-        private MailerInterface $mailer,
         private EntityManagerInterface $entityManager
     ) {
-    }
-
-    public function sendEmailConfirmation(string $verifyEmailRouteName, User $user): void
-    {
-        $signatureComponents = $this->verifyEmailHelper->generateSignature(
-            $verifyEmailRouteName,
-            $user->getId(),
-            $user->getEmail()
-        );
-
-        $email = (new TemplatedEmail())
-            ->from(new Address($this->noReplyAddress, $this->mailerName))
-            ->to($user->getEmail())
-            ->subject('Email Confirmation')
-            ->htmlTemplate('emails/registration-confirmation-email.html.twig');
-
-        $context = $email->getContext();
-        $context['signedUrl'] = $this->generateFeUrl($signatureComponents->getSignedUrl());
-        $context['expiresAtMessageKey'] = $signatureComponents->getExpirationMessageKey();
-        $context['expiresAtMessageData'] = $signatureComponents->getExpirationMessageData();
-
-        $email->context($context);
-
-        $this->mailer->send($email);
     }
 
     /**

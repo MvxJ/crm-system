@@ -8,7 +8,6 @@ use App\Entity\Role;
 use App\Entity\User;
 use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
-use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -18,21 +17,21 @@ class UserService
     private EntityManagerInterface $entityManager;
     private UserRepository $userRepository;
     private UserPasswordHasherInterface $userPasswordHasher;
-    private EmailVerifier $emailVerifier;
     private RoleRepository $roleRepository;
+    private MailerService $mailerService;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         UserRepository $userRepository,
         UserPasswordHasherInterface $userPasswordHasher,
-        EmailVerifier $emailVerifier,
-        RoleRepository $roleRepository
+        RoleRepository $roleRepository,
+        MailerService $mailerService
     ) {
         $this->entityManager = $entityManager;
         $this->userRepository = $userRepository;
         $this->userPasswordHasher = $userPasswordHasher;
-        $this->emailVerifier = $emailVerifier;
         $this->roleRepository = $roleRepository;
+        $this->mailerService = $mailerService;
     }
 
     public function getUsers(Request $request): array
@@ -82,7 +81,7 @@ class UserService
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
-        $this->emailVerifier->sendEmailConfirmation(
+        $this->mailerService->sendConfirmationEmail(
             'api_register_confirm',
             $user
         );

@@ -45,6 +45,7 @@ class Settings
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $mailerName = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -166,6 +167,18 @@ class Settings
     public function setMailerAddress(?string $mailerAddress): self
     {
         $this->mailerAddress = $mailerAddress;
+
+        return $this;
+    }
+
+    public function getMailerName(): ?string
+    {
+        return $this->mailerName;
+    }
+
+    public function setMailerName(string $mailerName): self
+    {
+        $this->mailerName = $mailerName;
 
         return $this;
     }

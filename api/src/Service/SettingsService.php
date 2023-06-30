@@ -71,6 +71,10 @@ class SettingsService
             $settings->setMailerAddress($requestContent['mailerAddress']);
         }
 
+        if ($requestContent['mailerName']) {
+            $settings->setMailerName($requestContent['mailerName']);
+        }
+
         if ($requestContent['technicalSupportNumber']) {
             $settings->setTechnicalSupportNumber($requestContent['technicalSupportNumber']);
         }

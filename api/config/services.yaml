@@ -26,8 +26,6 @@ services:
     App\Security\EmailVerifier:
         arguments:
             $clientVerifyAddress: '%app.client_verify_address%'
-            $noReplyAddress: '%app.no_reply_address%'
-            $mailerName: '%app.mailer_name%'
 
     App\Security\TwoFactorCodeMailer:
         arguments:
@@ -36,5 +34,9 @@ services:
     App\Service\SettingsService:
         arguments:
             $uploadDir: '%app.upload_directory%/system'
+    App\Service\MailerService:
+        arguments:
+            $uploadDir: '%app.upload_directory%/system'
+            $clientVerifyAddress: '%app.client_verify_address%'
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

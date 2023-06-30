@@ -2,6 +2,7 @@
 
 namespace App\Security;
 
+use App\Service\MailerService;
 use Scheb\TwoFactorBundle\Mailer\AuthCodeMailerInterface;
 use Scheb\TwoFactorBundle\Model\Email\TwoFactorInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -13,30 +14,22 @@ class TwoFactorCodeMailer implements AuthCodeMailerInterface
     private string $noReplyAddress;
     private string $mailerName;
     private MailerInterface $mailer;
+    private MailerService $mailerService;
 
     public function __construct(
         string $noReplyAddress,
         string $mailerName,
-        MailerInterface $mailer
+        MailerInterface $mailer,
+        MailerService $mailerService
     ) {
         $this->noReplyAddress = $noReplyAddress;
         $this->mailerName = $mailerName;
         $this->mailer = $mailer;
+        $this->mailerService = $mailerService;
     }
 
     public function sendAuthCode(TwoFactorInterface $user): void
     {
-        $authCode = $user->getEmailAuthCode();
-
-        $email = (new TemplatedEmail())
-            ->subject('Authentication Code')
-            ->from(new Address($this->noReplyAddress, $this->mailerName))
-            ->to($user->getEmailAuthRecipient())
-            ->htmlTemplate('emails/authentication-code-email.html.twig')
-            ->context([
-                'authCode' => $authCode,
-            ]);
-
-        $this->mailer->send($email);
+        $this->mailerService->sendTwoFactorAuthenticationEmail($user);
     }
 }

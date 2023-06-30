@@ -9,6 +9,7 @@ use App\Entity\User;
 use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
+use App\Service\MailerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -46,18 +47,25 @@ class RegistrationController extends AbstractController
      */
     private $emailVerifier;
 
+    /**
+     * @var MailerService
+     */
+    private MailerService $mailerService;
+
     public function __construct(
         UserPasswordHasherInterface $userPasswordHasher,
         EntityManagerInterface $entityManager,
         RoleRepository $roleRepository,
         UserRepository $userRepository,
         EmailVerifier $emailVerifier,
+        MailerService $mailerService
     ) {
         $this->userPasswordHasher = $userPasswordHasher;
         $this->entityManager = $entityManager;
         $this->roleRepository = $roleRepository;
         $this->userRepository = $userRepository;
         $this->emailVerifier = $emailVerifier;
+        $this->mailerService = $mailerService;
     }
 
     #[Route('/register', name: 'register_customer', methods: ['POST'])]
@@ -80,15 +88,14 @@ class RegistrationController extends AbstractController
             $this->entityManager->persist($user);
             $this->entityManager->flush();
 
-            $this->emailVerifier->sendEmailConfirmation(
+            $this->mailerService->sendConfirmationEmail(
                 'api_register_confirm',
                 $user
             );
         } catch (\Exception $exception) {
             return new JsonResponse(
                 [
-                    'message' => 'An error occurred during registration please try again',
-
+                    'message' => 'An error occurred during registration please try again'
                 ],
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
@@ -155,7 +162,7 @@ class RegistrationController extends AbstractController
                     );
                 }
 
-                $this->emailVerifier->sendEmailConfirmation(
+                $this->mailerService->sendConfirmationEmail(
                     'api_register_confirm',
                     $user
                 );
