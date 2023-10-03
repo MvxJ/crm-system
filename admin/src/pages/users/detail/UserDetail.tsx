@@ -53,11 +53,11 @@ const UserDetailPage: React.FunctionComponent<IUserDetailPageProps> = (props) =>
                 <div className="row">
                     <div className="col">
                         <h4>Name:</h4>
-                        <p></p>
+                        <p>{user.name}</p>
                     </div>
                     <div className="col">
                         <h4>Surname:</h4>
-                        <p></p>
+                        <p>{user.surname}</p>
                     </div>
                 </div>
                 <div className="row">
@@ -74,6 +74,10 @@ const UserDetailPage: React.FunctionComponent<IUserDetailPageProps> = (props) =>
                     <div className="col">
                         <h4>2FA: </h4>
                         <p>{user.email_auth ? 'Yes' : 'No'}</p>
+                    </div>
+                    <div className="col">
+                        <h4>Phone number:</h4>
+                        <p>{user.phoneNumber}</p>
                     </div>
                 </div>
             </div>

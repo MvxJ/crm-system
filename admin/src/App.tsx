@@ -16,6 +16,8 @@ import OfferForm from "./pages/offers/form/OfferForm";
 import UserForm from "./pages/users/form/UserForm";
 import UserDetailPage from "./pages/users/detail/UserDetail";
 import Settings from "./pages/settings/Settings";
+import CustomerForm from "./pages/customers/form/CustomerForm";
+import CustomerDetailPage from "./pages/customers/detail/CustomerDetailPage";
 
 export interface IAppProps {}
 
@@ -49,6 +51,9 @@ const App: React.FunctionComponent<IAppProps> = (props) => {
                                             <Route path="/users/edit/:id" element={<UserForm />} />
                                             <Route path="/users/detail/:id" element={<UserDetailPage />} />
                                             <Route path="customers" element={<CustomersList />} />
+                                            <Route path="/customers/add" element={<CustomerForm />} />
+                                            <Route path="/customers/edit/:id" element={<CustomerForm />} />
+                                            <Route path="/customers/detail/:id" element={<CustomerDetailPage />} />
                                             <Route path="/settings" element={<Settings />} />
                                         </Route>
                                         <Route path="login" element={<LoginPage setIsAuthenticated={setAuthenticated} />} />

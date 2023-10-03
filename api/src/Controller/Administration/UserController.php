@@ -64,7 +64,8 @@ class UserController extends AbstractController
         if (count($errors) > 0) {
             return new JsonResponse(
                 [
-
+                    'status' => 'error',
+                    'errors' => $errors
                 ],
                 Response::HTTP_BAD_REQUEST
             );
@@ -159,6 +160,9 @@ class UserController extends AbstractController
                         'id' => $user->getId(),
                         'email' => $user->getEmail(),
                         'username' => $user->getUsername(),
+                        'surname' => $user->getSurname(),
+                        'name' => $user->getName(),
+                        'phoneNumber' => $user->getPhoneNumber(),
                         'is_verified' => $user->isVerified(),
                         'email_auth' => $user->isEmailAuthEnabled(),
                         'roles' => $user->getRoles(),

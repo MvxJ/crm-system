@@ -40,7 +40,7 @@ const Navigation: React.FunctionComponent<INavigationProps> = (props) => {
                     </Link>
                     <Link to={"/customers"} >
                         <div className='link-container'>
-                           <span className='nav-el-icon'><FaUsers /></span> Clients
+                           <span className='nav-el-icon'><FaUsers /></span> Customers
                         </div>
                     </Link>
                     <Link to={"/settings"}>

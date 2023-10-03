@@ -20,7 +20,8 @@ const Settings: React.FunctionComponent<ISettingsPageProps> = (props) => {
             privacyPolicy: "",
             termsAndConditions: "",
             mailerAddress: "",
-            technicalSupportNumber: ""
+            technicalSupportNumber: "",
+            mailerName: ""
         }
     );
 
@@ -37,7 +38,8 @@ const Settings: React.FunctionComponent<ISettingsPageProps> = (props) => {
                 privacyPolicy: response.data.settings.privacyPolicy,
                 termsAndConditions: response.data.settings.termsAndConditions,
                 mailerAddress: response.data.settings.mailerAddress,
-                technicalSupportNumber: response.data.settings.technicalSupportNumber
+                technicalSupportNumber: response.data.settings.technicalSupportNumber,
+                mailerName: response.data.settings.mailerName
             });
             setLogoName(response.data.settings.logoUrl);
         } catch (error) {
@@ -60,6 +62,7 @@ const Settings: React.FunctionComponent<ISettingsPageProps> = (props) => {
             privacyPolicy: formData.privacyPolicy,
             termsAndConditions: formData.termsAndConditions,
             mailerAddress: formData.mailerAddress,
+            mailerName: formData.mailerName,
             technicalSupportNumber: formData.technicalSupportNumber
         });
 
@@ -177,6 +180,15 @@ const Settings: React.FunctionComponent<ISettingsPageProps> = (props) => {
                                 type="text"
                                 name="mailerAddress"
                                 value={formData.mailerAddress}
+                                onChange={handleInputChange}
+                            />
+                        </div>
+                        <div className="col">
+                            <label>Mailer name:</label>
+                            <input
+                                type="text"
+                                name="mailerName"
+                                value={formData.mailerName}
                                 onChange={handleInputChange}
                             />
                         </div>

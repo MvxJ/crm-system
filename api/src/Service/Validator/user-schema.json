@@ -10,12 +10,23 @@
     },
     "email": {
       "type": "string"
+    },
+    "name" : {
+      "type": "string"
+    },
+    "surname": {
+      "type": "string"
+    },
+    "phoneNumber": {
+      "type": "string"
     }
   },
-  "required": ["username", "password", "email"],
+  "required": ["username", "password", "email", "name", "surname"],
   "errorMessage": {
     "required.username": "Title is required. Please provide a value.",
     "required.password": "Description is required. Please provide a value.",
-    "required.email": "Email is required. Please provide a value."
+    "required.email": "Email is required. Please provide a value.",
+    "required.name": "Name is required. Please provide a value.",
+    "required.surname": "Surname is required. Please provide a value."
   }
 }

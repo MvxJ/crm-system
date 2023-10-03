@@ -45,6 +45,9 @@ class UserService
                 'username' => $user->getUsername(),
                 'id' => $user->getId(),
                 'email' => $user->getEmail(),
+                'name' => $user->getName(),
+                'surname' => $user->getSurname(),
+                'phoneNumber' => $user->getPhoneNumber()
             ];
         }
 
@@ -69,9 +72,15 @@ class UserService
         $user = new User();
 
         $user->setUsername($content['username']);
+        $user->setName($content['name']);
+        $user->setSurname($content['surname']);
         $user->setPassword($this->userPasswordHasher->hashPassword($user, $content['password']));
         $user->setEmail($content['email']);
         $user->addRole($roleAdmin);
+
+        if (array_key_exists('phoneNumber', $content)) {
+            $user->setPhoneNumber($content['phoneNumber']);
+        }
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
@@ -93,6 +102,18 @@ class UserService
 
         if (array_key_exists('password', $content)) {
             $user->setPassword($this->userPasswordHasher->hashPassword($user, $content['password']));
+        }
+
+        if (array_key_exists('name', $content)) {
+            $user->setName($content['name']);
+        }
+
+        if (array_key_exists('surname', $content)) {
+            $user->setSurname($content['surname']);
+        }
+
+        if (array_key_exists('phoneNumber', $content)) {
+            $user->setPhoneNumber($content['phoneNumber']);
         }
 
         $this->entityManager->persist($user);

@@ -4,26 +4,26 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
-use App\Entity\UserProfile;
+use App\Entity\CustomerProfile;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<UserProfile>
+ * @extends ServiceEntityRepository<CustomerProfile>
  *
- * @method UserProfile|null find($id, $lockMode = null, $lockVersion = null)
- * @method UserProfile|null findOneBy(array $criteria, array $orderBy = null)
- * @method UserProfile[]    findAll()
- * @method UserProfile[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method CustomerProfile|null find($id, $lockMode = null, $lockVersion = null)
+ * @method CustomerProfile|null findOneBy(array $criteria, array $orderBy = null)
+ * @method CustomerProfile[]    findAll()
+ * @method CustomerProfile[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class UserProfileRepository extends ServiceEntityRepository
+class CustomerProfileRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, UserProfile::class);
+        parent::__construct($registry, CustomerProfile::class);
     }
 
-    public function save(UserProfile $entity, bool $flush = false): void
+    public function save(CustomerProfile $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -32,7 +32,7 @@ class UserProfileRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(UserProfile $entity, bool $flush = false): void
+    public function remove(CustomerProfile $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
@@ -42,7 +42,7 @@ class UserProfileRepository extends ServiceEntityRepository
     }
 
 //    /**
-//     * @return UserProfile[] Returns an array of UserProfile objects
+//     * @return CustomerProfile[] Returns an array of CustomerProfile objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -56,7 +56,7 @@ class UserProfileRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?UserProfile
+//    public function findOneBySomeField($value): ?CustomerProfile
 //    {
 //        return $this->createQueryBuilder('u')
 //            ->andWhere('u.exampleField = :val')

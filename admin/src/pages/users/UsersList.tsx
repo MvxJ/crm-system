@@ -12,6 +12,7 @@ export interface IUsersListPageProps {};
 const UsersListPage: React.FunctionComponent<IUsersListPageProps> = (props) => {
     const [data, setData] = useState([]);
     const [totalRows, setTotalRows] = useState(0);
+    const [currentId, setCurrentId] = useState(null);
     const [paginationModel, setPaginationModel] = useState({
         pageSize: 10,
         page: 0,
@@ -35,10 +36,11 @@ const UsersListPage: React.FunctionComponent<IUsersListPageProps> = (props) => {
         {
             field: 'actions',
             headerName: 'Actions',
+            type: 'actions',
             width: 150,
             renderCell: (params) => (
                 <div className="actionColumn">
-                    <FiMoreVertical onClick={handleClick} />
+                    <FiMoreVertical onClick={(event) => handleClick(event, params.row.id)} />
                     <Menu
                         anchorEl={anchorEl}
                         open={Boolean(anchorEl)}
@@ -46,11 +48,11 @@ const UsersListPage: React.FunctionComponent<IUsersListPageProps> = (props) => {
                         onClick={handleClose}
                     >
                         <MenuItem>
-                            <Link to={`/users/detail/${params.row.id}`} className="text-decoration-none">
+                            <Link to={`/users/detail/${currentId}`} className="text-decoration-none">
                                 <BsEye /> View Details
                             </Link>
                         </MenuItem>
-                        <MenuItem onClick={() => handleDelete(params.row.id)}>
+                        <MenuItem onClick={() => handleDelete(currentId)}>
                                 <FiTrash2 /> Delete
                         </MenuItem>
                     </Menu>
@@ -67,6 +69,8 @@ const UsersListPage: React.FunctionComponent<IUsersListPageProps> = (props) => {
         try {
             await UsersService.deleteUser(id);
             fetchData();
+            setAnchorEl(null);
+            setCurrentId(null);
             showNotification('User deleted successfully', 'success');
         } catch (error) {
             showNotification('Failed to delete user', 'error');
@@ -74,11 +78,14 @@ const UsersListPage: React.FunctionComponent<IUsersListPageProps> = (props) => {
     };
 
     const [anchorEl, setAnchorEl] = useState(null);
-    const handleClick = (event) => {
+    const handleClick = (event, id) => {
+        event.stopPropagation();
         setAnchorEl(event.currentTarget);
+        setCurrentId(id);
     };
     const handleClose = () => {
         setAnchorEl(null);
+        setCurrentId(null);
     };
 
     const showNotification = (message, type) => {

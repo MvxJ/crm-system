@@ -12,13 +12,19 @@ const UserForm: React.FunctionComponent<IUserFormPageProps> = (props) => {
         { 
             username: '',
             email: '',
-            password: ''
+            name: '',
+            surname: '',
+            password: '',
+            phoneNumber: ''
         }
     );
         const [formEditData, setFormEditData] = useState(
         { 
             username: '',
             email: '',
+            name: '',
+            surname: '',
+            phoneNumber: ''
         }
     );
     const navigate = useNavigate();
@@ -30,7 +36,10 @@ const UserForm: React.FunctionComponent<IUserFormPageProps> = (props) => {
                 setUser(response.data.user);
                 setFormEditData({
                     username: response.data.user.username,
-                    email: response.data.user.email
+                    email: response.data.user.email,
+                    name: response.data.user.name,
+                    surname: response.data.user.surname,
+                    phoneNumber: response.data.user.phoneNumber
                 });
             }
         } catch (error) {
@@ -54,6 +63,9 @@ const UserForm: React.FunctionComponent<IUserFormPageProps> = (props) => {
         await UsersService.updateUser(id, {
             username: formEditData.username,
             email: formEditData.email,
+            name: formEditData.name,
+            surname: formEditData.surname,
+            phoneNumber: formEditData.phoneNumber
         });
         navigate(`/users/detail/${id}`);
     }
@@ -62,7 +74,10 @@ const UserForm: React.FunctionComponent<IUserFormPageProps> = (props) => {
         const response = await UsersService.addUser({
             username: formAddData.username,
             email: formAddData.email,
-            password: formAddData.password
+            password: formAddData.password,
+            name: formAddData.name,
+            surname: formAddData.surname,
+            phoneNumber: formAddData.phoneNumber
         });
         
         if (response.data.status == 'success') {
@@ -74,8 +89,6 @@ const UserForm: React.FunctionComponent<IUserFormPageProps> = (props) => {
         fetchData();
       }, []
     );
-
-
 
     return (
         <div className="card">
@@ -103,6 +116,23 @@ const UserForm: React.FunctionComponent<IUserFormPageProps> = (props) => {
                             <>
                                 <div className="row">
                                     <div className="col">
+                                        <label>Name:</label>
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            value={formAddData.name}
+                                            onChange={handleInputEditFormChange} />
+                                    </div>
+                                    <div className="col">
+                                        <label>Surname:</label>
+                                        <input type="text"
+                                            name="surname"
+                                            value={formAddData.surname}
+                                            onChange={handleInputEditFormChange} />
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col">
                                         <label>Username:</label>
                                         <input
                                             type="text"
@@ -110,7 +140,7 @@ const UserForm: React.FunctionComponent<IUserFormPageProps> = (props) => {
                                             value={formAddData.username}
                                             onChange={handleInputAddFormChange} />
                                     </div>
-                                    <div classNmae="col">
+                                    <div className="col">
                                         <label>Email:</label>
                                         <input type="text"
                                             name="email"
@@ -127,10 +157,35 @@ const UserForm: React.FunctionComponent<IUserFormPageProps> = (props) => {
                                             value={formAddData.password}
                                             onChange={handleInputAddFormChange} />
                                     </div>
+                                    <div className="col">
+                                        <label>Phone number:</label>
+                                        <input
+                                            type="text"
+                                            name="phoneNumber"
+                                            value={formAddData.phoneNumber}
+                                            onChange={handleInputAddFormChange} />
+                                    </div>
                                 </div>    
                             </>
                         :
                             <>
+                            <div className="row">
+                                <div className="col">
+                                    <label>Name:</label>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        value={formEditData.name}
+                                        onChange={handleInputEditFormChange} />
+                                </div>
+                                <div className="col">
+                                    <label>Surname:</label>
+                                    <input type="text"
+                                        name="surname"
+                                        value={formEditData.surname}
+                                        onChange={handleInputEditFormChange} />
+                                </div>
+                            </div>
                             <div className="row">
                                 <div className="col">
                                     <label>Username:</label>
@@ -145,6 +200,16 @@ const UserForm: React.FunctionComponent<IUserFormPageProps> = (props) => {
                                     <input type="text"
                                         name="email"
                                         value={formEditData.email}
+                                        onChange={handleInputEditFormChange} />
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="col">
+                                    <label>Phone number:</label>
+                                    <input
+                                        type="text"
+                                        name="phoneNumber"
+                                        value={formEditData.phoneNumber}
                                         onChange={handleInputEditFormChange} />
                                 </div>
                             </div>

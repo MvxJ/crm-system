@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string"
+    },
+    "password": {
+      "type": "string"
+    },
+    "firstName" : {
+      "type": "string"
+    },
+    "secondName": {
+      "type": "string"
+    },
+    "surname": {
+      "type": "string"
+    },
+    "socialSecurityNumber": {
+      "type": "string"
+    },
+    "phoneNumber": {
+      "type": "string"
+    },
+    "birthDate": {
+      "type": "string"
+    }
+  },
+  "required": ["password", "email", "firstName", "surname", "socialSecurityNumber", "phoneNumber"],
+  "errorMessage": {
+    "required.password": "Description is required. Please provide a value.",
+    "required.email": "Email is required. Please provide a value.",
+    "required.firstName": "First name is required. Please provide a value.",
+    "required.surname": "Surname is required. Please provide a value.",
+    "required.socialSecurityNumber": "Social security number is required. Please provide a value.",
+    "required.phoneNumber": "Phone number is required. Please provide a value."
+  }
+}

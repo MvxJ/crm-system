@@ -13,6 +13,8 @@ export interface IOffersListPageProps {};
 const OffersList: React.FunctionComponent<IOffersListPageProps> = (props) => {
     const [data, setData] = useState([]);
     const [totalRows, setTotalRows] = useState(0);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [currentId, setCurrentId] = useState(null);
     const [paginationModel, setPaginationModel] = useState({
         pageSize: 10,
         page: 0,
@@ -49,23 +51,23 @@ const OffersList: React.FunctionComponent<IOffersListPageProps> = (props) => {
             width: 150,
             renderCell: (params) => (
                 <div className="actionColumn">
-                    <FiMoreVertical onClick={handleClick} />
-                    <Menu
-                        anchorEl={anchorEl}
-                        open={Boolean(anchorEl)}
-                        onClose={handleClose}
-                        onClick={handleClose}
-                    >
-                        <MenuItem>
-                            <Link to={`/offers/detail/${params.row.id}`} className="text-decoration-none">
-                                <BsEye /> View Details
-                            </Link>
-                        </MenuItem>
-                        <MenuItem onClick={() => handleDelete(params.row.id)}>
-                                <FiTrash2 /> Delete
-                        </MenuItem>
-                    </Menu>
-                </div>
+                <FiMoreVertical onClick={(event) => handleClick(event, params.row.id)} />
+                <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={handleClose}
+                    onClick={handleClose}
+                >
+                    <MenuItem>
+                        <Link to={`/offers/detail/${currentId}`} className="text-decoration-none">
+                            <BsEye /> View Details
+                        </Link>
+                    </MenuItem>
+                    <MenuItem onClick={() => handleDelete(currentId)}>
+                            <FiTrash2 /> Delete
+                    </MenuItem>
+                </Menu>
+            </div>
             ),
         },
     ];
@@ -78,6 +80,8 @@ const OffersList: React.FunctionComponent<IOffersListPageProps> = (props) => {
         try {
             await OfferService.deleteOffer(id);
             fetchData();
+            setAnchorEl(null);
+            setCurrentId(null);
             showNotification('Offer deleted successfully', 'success');
         } catch (error) {
             showNotification('Failed to delete offer', 'error');
@@ -99,13 +103,16 @@ const OffersList: React.FunctionComponent<IOffersListPageProps> = (props) => {
         }));
     };
 
-    const [anchorEl, setAnchorEl] = useState(null);
-    const handleClick = (event) => {
+    const handleClick = (event, id) => {
+        event.stopPropagation();
         setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
+        setCurrentId(id);
+      };
+    
+      const handleClose = () => {
         setAnchorEl(null);
-    };
+        setCurrentId(null);
+      };
 
     const snackbarPosition: SnackbarOrigin = { vertical: 'bottom', horizontal: 'right' };
 

@@ -34,6 +34,9 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Two
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $emailAuthEnabled = false;
 
+    #[ORM\OneToOne(inversedBy: 'customer', targetEntity: CustomerProfile::class, cascade: ['persist', 'remove'])]
+    private CustomerProfile $customerProfile;
+
     #[ORM\ManyToMany(targetEntity: Role::Class, inversedBy: "customers")]
     private Collection $roles;
 
@@ -168,5 +171,17 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Two
         $this->email = $email;
 
         return $this;
+    }
+
+    public function setProfile(CustomerProfile $profile): self
+    {
+        $this->customerProfile = $profile;
+
+        return $this;
+    }
+
+    public function getProfile(): ?CustomerProfile
+    {
+        return $this->customerProfile;
     }
 }

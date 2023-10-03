@@ -4,38 +4,39 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Repository\UserProfileRepository;
+use App\Repository\CustomerProfileRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: UserProfileRepository::class)]
-class UserProfile
+#[ORM\Entity(repositoryClass: CustomerProfileRepository::class)]
+class CustomerProfile
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 30)]
+    #[ORM\Column(length: 30, type: TYpes::STRING)]
     private string $firstName;
 
-    #[ORM\Column(length: 30)]
-    private string $secondName;
+    #[ORM\Column(length: 30, type: Types::STRING, nullable: true)]
+    private ?string $secondName = null;
 
-    #[ORM\Column(length: 30)]
+    #[ORM\Column(length: 30, type: Types::STRING)]
     private string $surname;
 
-    #[ORM\Column(length: 11)]
+    #[ORM\Column(length: 11, type: Types::STRING)]
     private string $socialSecurityNumber;
 
-    #[ORM\Column(length: 15)]
+    #[ORM\Column(length: 15, type: Types::STRING)]
     private string $phoneNumber;
 
-    #[ORM\Column]
-    private \DateTime $birthDate;
+    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
+    private ?\DateTime $birthDate = null;
 
-    #[ORM\OneToOne(inversedBy: 'profile', targetEntity: User::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'customerProfile', targetEntity: Customer::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
+    private ?Customer $customer = null;
 
     public function getId(): ?int
     {
@@ -155,21 +156,14 @@ class UserProfile
         return $this;
     }
 
-    /**
-     * @return User|null
-     */
-    public function getUser(): ?User
+    public function getCustomer(): ?Customer
     {
-        return $this->user;
+        return $this->customer;
     }
 
-    /**
-     * @param User $user
-     * @return $this
-     */
-    public function setUser(User $user): self
+    public function setCustomer(Customer $customer): self
     {
-        $this->user = $user;
+        $this->customer = $customer;
 
         return $this;
     }
