@@ -94,15 +94,20 @@ class MailerService
             ->subject($subject)
             ->htmlTemplate($template);
 
-        $logoPath = $this->uploadDir . '/' . $settings->getLogoUrl();
-        $email->addPart((new DataPart(fopen($logoPath, 'r'), 'logo', 'image/png'))->asInline());
-        $context['logoUrl'] = $this->urlGenerator->generate(
-            'api_file_display',
-            [
-                'fileName' => $settings->getLogoUrl()
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        );
+        if ($settings->getLogoUrl()) {
+            $logoPath = $this->uploadDir . '/' . $settings->getLogoUrl();
+            $email->addPart((new DataPart(fopen($logoPath, 'r'), 'logo', 'image/png'))->asInline());
+            $context['logoUrl'] = $this->urlGenerator->generate(
+                'api_file_display',
+                [
+                    'fileName' => $settings->getLogoUrl()
+                ],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+
+        } else {
+            $context['logoUrl'] = '';
+        }
 
         $email->context($context);
 

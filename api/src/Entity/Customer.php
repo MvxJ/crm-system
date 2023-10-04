@@ -28,10 +28,10 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Two
     #[ORM\Column(type: Types::STRING, nullable: true)]
     private ?string $emailAuthCode;
 
-    #[ORM\Column(type: TYpes::BOOLEAN)]
+    #[ORM\Column(type: Types::BOOLEAN, nullable: false)]
     private bool $authenticated = false;
 
-    #[ORM\Column(type: Types::BOOLEAN)]
+    #[ORM\Column(type: Types::BOOLEAN,nullable: false)]
     private bool $emailAuthEnabled = false;
 
     #[ORM\OneToOne(inversedBy: 'customer', targetEntity: CustomerProfile::class, cascade: ['persist', 'remove'])]
@@ -40,9 +40,21 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Two
     #[ORM\ManyToMany(targetEntity: Role::Class, inversedBy: "customers")]
     private Collection $roles;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Device::class)]
+    private Collection $devices;
+
+    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: ServiceRequest::class)]
+    private Collection $serviceRequests;
+
+    #[ORM\OneToMany(mappedBy: 'Customer', targetEntity: Message::class, orphanRemoval: true)]
+    private Collection $messages;
+
     public function __construct()
     {
         $this->roles = new ArrayCollection();
+        $this->devices = new ArrayCollection();
+        $this->serviceRequests = new ArrayCollection();
+        $this->messages = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -114,7 +126,6 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Two
 
     public function eraseCredentials()
     {
-        // TODO: Implement eraseCredentials() method.
     }
 
     public function getUserIdentifier(): string
@@ -183,5 +194,79 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Two
     public function getProfile(): ?CustomerProfile
     {
         return $this->customerProfile;
+    }
+
+    /**
+     * @return Collection<int, Device>
+     */
+    public function getDevices(): Collection
+    {
+        return $this->devices;
+    }
+
+    public function addDevice(Device $device): self
+    {
+        if (!$this->devices->contains($device)) {
+            $this->devices->add($device);
+            $device->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDevice(Device $device): self
+    {
+        if ($this->devices->removeElement($device)) {
+            if ($device->getUser() === $this) {
+                $device->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getServiceRequests(): Collection
+    {
+        return $this->serviceRequests;
+    }
+
+    public function addServiceRequest(ServiceRequest $serviceRequest): self
+    {
+        if (!$this->serviceRequests->contains($serviceRequest)) {
+            $this->devices->add($serviceRequest);
+            $serviceRequest->setCustomer($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Message>
+     */
+    public function getMessages(): Collection
+    {
+        return $this->messages;
+    }
+
+    public function addMessage(Message $message): self
+    {
+        if (!$this->messages->contains($message)) {
+            $this->messages->add($message);
+            $message->setCustomer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMessage(Message $message): self
+    {
+        if ($this->messages->removeElement($message)) {
+            // set the owning side to null (unless already changed)
+            if ($message->getCustomer() === $this) {
+                $message->setCustomer(null);
+            }
+        }
+
+        return $this;
     }
 }

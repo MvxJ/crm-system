@@ -41,18 +41,38 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\Column]
     private bool $emailAuth = false;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?string $name = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?string $surname = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?string $phoneNumber = null;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Comment::class, orphanRemoval: true)]
+    private Collection $comments;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: ServiceRequest::class)]
+    private Collection $serviceRequests;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: ServiceVisit::class, orphanRemoval: true)]
+    private Collection $serviceVisits;
+
+    #[ORM\OneToMany(mappedBy: 'author', targetEntity: Document::class, orphanRemoval: true)]
+    private Collection $documents;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Notification::class, orphanRemoval: true)]
+    private Collection $notifications;
 
     public function __construct()
     {
         $this->roles = new ArrayCollection();
+        $this->comments = new ArrayCollection();
+        $this->serviceRequests = new ArrayCollection();
+        $this->serviceVisits = new ArrayCollection();
+        $this->documents = new ArrayCollection();
+        $this->notifications = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -264,5 +284,155 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * @return Collection<int, Comment>
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments->add($comment);
+            $comment->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): self
+    {
+        if ($this->comments->removeElement($comment)) {
+            // set the owning side to null (unless already changed)
+            if ($comment->getUser() === $this) {
+                $comment->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ServiceRequest>
+     */
+    public function getServiceRequests(): Collection
+    {
+        return $this->serviceRequests;
+    }
+
+    public function addServiceRequest(ServiceRequest $serviceRequest): self
+    {
+        if (!$this->serviceRequests->contains($serviceRequest)) {
+            $this->serviceRequests->add($serviceRequest);
+            $serviceRequest->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeServiceRequest(ServiceRequest $serviceRequest): self
+    {
+        if ($this->serviceRequests->removeElement($serviceRequest)) {
+            // set the owning side to null (unless already changed)
+            if ($serviceRequest->getUser() === $this) {
+                $serviceRequest->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ServiceVisit>
+     */
+    public function getServiceVisits(): Collection
+    {
+        return $this->serviceVisits;
+    }
+
+    public function addServiceVisit(ServiceVisit $serviceVisit): self
+    {
+        if (!$this->serviceVisits->contains($serviceVisit)) {
+            $this->serviceVisits->add($serviceVisit);
+            $serviceVisit->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeServiceVisit(ServiceVisit $serviceVisit): self
+    {
+        if ($this->serviceVisits->removeElement($serviceVisit)) {
+            // set the owning side to null (unless already changed)
+            if ($serviceVisit->getUser() === $this) {
+                $serviceVisit->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Document>
+     */
+    public function getDocuments(): Collection
+    {
+        return $this->documents;
+    }
+
+    public function addDocument(Document $document): self
+    {
+        if (!$this->documents->contains($document)) {
+            $this->documents->add($document);
+            $document->setAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDocument(Document $document): self
+    {
+        if ($this->documents->removeElement($document)) {
+            // set the owning side to null (unless already changed)
+            if ($document->getAuthor() === $this) {
+                $document->setAuthor(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Notification>
+     */
+    public function getNotifications(): Collection
+    {
+        return $this->notifications;
+    }
+
+    public function addNotification(Notification $notification): self
+    {
+        if (!$this->notifications->contains($notification)) {
+            $this->notifications->add($notification);
+            $notification->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNotification(Notification $notification): self
+    {
+        if ($this->notifications->removeElement($notification)) {
+            // set the owning side to null (unless already changed)
+            if ($notification->getUser() === $this) {
+                $notification->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }
