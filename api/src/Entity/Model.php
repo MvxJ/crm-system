@@ -41,6 +41,9 @@ class Model
     #[ORM\OneToMany(mappedBy: 'model', targetEntity: Device::class, orphanRemoval: true)]
     private Collection $devices;
 
+    #[ORM\Column(type: Types::BOOLEAN, nullable: false)]
+    private bool $isDeleted = false;
+
     public function __construct()
     {
         $this->devices = new ArrayCollection();
@@ -148,6 +151,18 @@ class Model
                 $device->setModel(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isIsDeleted(): ?bool
+    {
+        return $this->isDeleted;
+    }
+
+    public function setIsDeleted(bool $isDeleted): self
+    {
+        $this->isDeleted = $isDeleted;
 
         return $this;
     }

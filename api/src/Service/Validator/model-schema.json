@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "manufacturer": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "price": {
+      "type": "number"
+    },
+    "type": {
+      "type": "number"
+    },
+    "description": {
+      "type": "string"
+    },
+    "params": {
+      "type": "string"
+    }
+  },
+  "required": ["manufacturer", "name", "price", "type"],
+  "errorMessage": {
+    "required.name": "Name is required. Please provide a value.",
+    "required.manufacturer": "Manufacturer is required. Please provide a value.",
+    "required.price": "Price is required. Please provide a value.",
+    "required.type": "Type is required. Please provide a value.",
+    "type.price": "Price should be a number. Please provide a valid number.",
+    "type.type": "Download speed should be a number. Please provide a valid number.",
+    "type.description": "Description should be a string. Please provide a valid value.",
+    "type.params": "Params should be a string. Please provide a valid value.",
+    "type.name": "Name should be a string. Please provide a valid value.",
+    "type.manufacturer": "Manufacturer should be a string. Please provide a valid value."
+  }
+}
