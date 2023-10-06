@@ -37,28 +37,38 @@ class DeviceRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Device[] Returns an array of Device objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('d')
-//            ->andWhere('d.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('d.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function findDevicesWithPagination(
+        int $page = 0,
+        int $itemsPerPage = 25,
+        string $orderBy,
+        string $order,
+        string $status,
+    ): array {
+        $queryBuilder = $this->createQueryBuilder('d');
+        $queryBuilder->setMaxResults($itemsPerPage)
+            ->setFirstResult(($page - 1) * $itemsPerPage)
+            ->orderBy('d.' . $orderBy, $order);
 
-//    public function findOneBySomeField($value): ?Device
-//    {
-//        return $this->createQueryBuilder('d')
-//            ->andWhere('d.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+            if ($status != 'all' && !is_nan((int)$status)) {
+                $queryBuilder->where('d.status = :status')
+                    ->setParameter('status', (int)$status);
+            }
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function countDevices(string $status): int
+    {
+        $queryBuilder = $this->createQueryBuilder('d')
+            ->select('COUNT(d.id) as device_count');
+
+        if ($status != 'all' && !is_nan((int)$status)) {
+            $queryBuilder->where('d.status = :status')
+                ->setParameter('status', (int)$status);
+        }
+
+        $result = $queryBuilder->getQuery()->getSingleScalarResult();
+
+        return (int)$result;
+    }
 }

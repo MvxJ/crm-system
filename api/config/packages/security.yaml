@@ -70,6 +70,8 @@ security:
         - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
         - { path: ^/api/settings, roles: ROLE_ADMIN }
         - { path: ^/api/model, roles: ROLE_ACCESS_ADMIN_PANEL }
+        - { path: ^/api/public/model, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/device, roles: ROLE_ACCESS_ADMIN_PANEL }
         - { path: ^/api/file/display/*, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 

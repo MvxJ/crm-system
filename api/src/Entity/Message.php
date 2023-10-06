@@ -9,9 +9,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: MessageRepository::class)]
 class Message
 {
-    private const TYPE_NOTIFICATION = 0;
-    private const TYPE_REMINDER = 1;
-    private const TYPE_MESSAGE = 2;
+    public const TYPE_NOTIFICATION = 0;
+    public const TYPE_REMINDER = 1;
+    public const TYPE_MESSAGE = 2;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]

@@ -44,48 +44,33 @@ class ModelRepository extends ServiceEntityRepository
         int $itemsPerPage = 25,
         string $orderBy,
         string $order,
+        string $type
     ): array {
         $queryBuilder = $this->createQueryBuilder('m');
         $queryBuilder->setMaxResults($itemsPerPage)
             ->setFirstResult(($page - 1) * $itemsPerPage)
             ->orderBy('m.' . $orderBy, $order);
 
+        if ($type != 'all' && !is_nan((int)$type)) {
+            $queryBuilder->where('m.type = :type')
+                ->setParameter('type', (int)$type);
+        }
+
          return $queryBuilder->getQuery()->getResult();
     }
 
-    public function countModels(): int
+    public function countModels(string $type): int
     {
         $queryBuilder = $this->createQueryBuilder('m')
             ->select('COUNT(m.id) as model_count');
 
+        if ($type != 'all' && !is_nan((int)$type)) {
+            $queryBuilder->where('m.type = :type')
+                ->setParameter('type', (int)$type);
+        }
 
         $result = $queryBuilder->getQuery()->getSingleScalarResult();
 
         return (int) $result;
     }
-
-//    /**
-//     * @return Model[] Returns an array of Model objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('m.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Model
-//    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }

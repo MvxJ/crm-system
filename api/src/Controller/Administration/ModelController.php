@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller\Administration;
 
-use App\Entity\Model;
 use App\Service\Validator\JsonValidator;
 use App\Service\ModelService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

@@ -30,12 +30,14 @@ class ModelService
         $itemsPerPage = $request->get('items', 25);
         $orderBy = $request->get('orderBy', 'manufacturer');
         $order = $request->get('order', 'ASC');
-        $maxModels = $this->modelRepository->countModels();
+        $type = $request->get('type', 'all');
+        $maxModels = $this->modelRepository->countModels($type);
         $models = $this->modelRepository->getModelsWithPagination(
             (int)$page,
             (int)$itemsPerPage,
             $orderBy,
-            $order
+            $order,
+            $type
         );
 
         if (count($models) == 0) {
@@ -69,16 +71,7 @@ class ModelService
         }
 
         $content = json_decode($request->getContent(), true);
-
-        foreach ($content as $fieldName => $fieldValue) {
-            if (property_exists(Model::class, $fieldName)) {
-                $setterMethod = 'set' . ucfirst($fieldName);
-
-                if (method_exists($model, $setterMethod)) {
-                    $model->$setterMethod($fieldValue);
-                }
-            }
-        }
+        $model = $this->objectCreator($content, $model);
 
         $this->entityManager->persist($model);
         $this->entityManager->flush();
@@ -99,16 +92,7 @@ class ModelService
     {
         $content = json_decode($request->getContent(), true);
         $model = new Model();
-
-        foreach ($content as $fieldName => $fieldValue) {
-            if (property_exists(Model::class, $fieldName)) {
-                $setterMethod = 'set' . ucfirst($fieldName);
-
-                if (method_exists($model, $setterMethod)) {
-                    $model->$setterMethod($fieldValue);
-                }
-            }
-        }
+        $model = $this->objectCreator($content, $model);
 
         $this->entityManager->persist($model);
         $this->entityManager->flush();
@@ -161,7 +145,8 @@ class ModelService
             'type' => $model->getType(),
             'price' => $model->getPrice(),
             'description' => $model->getDescription(),
-            'params' => $model->getParams()
+            'params' => $model->getParams(),
+            'availableDevices' => count($model->getFreeDevices())
         ];
     }
 
@@ -195,5 +180,20 @@ class ModelService
         }
 
         return $devicesArray;
+    }
+
+    private function objectCreator(array $content, Model $model): Model
+    {
+        foreach ($content as $fieldName => $fieldValue) {
+            if (property_exists(Model::class, $fieldName)) {
+                $setterMethod = 'set' . ucfirst($fieldName);
+
+                if (method_exists($model, $setterMethod)) {
+                    $model->$setterMethod($fieldValue);
+                }
+            }
+        }
+
+        return $model;
     }
 }

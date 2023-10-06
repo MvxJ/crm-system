@@ -11,9 +11,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ModelRepository::class)]
 class Model
 {
-    private const TYPE_ROUTER = 0;
-    private const TYPE_DECODER = 1;
-    private const TYPE_PHONE = 2;
+    public const TYPE_ROUTER = 0;
+    public const TYPE_DECODER = 1;
+    public const TYPE_PHONE = 2;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -132,6 +132,20 @@ class Model
     public function getDevices(): Collection
     {
         return $this->devices;
+    }
+
+    public function getFreeDevices(): array
+    {
+        $freeDevices = [];
+
+        /** @var Device $device */
+        foreach ($this->devices as $device) {
+            if ($device->getStatus() == Device::STATUS_AVAILABLE) {
+                $freeDevices[] = $device;
+            }
+        }
+
+        return  $freeDevices;
     }
 
     public function addDevice(Device $device): self

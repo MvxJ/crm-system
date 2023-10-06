@@ -9,22 +9,22 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: DeviceRepository::class)]
 class Device
 {
-    private const STATUS_FREE = 0;
-    private const STATUS_RESERVED = 1;
-    private const STATUS_DESTROYED = 2;
-    private const STATUS_SOLD = 3;
-    private const STATUS_RENTED = 4;
-    private const STATUS_DEFEVTICE = 5;
+    public const STATUS_AVAILABLE = 0;
+    public const STATUS_RESERVED = 1;
+    public const STATUS_DESTROYED = 2;
+    public const STATUS_SOLD = 3;
+    public const STATUS_RENTED = 4;
+    public const STATUS_DEFEVTICE = 5;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     private ?string $serialNumber = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 255, unique: true)]
     private ?string $macAddress = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
