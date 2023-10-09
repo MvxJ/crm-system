@@ -39,6 +39,9 @@ class Document
     #[ORM\ManyToOne]
     private ?User $editor = null;
 
+    #[ORM\ManyToOne(inversedBy: 'documents')]
+    private ?Model $model = null;
+
     public function getId(): int
     {
         return $this->id;
@@ -104,7 +107,7 @@ class Document
         return $this;
     }
 
-    public function isIsForClients(): bool
+    public function getIsForClients(): bool
     {
         return $this->isForClients;
     }
@@ -136,6 +139,18 @@ class Document
     public function setEditor(?User $editor): self
     {
         $this->editor = $editor;
+
+        return $this;
+    }
+
+    public function getModel(): ?Model
+    {
+        return $this->model;
+    }
+
+    public function setModel(?Model $model): self
+    {
+        $this->model = $model;
 
         return $this;
     }

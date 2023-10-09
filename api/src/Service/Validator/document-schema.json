@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    },
+    "isForClients": {
+      "type": "boolean"
+    },
+    "model": {
+      "type": "integer"
+    }
+  },
+  "required": ["title", "isForClients"],
+  "errorMessage": {
+    "required.title": "Title is required. Please provide a value.",
+    "required.isForClient": "You should precise if the article should be visible for clients",
+    "type.title": "Title speed should be a string provide a valid number.",
+    "type.description": "Description should be a string. Please provide a valid number.",
+    "type.content": "Content should be a string. Please provide a valid value.",
+    "type.isForClients": "isForClients fields should be a boolean. Please provide a valid value.",
+    "type.model": "Model should be a int. Please provide a valid value."
+  }
+}

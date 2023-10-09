@@ -72,6 +72,8 @@ security:
         - { path: ^/api/model, roles: ROLE_ACCESS_ADMIN_PANEL }
         - { path: ^/api/public/model, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/device, roles: ROLE_ACCESS_ADMIN_PANEL }
+        - { path: ^/api/document, roles: ROLE_ACCESS_ADMIN_PANEL }
+        - { path: ^/api/public/document, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/file/display/*, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 

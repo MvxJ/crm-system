@@ -44,9 +44,13 @@ class Model
     #[ORM\Column(type: Types::BOOLEAN, nullable: false)]
     private bool $isDeleted = false;
 
+    #[ORM\OneToMany(mappedBy: 'model', targetEntity: Document::class)]
+    private Collection $documents;
+
     public function __construct()
     {
         $this->devices = new ArrayCollection();
+        $this->documents = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -177,6 +181,36 @@ class Model
     public function setIsDeleted(bool $isDeleted): self
     {
         $this->isDeleted = $isDeleted;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Document>
+     */
+    public function getDocuments(): Collection
+    {
+        return $this->documents;
+    }
+
+    public function addDocument(Document $document): self
+    {
+        if (!$this->documents->contains($document)) {
+            $this->documents->add($document);
+            $document->setModel($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDocument(Document $document): self
+    {
+        if ($this->documents->removeElement($document)) {
+            // set the owning side to null (unless already changed)
+            if ($document->getModel() === $this) {
+                $document->setModel(null);
+            }
+        }
 
         return $this;
     }

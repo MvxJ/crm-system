@@ -39,6 +39,41 @@ class DocumentRepository extends ServiceEntityRepository
         }
     }
 
+    public function getDocumentsWithPagination(
+        int $page,
+        int $itemsPerPage,
+        string $order,
+        string $orderBy,
+        bool $isClient
+    ): array {
+        $queryBuilder = $this->createQueryBuilder('d');
+        $queryBuilder->setMaxResults($itemsPerPage)
+            ->setFirstResult(($page - 1) * $itemsPerPage)
+            ->orderBy('d.' . $orderBy, $order);
+
+        if ($isClient) {
+            $queryBuilder->where('d.isForClients = :forClients')
+                ->setParameter('forClients', true);
+        }
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function countDocuments(bool $isForClient): int
+    {
+        $queryBuilder = $this->createQueryBuilder('d')
+            ->select('COUNT(d.id) as document_count');
+
+        if ($isForClient) {
+            $queryBuilder->where('d.isForClients = :forClients')
+                ->setParameter('forClients', true);
+        }
+
+        $result = $queryBuilder->getQuery()->getSingleScalarResult();
+
+        return (int)$result;
+    }
+
 //    /**
 //     * @return Document[] Returns an array of Document objects
 //     */
