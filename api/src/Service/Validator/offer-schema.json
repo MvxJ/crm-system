@@ -11,28 +11,55 @@
     "price": {
       "type": "number"
     },
-    "download_speed": {
+    "downloadSpeed": {
       "type": "number"
     },
-    "upload_speed": {
+    "uploadSpeed": {
       "type": "number"
     },
-    "new_users": {
+    "newUsers": {
       "type": "boolean"
     },
     "discount": {
       "type": "number"
+    },
+    "numberOfCanals": {
+      "type": "integer"
+    },
+    "forStudents": {
+      "type": "boolean"
+    },
+    "type": {
+      "type": "integer"
+    },
+    "duration": {
+      "type": "integer"
+    },
+    "discountType": {
+      "type": "integer"
+    },
+    "validDue": {
+      "type": "string"
     }
   },
-  "required": ["title", "description", "price"],
+  "required": ["title", "description", "price", "newUsers", "type", "duration", "forStudents"],
   "errorMessage": {
     "required.title": "Title is required. Please provide a value.",
     "required.description": "Description is required. Please provide a value.",
     "required.price": "Price is required. Please provide a value.",
+    "required.newUsers": "You should precise if the offer should be available only for new users. Please provide a value.",
+    "required.type": "Offer type is required. Please provide a value.",
+    "required.duration": "Duration is required. Please provide a value.",
+    "required.forStudents": "You should decide if the offer is available only for students. Please provide a value.",
     "type.price": "Price should be a number. Please provide a valid number.",
-    "type.download_speed": "Download speed should be a number. Please provide a valid number.",
-    "type.upload_speed": "Upload speed should be a number. Please provide a valid number.",
+    "type.downloadSpeed": "Download speed should be a number. Please provide a valid number.",
+    "type.uploadSpeed": "Upload speed should be a number. Please provide a valid number.",
     "type.discount": "Discount should be a number. Please provide a valid number.",
-    "type.new_users": "New users offer should be a bool. Please provide a valid value."
+    "type.discountType": "Discount type should be a integer. Please provide valid integer.",
+    "type.duration": "Duration should be integer. Please provide valid integer",
+    "type.newUsers": "New users offer should be a boolean. Please provide a valid value.",
+    "type.forStudents": "For students should be boolean. Please provide valid value.",
+    "type.type": "Type should be a integer. Please provide valid integer.",
+    "type.numberOfCanals": "Number of canals should be a integer. Please provide valid integer."
   }
 }

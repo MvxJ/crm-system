@@ -74,12 +74,12 @@ class OfferController extends AbstractController
         }
 
         try {
-            $offerId = $this->offerService->addOffer($request);
+            $offer = $this->offerService->addOffer($request);
 
             return new JsonResponse(
                 [
                     'status' => 'success',
-                    'offerId' => $offerId
+                    'offer' => $offer
                 ],
                 Response::HTTP_OK
             );
@@ -94,25 +94,25 @@ class OfferController extends AbstractController
         }
     }
 
-    #[Route('/edit/{offer}', name: 'edit', methods: ['POST', 'PUT', 'PATCH'])]
-    public function editOffer(Offer $offer, Request $request): JsonResponse
+    #[Route('/edit/{id}', name: 'edit', methods: ['PATCH'])]
+    public function editOffer(int $id, Request $request): JsonResponse
     {
-        if (!$offer) {
-            return new JsonResponse(
-                [
-                    'status' => 'error',
-                    'message' => 'Offer not found.'
-                ],
-                Response::HTTP_NOT_FOUND
-            );
-        }
-
         try {
-            $this->offerService->editOffer($offer, $request);
+            $offer = $this->offerService->editOffer($id, $request);
+
+            if (!$offer) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Invalid request. Please try again later.'
+                    ]
+                );
+            }
 
             return new JsonResponse(
                 [
-                    'status' => 'success'
+                    'status' => 'success',
+                    'offer' => $offer
                 ],
                 Response::HTTP_OK
             );

@@ -3,36 +3,73 @@
 namespace App\Entity;
 
 use App\Repository\OfferRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: OfferRepository::class)]
 class Offer
 {
+    public const TYPE_INTERNET = 0;
+    public const TYPE_TELEVISION = 1;
+    public const TYPE_INTERNET_AND_TELEVISION = 2;
+    public const DISCOUNT_TYPE_ABSOLUTE = 0;
+    public const DISCOUNT_TYPE_PERCENTAGE = 1;
+    public const DURATION_12_M = 0;
+    public const DURATION_24_M = 1;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private int $id;
 
-    #[ORM\Column(length: 255)]
-    private ?string $title = null;
+    #[ORM\Column(length: 255, nullable: false)]
+    private string $title;
 
-    #[ORM\Column]
-    private ?string $description = null;
+    #[ORM\Column(type: Types::TEXT ,nullable: false)]
+    private string $description;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::FLOAT, nullable: true)]
     private ?int $downloadSpeed = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::FLOAT, nullable: true)]
     private ?int $uploadSpeed = null;
 
-    #[ORM\Column]
-    private ?bool $forNewUsers = null;
+    #[ORM\Column(type: Types::BOOLEAN, nullable: false)]
+    private bool $newUsers = false;
 
-    #[ORM\Column]
-    private ?int $price = null;
+    #[ORM\Column(type: Types::FLOAT, nullable: false)]
+    private float $price;
 
-    #[ORM\Column]
-    private ?int $percentageDiscount = null;
+    #[ORM\Column(type: Types::FLOAT, nullable: true)]
+    private ?float $discount = null;
+
+    #[ORM\Column(type: Types::SMALLINT, nullable: false)]
+    private int $type = 0;
+
+    #[ORM\Column(type: Types::SMALLINT, nullable: false)]
+    private int $duration = 0;
+
+    #[ORM\ManyToMany(targetEntity: Model::class)]
+    private Collection $devices;
+
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
+    private ?int $numberOfCanals = null;
+
+    #[ORM\Column(type: Types::BOOLEAN, nullable: false)]
+    private bool $forStudents = false;
+
+    #[ORM\Column(type: Types::SMALLINT, nullable: true)]
+    private ?int $discountType = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $validDue = null;
+
+    public function __construct()
+    {
+        $this->devices = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -66,7 +103,7 @@ class Offer
     /**
      * @return int|null
      */
-    public function getDownloadSpeed(): ?int
+    public function getDownloadSpeed(): ?float
     {
         return $this->downloadSpeed;
     }
@@ -74,7 +111,7 @@ class Offer
     /**
      * @param int|null $downloadSpeed
      */
-    public function setDownloadSpeed(?int $downloadSpeed): void
+    public function setDownloadSpeed(?float $downloadSpeed): void
     {
         $this->downloadSpeed = $downloadSpeed;
     }
@@ -82,7 +119,7 @@ class Offer
     /**
      * @return int|null
      */
-    public function getUploadSpeed(): ?int
+    public function getUploadSpeed(): ?float
     {
         return $this->uploadSpeed;
     }
@@ -90,38 +127,134 @@ class Offer
     /**
      * @param int|null $uploadSpeed
      */
-    public function setUploadSpeed(?int $uploadSpeed): void
+    public function setUploadSpeed(?float $uploadSpeed): void
     {
         $this->uploadSpeed = $uploadSpeed;
     }
 
-    public function isForNewUsers(): ?bool
+    public function isForNewUsers(): bool
     {
-        return $this->forNewUsers;
+        return $this->newUsers;
     }
 
-    public function setForNewUsers(?bool $forNewUsers): void
+    public function setNewUsers(bool $newUsers): void
     {
-        $this->forNewUsers = $forNewUsers;
+        $this->newUsers = $newUsers;
     }
 
-    public function getPrice(): ?int
+    public function getPrice(): float
     {
         return $this->price;
     }
 
-    public function setPrice(?int $price): void
+    public function setPrice(float $price): void
     {
         $this->price = $price;
     }
 
-    public function getPercentageDiscount(): ?int
+    public function getDiscount(): ?float
     {
-        return $this->percentageDiscount;
+        return $this->discount;
     }
 
-    public function setPercentageDiscount(?int $percentageDiscount): void
+    public function setDiscount(float $discount): void
     {
-        $this->percentageDiscount = $percentageDiscount;
+        $this->discount = $discount;
+    }
+
+    public function getType(): int
+    {
+        return $this->type;
+    }
+
+    public function setType(int $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getDuration(): int
+    {
+        return $this->duration;
+    }
+
+    public function setDuration(int $duration): self
+    {
+        $this->duration = $duration;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Model>
+     */
+    public function getDevices(): Collection
+    {
+        return $this->devices;
+    }
+
+    public function addDevice(Model $device): self
+    {
+        if (!$this->devices->contains($device)) {
+            $this->devices->add($device);
+        }
+
+        return $this;
+    }
+
+    public function removeDevice(Model $device): self
+    {
+        $this->devices->removeElement($device);
+
+        return $this;
+    }
+
+    public function getNumberOfCanals(): ?int
+    {
+        return $this->numberOfCanals;
+    }
+
+    public function setNumberOfCanals(int $numberOfCanals): self
+    {
+        $this->numberOfCanals = $numberOfCanals;
+
+        return $this;
+    }
+
+    public function isForStudents(): bool
+    {
+        return $this->forStudents;
+    }
+
+    public function setForStudents(bool $forStudents): self
+    {
+        $this->forStudents = $forStudents;
+
+        return $this;
+    }
+
+    public function getDiscountType(): int
+    {
+        return $this->discountType;
+    }
+
+    public function setDiscountType(int $discountType): self
+    {
+        $this->discountType = $discountType;
+
+        return $this;
+    }
+
+    public function getValidDue(): ?\DateTimeInterface
+    {
+        return $this->validDue;
+    }
+
+    public function setValidDue(\DateTimeInterface $validDue): self
+    {
+        $this->validDue = $validDue;
+
+        return $this;
     }
 }

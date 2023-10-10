@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\Offer;
+use App\Repository\ModelRepository;
 use App\Repository\OfferRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,78 +14,53 @@ class OfferService
 {
     private EntityManagerInterface $entityManager;
     private OfferRepository $offerRepository;
+    private ModelRepository $modelRepository;
 
-    public function __construct(EntityManagerInterface $entityManager, OfferRepository $offerRepository)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        OfferRepository $offerRepository,
+        ModelRepository $modelRepository
+    ) {
         $this->entityManager = $entityManager;
         $this->offerRepository = $offerRepository;
+        $this->modelRepository = $modelRepository;
     }
 
-    public function addOffer(Request $request): int
+    public function addOffer(Request $request): ?array
     {
         $content = json_decode($request->getContent(), true);
         $offer = new Offer();
+        $offer = $this->objectCreator($content, $offer);
 
-        $offer->setTitle($content['title']);
-        $offer->setDescription($content['description']);
-        $offer->setPrice($content['price']);
+        if ($offer) {
+            $this->entityManager->persist($offer);
+            $this->entityManager->flush();
 
-        if (array_key_exists('download_speed', $content)) {
-            $offer->setDownloadSpeed($content['download_speed']);
+            return $this->createOfferArray($offer);
         }
 
-        if (array_key_exists('upload_speed', $content)) {
-            $offer->setUploadSpeed($content['upload_speed']);
-        }
-
-        if (array_key_exists('new_users', $content)) {
-            $offer->setForNewUsers($content['new_users']);
-        }
-
-        if (array_key_exists('discount', $content)) {
-            $offer->setPercentageDiscount($content['discount']);
-        }
-
-        $this->entityManager->persist($offer);
-        $this->entityManager->flush();
-
-        return $offer->getId();
+        return null;
     }
 
-    public function editOffer(Offer $offer, Request $request): void
+    public function editOffer(int $id, Request $request): ?array
     {
+        $offer = $this->offerRepository->findOneBy(['id' => $id]);
+
+        if (!$offer) {
+            return null;
+        }
+
         $content = json_decode($request->getContent(), true);
+        $offer = $this->objectCreator($content, $offer);
 
-        if (array_key_exists('title', $content)) {
-            $offer->setTitle($content['title']);
+        if ($offer) {
+            $this->entityManager->persist($offer);
+            $this->entityManager->flush();
+
+            return $this->createOfferArray($offer);
         }
 
-        if (array_key_exists('description', $content)) {
-            $offer->setDescription($content['description']);
-        }
-
-        if (array_key_exists('price', $content)) {
-            $offer->setPrice($content['price']);
-        }
-
-        if (array_key_exists('download_speed', $content)) {
-            $offer->setDownloadSpeed($content['download_speed']);
-        }
-
-        if (array_key_exists('upload_speed', $content)) {
-            $offer->setUploadSpeed($content['upload_speed']);
-        }
-
-        if (array_key_exists('new_users', $content)) {
-            $offer->setForNewUsers($content['new_users']);
-        }
-
-        if (array_key_exists('discount', $content)) {
-            $offer->setPercentageDiscount($content['discount']);
-        }
-
-        $this->entityManager->persist($offer);
-        $this->entityManager->flush();
+        return null;
     }
 
     public function getOffers(Request $request): array
@@ -101,15 +77,19 @@ class OfferService
                 'id' => $offer->getId(),
                 'title' => $offer->getTitle(),
                 'description' => $offer->getDescription(),
-                'price' => $offer->getPrice()
+                'price' => $offer->getPrice(),
+                'type' => $offer->getType(),
+                'forNewUsers' => $offer->isForNewUsers(),
+                'forStudents' => $offer->isForStudents(),
+                'validDue' => $offer->getValidDue(),
+                'discount' => $offer->getDiscount(),
+                'discountType' => $offer->getDiscountType()
             ];
         }
 
         return [
-            'items' => $offers,
-            'totalItems' => $totalItems,
-            'page' => $page,
-            'limit' => $itemsPerPage
+            'offers' => $offers,
+            'maxResults' => $totalItems,
         ];
     }
 
@@ -117,5 +97,53 @@ class OfferService
     {
         $this->entityManager->remove($offer);
         $this->entityManager->flush();
+    }
+
+    public function getOffer(int $id): ?array
+    {
+        $offer = $this->offerRepository->findOneBy(['id' => $id]);
+
+        if (!$offer) {
+            return null;
+        }
+
+        return $this->createOfferArray($offer);
+    }
+
+    private function objectCreator(array $content, Offer $offer): ?Offer
+    {
+        foreach ($content as $fieldName => $fieldValue) {
+            if (property_exists(Offer::class, $fieldName)) {
+                $setterMethod = 'set' . ucfirst($fieldName);
+
+                if ($fieldName == 'devices') {
+                    $models = $this->modelRepository->findAllBy(['id' => $fieldValue]);
+                } elseif (method_exists($offer, $setterMethod)) {
+                    $offer->$setterMethod($fieldValue);
+                }
+            }
+        }
+
+        return $offer;
+    }
+
+    private function createOfferArray(Offer $offer): array
+    {
+        return [
+            'id' => $offer->getId(),
+            'title' => $offer->getTitle(),
+            'description' => $offer->getDescription(),
+            'duration' => $offer->getDuration(),
+            'downloadSpeed' => $offer->getDownloadSpeed(),
+            'uploadSpeed' => $offer->getUploadSpeed(),
+            'numberOfCanals' => $offer->getNumberOfCanals(),
+            'type' => $offer->getType(),
+            'price' => $offer->getPrice(),
+            'discount' => $offer->getDiscount(),
+            'discountType' => $offer->getDiscountType(),
+            'forNewUsers' => $offer->isForNewUsers(),
+            'forStudents' => $offer->isForStudents(),
+            'validDue' => $offer->getValidDue()
+        ];
     }
 }
