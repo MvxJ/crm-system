@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Entity\Model;
 use App\Entity\Offer;
 use App\Repository\ModelRepository;
 use App\Repository\OfferRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class OfferService
 {
@@ -36,7 +38,7 @@ class OfferService
             $this->entityManager->persist($offer);
             $this->entityManager->flush();
 
-            return $this->createOfferArray($offer);
+            return $this->createOfferArray($offer, true);
         }
 
         return null;
@@ -57,7 +59,7 @@ class OfferService
             $this->entityManager->persist($offer);
             $this->entityManager->flush();
 
-            return $this->createOfferArray($offer);
+            return $this->createOfferArray($offer, true);
         }
 
         return null;
@@ -67,24 +69,22 @@ class OfferService
     {
         $page = $request->get('page', 1);
         $itemsPerPage = $request->get('items', 25);
-        $totalItems = count($this->offerRepository->findAll());
-        $results = $this->offerRepository->getOffersWithPagination((int)$itemsPerPage, (int)$page);
+        $order = $request->get('order', 'asc');
+        $orderBy = $request->get('orderBy', 'id');
+        $type = $request->get('type', 'all');
+        $totalItems = $this->offerRepository->countOffers($type);
+        $results = $this->offerRepository->getOffersWithPagination(
+            (int)$itemsPerPage,
+            (int)$page,
+            $order,
+            $orderBy,
+            $type
+        );
         $offers = [];
 
         /** @var Offer $offer */
         foreach ($results as $offer) {
-            $offers[] = [
-                'id' => $offer->getId(),
-                'title' => $offer->getTitle(),
-                'description' => $offer->getDescription(),
-                'price' => $offer->getPrice(),
-                'type' => $offer->getType(),
-                'forNewUsers' => $offer->isForNewUsers(),
-                'forStudents' => $offer->isForStudents(),
-                'validDue' => $offer->getValidDue(),
-                'discount' => $offer->getDiscount(),
-                'discountType' => $offer->getDiscountType()
-            ];
+            $offers[] = $this->createOfferArray($offer, false);
         }
 
         return [
@@ -93,10 +93,18 @@ class OfferService
         ];
     }
 
-    public function deleteOffer(Offer $offer): void
+    public function deleteOffer(int $offerId): bool
     {
+        $offer = $this->offerRepository->findOneBy(['id' => $offerId]);
+
+        if (!$offer) {
+            return false;
+        }
+
         $this->entityManager->remove($offer);
         $this->entityManager->flush();
+
+        return true;
     }
 
     public function getOffer(int $id): ?array
@@ -106,6 +114,27 @@ class OfferService
         if (!$offer) {
             return null;
         }
+
+        return $this->createOfferArray($offer, true);
+    }
+
+    public function removeOfferDevice(int $offerId, int $deviceId): ?array
+    {
+        $offer = $this->offerRepository->findOneBy(['id' => $offerId]);
+
+        if (!$offer) {
+            return null;
+        }
+
+        $device = $this->modelRepository->findOneBy(['id' => $deviceId]);
+
+        if (!$device) {
+            return null;
+        }
+
+        $offer->removeDevice($device);
+        $this->entityManager->persist($offer);
+        $this->entityManager->flush();
 
         return $this->createOfferArray($offer);
     }
@@ -117,7 +146,12 @@ class OfferService
                 $setterMethod = 'set' . ucfirst($fieldName);
 
                 if ($fieldName == 'devices') {
-                    $models = $this->modelRepository->findAllBy(['id' => $fieldValue]);
+                    $models = $this->modelRepository->findBy(['id' => $fieldValue]);
+
+                    /** @var Model $model */
+                    foreach ($models as $model) {
+                        $offer->addDevice($model);
+                    }
                 } elseif (method_exists($offer, $setterMethod)) {
                     $offer->$setterMethod($fieldValue);
                 }
@@ -127,9 +161,9 @@ class OfferService
         return $offer;
     }
 
-    private function createOfferArray(Offer $offer): array
+    private function createOfferArray(Offer $offer, bool $details = false): array
     {
-        return [
+        $offerArray = [
             'id' => $offer->getId(),
             'title' => $offer->getTitle(),
             'description' => $offer->getDescription(),
@@ -145,5 +179,19 @@ class OfferService
             'forStudents' => $offer->isForStudents(),
             'validDue' => $offer->getValidDue()
         ];
+
+        if (count($offer->getDevices()) > 0 && $details = true) {
+            $devices = $offer->getDevices();
+
+            /** @var Model $device */
+            foreach ($devices as $device) {
+                $offerArray['devices'][] = [
+                    'name' => $device->getName(),
+                    'id' => $device->getId()
+                ];
+            }
+        }
+
+        return $offerArray;
     }
 }

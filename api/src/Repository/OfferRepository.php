@@ -39,39 +39,46 @@ class OfferRepository extends ServiceEntityRepository
         }
     }
 
-    public function getOffersWithPagination(int $limit = 25, int $page = 1)
-    {
-        return $this->createQueryBuilder('o')
+    public function getOffersWithPagination(
+        int $limit = 25,
+        int $page = 1,
+        string $order,
+        string $orderBy,
+        string $type
+    ) {
+        $currentDate = new \DateTime();
+
+        $queryBuilder = $this->createQueryBuilder('o')
             ->setMaxResults($limit)
             ->setFirstResult(($page - 1) * $limit)
             ->orderBy('o.id', 'ASC')
-            ->getQuery()
-            ->getResult();
+            ->where('o.validDue >= :currentDate')
+            ->orWhere('o.validDue IS NULL')
+            ->setParameter('currentDate', $currentDate);
 
+        if ($type != 'all' && !is_nan((int)$type)) {
+            $queryBuilder->andWhere('o.type = :type')->setParameter('type', (int)$type);
+        }
+
+        return $queryBuilder->getQuery()->getResult();
     }
 
-//    /**
-//     * @return Offer[] Returns an array of Offer objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('o')
-//            ->andWhere('o.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('o.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function countOffers(string $type): int
+    {
+        $currentDate = new \DateTime();
 
-//    public function findOneBySomeField($value): ?Offer
-//    {
-//        return $this->createQueryBuilder('o')
-//            ->andWhere('o.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        $queryBuilder = $this->createQueryBuilder('o')
+            ->select('COUNT(o.id) as document_count')
+            ->where('o.validDue >= :currentDate')
+            ->orWhere('o.validDue IS NULL')
+            ->setParameter('currentDate', $currentDate);
+
+        if ($type != 'all' && !is_nan((int)$type)) {
+            $queryBuilder->andWhere('o.type = :type')->setParameter('type', (int)$type);
+        }
+
+        $result = $queryBuilder->getQuery()->getSingleScalarResult();
+
+        return (int)$result;
+    }
 }

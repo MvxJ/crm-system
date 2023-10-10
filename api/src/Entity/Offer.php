@@ -234,7 +234,7 @@ class Offer
         return $this;
     }
 
-    public function getDiscountType(): int
+    public function getDiscountType(): ?int
     {
         return $this->discountType;
     }

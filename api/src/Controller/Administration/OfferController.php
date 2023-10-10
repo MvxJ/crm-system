@@ -19,16 +19,10 @@ class OfferController extends AbstractController
 {
     private OfferService $offerService;
     private JsonValidator $validator;
-    private SerializerInterface $serializer;
 
-    public function __construct(
-        OfferService $offerService,
-        JsonValidator $validator,
-        SerializerInterface $serializer
-    ) {
+    public function __construct(OfferService $offerService, JsonValidator $validator) {
         $this->offerService = $offerService;
         $this->validator = $validator;
-        $this->serializer = $serializer;
     }
 
     #[Route('/list', name: 'list', methods: ['GET'])]
@@ -40,9 +34,7 @@ class OfferController extends AbstractController
             return new JsonResponse(
                 [
                     'status' => 'success',
-                    'offers' => $response['items'],
-                    'totalItems' => $response['totalItems'],
-
+                    'results' => $response
                 ],
                 Response::HTTP_OK
             );
@@ -94,7 +86,7 @@ class OfferController extends AbstractController
         }
     }
 
-    #[Route('/edit/{id}', name: 'edit', methods: ['PATCH'])]
+    #[Route('/{id}/edit', name: 'edit', methods: ['PATCH'])]
     public function editOffer(int $id, Request $request): JsonResponse
     {
         try {
@@ -127,33 +119,88 @@ class OfferController extends AbstractController
         }
     }
 
-    #[Route('/{offer}', name: 'detail', methods: ['GET'])]
-    public function getOfferDetail(Offer $offer): JsonResponse
+    #[Route('/{id}/detail', name: 'detail', methods: ['GET'])]
+    public function getOfferDetail(int $id): JsonResponse
     {
-        if (!$offer) {
-            return new JsonResponse(
-                [
-                    'status' => 'error',
-                    'message' => 'Offer was not found.'
-                ],
-                Response::HTTP_NOT_FOUND
-            );
-        } else {
+        try {
+            $offer = $this->offerService->getOffer($id);
+
+            if (!$offer) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Offer was not found.'
+                    ],
+                    Response::HTTP_NOT_FOUND
+                );
+            }
+
             return new JsonResponse(
                 [
                     'status' => 'success',
-                    'offer' => $this->serializer->normalize($offer)
+                    'offer' => $offer
                 ],
                 Response::HTTP_OK
+            );
+        } catch (\Exception $exception) {
+            return new JsonResponse(
+                [
+                    'status' => 'error',
+                    'message' => $exception->getMessage()
+                ]
             );
         }
     }
 
-    #[Route('/delete/{offer}', name: 'delete', methods: ['DELETE'])]
-    public function deleteOffer(Offer $offer): JsonResponse
+    #[Route('/{offerId}/device/{deviceId}/remove', name: '', methods: ['DELETE'])]
+    public function deleteOfferDevice(int $offerId, int $deviceId, Request $request): JsonResponse
     {
         try {
-            $this->offerService->deleteOffer($offer);
+            $offer = $this->offerService->removeOfferDevice($offerId, $deviceId);
+
+            if (!$offer) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Bad request. Please try again later.'
+                    ],
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
+
+            return new JsonResponse(
+                [
+                    'status' => 'success',
+                    'offer' => $offer
+                ],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $exception) {
+            return new JsonResponse(
+                [
+                    'status' => 'error',
+                    'message' => $exception->getMessage()
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    #[Route('/{id}/delete', name: 'delete', methods: ['DELETE'])]
+    public function deleteOffer(int $id): JsonResponse
+    {
+        try {
+            $status = $this->offerService->deleteOffer($id);
+
+            if (!$status) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Bad request'
+                    ],
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
 
             return new JsonResponse(
                 [
