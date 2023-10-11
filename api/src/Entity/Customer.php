@@ -49,12 +49,28 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Two
     #[ORM\OneToMany(mappedBy: 'Customer', targetEntity: Message::class, orphanRemoval: true)]
     private Collection $messages;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Contract::class, orphanRemoval: true)]
+    private Collection $contracts;
+
+    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: ServiceVisit::class)]
+    private Collection $serviceVisits;
+
+    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Bill::class)]
+    private Collection $bills;
+
+    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Payment::class)]
+    private Collection $payments;
+
     public function __construct()
     {
         $this->roles = new ArrayCollection();
         $this->devices = new ArrayCollection();
         $this->serviceRequests = new ArrayCollection();
         $this->messages = new ArrayCollection();
+        $this->contracts = new ArrayCollection();
+        $this->serviceVisits = new ArrayCollection();
+        $this->bills = new ArrayCollection();
+        $this->payments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -264,6 +280,126 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Two
             // set the owning side to null (unless already changed)
             if ($message->getCustomer() === $this) {
                 $message->setCustomer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Contract>
+     */
+    public function getContracts(): Collection
+    {
+        return $this->contracts;
+    }
+
+    public function addContract(Contract $contract): self
+    {
+        if (!$this->contracts->contains($contract)) {
+            $this->contracts->add($contract);
+            $contract->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeContract(Contract $contract): self
+    {
+        if ($this->contracts->removeElement($contract)) {
+            // set the owning side to null (unless already changed)
+            if ($contract->getUser() === $this) {
+                $contract->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ServiceVisit>
+     */
+    public function getServiceVisits(): Collection
+    {
+        return $this->serviceVisits;
+    }
+
+    public function addServiceVisit(ServiceVisit $serviceVisit): self
+    {
+        if (!$this->serviceVisits->contains($serviceVisit)) {
+            $this->serviceVisits->add($serviceVisit);
+            $serviceVisit->setCustomer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeServiceVisit(ServiceVisit $serviceVisit): self
+    {
+        if ($this->serviceVisits->removeElement($serviceVisit)) {
+            // set the owning side to null (unless already changed)
+            if ($serviceVisit->getCustomer() === $this) {
+                $serviceVisit->setCustomer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Bill>
+     */
+    public function getBills(): Collection
+    {
+        return $this->bills;
+    }
+
+    public function addBill(Bill $bill): self
+    {
+        if (!$this->bills->contains($bill)) {
+            $this->bills->add($bill);
+            $bill->setCustomer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBill(Bill $bill): self
+    {
+        if ($this->bills->removeElement($bill)) {
+            // set the owning side to null (unless already changed)
+            if ($bill->getCustomer() === $this) {
+                $bill->setCustomer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Payment>
+     */
+    public function getPayments(): Collection
+    {
+        return $this->payments;
+    }
+
+    public function addPayment(Payment $payment): self
+    {
+        if (!$this->payments->contains($payment)) {
+            $this->payments->add($payment);
+            $payment->setCustomer($this);
+        }
+
+        return $this;
+    }
+
+    public function removePayment(Payment $payment): self
+    {
+        if ($this->payments->removeElement($payment)) {
+            // set the owning side to null (unless already changed)
+            if ($payment->getCustomer() === $this) {
+                $payment->setCustomer(null);
             }
         }
 

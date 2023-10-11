@@ -44,6 +44,9 @@ class ServiceRequest
     #[ORM\OneToMany(mappedBy: 'serviceRequest', targetEntity: Message::class)]
     private Collection $messages;
 
+    #[ORM\ManyToOne(inversedBy: 'serviceRequests')]
+    private ?Contract $contract = null;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
@@ -214,6 +217,18 @@ class ServiceRequest
                 $message->setServiceRequest(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getContract(): ?Contract
+    {
+        return $this->contract;
+    }
+
+    public function setContract(?Contract $contract): self
+    {
+        $this->contract = $contract;
 
         return $this;
     }

@@ -46,6 +46,10 @@ class ServiceVisit
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     private \DateTimeInterface $endTime;
 
+    #[ORM\ManyToOne(inversedBy: 'serviceVisits')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Customer $customer = null;
+
     public function getId(): int
     {
         return $this->id;
@@ -167,6 +171,18 @@ class ServiceVisit
     public function setEndTime(\DateTimeInterface $endTime): self
     {
         $this->endTime = $endTime;
+
+        return $this;
+    }
+
+    public function getCustomer(): ?Customer
+    {
+        return $this->customer;
+    }
+
+    public function setCustomer(?Customer $customer): self
+    {
+        $this->customer = $customer;
 
         return $this;
     }
