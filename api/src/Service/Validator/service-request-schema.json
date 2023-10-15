@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "user": {
+      "type": "integer"
+    }
+  },
+  "required": [],
+  "errorMessage": {
+    "required.city": "City is required, Please provide value.",
+    "type.offer": "Offer should be a integer. provide a valid number."
+  }
+}

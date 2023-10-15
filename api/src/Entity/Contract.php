@@ -40,7 +40,7 @@ class Contract
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
     private \DateTimeInterface $startDate;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $updatedDate = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]

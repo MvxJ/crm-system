@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "user": {
+      "type": "integer"
+    },
+    "offer": {
+      "type": "integer"
+    },
+    "startDate": {
+      "type": "string"
+    },
+    "discount": {
+      "type": "number"
+    },
+    "discountType": {
+      "type": "integer"
+    },
+    "description": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "zipCode": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "status": {
+      "type": "integer"
+    }
+  },
+  "required": ["city", "zipCode", "address", "user", "offer", "startDate"],
+  "errorMessage": {
+    "required.city": "City is required, Please provide value.",
+    "required.zipCode": "Zip Code is required, Please provide value.",
+    "required.address": "Address is required, Please provide value.",
+    "required.user": "User is required, Please provide value.",
+    "required.offer": "Offer is required, Please provide value.",
+    "required.startDate": "Start Date is required, Please provide value.",
+    "type.offer": "Offer should be a integer. provide a valid number.",
+    "type.user": "User should be a integer. provide a valid number.",
+    "type.status": "Status should be a integer. provide a valid number.",
+    "type.description": "Description should be a string. Please provide correct value.",
+    "type.discountType": "Discount Type should be a int. Please provide a valid value.",
+    "type.discount": "Discount should be a number. Please provide a valid value.",
+    "type.startDate": "Start date should be a string. Please provide a valid value."
+  }
+}

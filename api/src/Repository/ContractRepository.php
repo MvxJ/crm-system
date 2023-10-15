@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Contract;
+use App\Entity\Customer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -39,28 +40,48 @@ class ContractRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Contract[] Returns an array of Contract objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function findContractsWithPagination(
+        int $page = 0,
+        int $itemsPerPage = 25,
+        string $order,
+        string $orderBy,
+        string $status,
+    ): array {
+        $queryBuilder = $this->createQueryBuilder('c');
+        $queryBuilder->setMaxResults($itemsPerPage)
+            ->setFirstResult(($page - 1) * $itemsPerPage)
+            ->orderBy('c.' . $orderBy, $order);
 
-//    public function findOneBySomeField($value): ?Contract
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        if ($status != 'all' && !is_nan((int)$status)) {
+            $queryBuilder->where('c.status = :status')
+                ->setParameter('status', (int)$status);
+        }
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function countContracts(string $status): int
+    {
+        $queryBuilder = $this->createQueryBuilder('c')
+            ->select('COUNT(c.id) as device_count');
+
+        if ($status != 'all' && !is_nan((int)$status)) {
+            $queryBuilder->where('c.status = :status')
+                ->setParameter('status', (int)$status);
+        }
+
+        $result = $queryBuilder->getQuery()->getSingleScalarResult();
+
+        return (int)$result;
+    }
+
+    public function getUserContracts(string $userEmail): array
+    {
+        $queryBuilder = $this->createQueryBuilder('c')
+            ->innerJoin(Customer::class, 'u')
+            ->where('u.email = :email')
+            ->setParameter('email', $userEmail);
+
+        return $queryBuilder->getQuery()->getResult();
+    }
 }
