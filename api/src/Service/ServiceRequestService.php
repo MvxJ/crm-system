@@ -6,6 +6,7 @@ use App\Entity\ServiceRequest;
 use App\Repository\ContractRepository;
 use App\Repository\CustomerRepository;
 use App\Repository\ServiceRequestRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -15,22 +16,54 @@ class ServiceRequestService
     private EntityManagerInterface $entityManager;
     private CustomerRepository $customerRepository;
     private ContractRepository $contractRepository;
+    private UserRepository $userRepository;
 
     public function __construct(
        ServiceRequestRepository $serviceRequestRepository,
        EntityManagerInterface $entityManager,
         CustomerRepository $customerRepository,
-        ContractRepository $contractRepository
+        ContractRepository $contractRepository,
+        UserRepository $userRepository
     ) {
         $this->serviceRequestRepository = $serviceRequestRepository;
         $this->entityManager = $entityManager;
         $this->customerRepository = $customerRepository;
         $this->contractRepository = $contractRepository;
+        $this->userRepository = $userRepository;
     }
 
     public function getServiceRequests(Request $request): ?array
     {
-        return null;
+        $serviceRequestsArray = [];
+        $page = $request->get('page', 1);
+        $itemsPerPage = $request->get('items', 25);
+        $order = $request->get('order', 'asc');
+        $orderBy = $request->get('orderBy', 'id');
+        $user = $request->get('userId', 'all');
+        $customer = $request->get('customerId', 'all');
+        $maxResults = $this->contractRepository->countContracts($user, $customer);
+        $serviceRequests = $this->contractRepository->findContractsWithPagination(
+            (int)$page,
+            (int)$itemsPerPage,
+            $order,
+            $orderBy,
+            $user,
+            $customer
+        );
+
+        if (count($serviceRequests) == 0) {
+            return null;
+        }
+
+        /** @var ServiceRequest $serviceRequest */
+        foreach ($serviceRequests as $serviceRequest) {
+            $serviceRequestsArray[] = $this->createServiceRequestArray($serviceRequest);
+        }
+
+        return [
+            'serviceRequests' => $serviceRequestsArray,
+            'maxResults' => $maxResults
+        ];
     }
 
     public function getServiceRequestDetails(int $serviceRequestId): ?array
@@ -46,7 +79,33 @@ class ServiceRequestService
 
     public function getCustomerServiceRequests(Request $request, string $userEmail): ?array
     {
-        return null;
+        $serviceRequestsArray = [];
+        $page = $request->get('page', 1);
+        $itemsPerPage = $request->get('items', 25);
+        $order = $request->get('order', 'asc');
+        $orderBy = $request->get('orderBy', 'id');
+        $maxResults = $this->contractRepository->countContractsByCustomer($userEmail);
+        $serviceRequests = $this->contractRepository->findContractsWithPagination(
+            (int)$page,
+            (int)$itemsPerPage,
+            $order,
+            $orderBy,
+            $userEmail
+        );
+
+        if (count($serviceRequests) == 0) {
+            return null;
+        }
+
+        /** @var ServiceRequest $serviceRequest */
+        foreach ($serviceRequests as $serviceRequest) {
+            $serviceRequestsArray[] = $this->createServiceRequestArray($serviceRequest);
+        }
+
+        return [
+            'serviceRequests' => $serviceRequestsArray,
+            'maxResults' => $maxResults
+        ];
     }
 
     public function getCustomerServiceRequestDetails(int $serviceRequestId, string $customerEmail): ?array
@@ -64,8 +123,8 @@ class ServiceRequestService
     {
         $content = json_decode($request->getContent(), true);
         $serviceRequest = new ServiceRequest();
-
-        //TODO:: Object creator => create object from request content
+        $serviceRequest = $this->objectCreator($serviceRequest, $content);
+        $serviceRequest->setCreatedDate(new \DateTime());
 
         $this->entityManager->persist($serviceRequest);
         $this->entityManager->flush();
@@ -84,8 +143,8 @@ class ServiceRequestService
 
         $serviceRequest = new ServiceRequest();
         $serviceRequest->setCustomer($customer);
-
-        //TODO:: Object creator => create object from request content
+        $serviceRequest->setCreatedDate(new \DateTime());
+        $serviceRequest = $this->objectCreator($serviceRequest, $content);
 
         $this->entityManager->persist($serviceRequest);
         $this->entityManager->flush();
@@ -102,7 +161,7 @@ class ServiceRequestService
         }
 
         $content = json_decode($request->getContent(), true);
-        //TODO:: Object creator;
+        $serviceRequest = $this->objectCreator($serviceRequest, $content);
 
         $this->entityManager->persist($serviceRequest);
         $this->entityManager->flush();
@@ -126,6 +185,56 @@ class ServiceRequestService
 
     private function objectCreator(ServiceRequest $serviceRequest, array $content): ?ServiceRequest
     {
+        foreach ($content as $fieldName => $fieldValue) {
+            if (property_exists(ServiceRequest::class, $fieldName)) {
+                $setterMethod = 'set' . ucfirst($fieldName);
+
+                if ($setterMethod == 'setCustomer') {
+                    $customer = $this->customerRepository->findOneBy(['id' => $fieldValue]);
+
+                    if (!$customer) {
+                        return null;
+                    }
+
+                    $serviceRequest->setCustomer($customer);
+                }
+
+                elseif ($setterMethod == 'setUser') {
+                    $user = $this->userRepository->findOneBy(['id' => $fieldValue]);
+
+                    if (!$user) {
+                        return null;
+                    }
+
+                    $serviceRequest->setUser($user);
+                }
+
+                elseif ($setterMethod == 'setContract') {
+                    $contract = $this->contractRepository->findOneBy(['id' => $fieldValue]);
+
+                    if (!$contract) {
+                        return null;
+                    }
+
+                    $serviceRequest->setContract($contract);
+                }
+
+                elseif ($setterMethod == 'setIsClosed') {
+                    $serviceRequest->setIsClosed($fieldValue);
+
+                    if (!$fieldValue) {
+                        $serviceRequest->setCloseDate(null);
+                    } else {
+                        $serviceRequest->setCloseDate(new \DateTime());
+                    }
+                }
+
+                elseif (method_exists($serviceRequest, $setterMethod)) {
+                    $serviceRequest->$setterMethod($fieldValue);
+                }
+            }
+        }
+
         return $serviceRequest;
     }
 

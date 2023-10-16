@@ -38,4 +38,17 @@ class ServiceRequestRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+    public function getServiceRequestsWithPagination()
+    {
+    }
+
+    public function countServiceRequests(
+    ) {
+
+    }
+
+    public function getCustomerServiceRequests()
+    {
+    }
 }
