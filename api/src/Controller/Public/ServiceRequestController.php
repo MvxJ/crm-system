@@ -2,6 +2,8 @@
 
 namespace App\Controller\Public;
 
+use App\Service\ServiceRequestService;
+use App\Service\Validator\JsonValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,13 +13,29 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/api/public/service/request', name: 'api_public_service_request_')]
 class ServiceRequestController extends AbstractController
 {
+    private ServiceRequestService $serviceRequestService;
+    private JsonValidator $validator;
+
+    public function __construct(ServiceRequestService $serviceRequestService, JsonValidator $validator)
+    {
+        $this->serviceRequestService = $serviceRequestService;
+        $this->validator = $validator;
+    }
+
     #[Route('/list', name: 'list', methods: ['GET'])]
     public function getServiceRequests(Request $request): JsonResponse
     {
         try {
+            $user = $this->getUser();
+            $serviceRequests = $this->serviceRequestService->getCustomerServiceRequests(
+                $request,
+                $user->getUserIdentifier()
+            );
+
             return new JsonResponse(
                 [
-                    'status' => 'success'
+                    'status' => 'success',
+                    'results' => $serviceRequests
                 ],
                 Response::HTTP_OK
             );
@@ -36,9 +54,26 @@ class ServiceRequestController extends AbstractController
     public function getServiceRequestDetails(int $id, Request $request): JsonResponse
     {
         try {
+            $user = $this->getUser();
+            $serviceRequest = $this->serviceRequestService->getCustomerServiceRequestDetails(
+                $id,
+                $user->getUserIdentifier()
+            );
+
+            if (!$serviceRequest) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Bad request please try again.'
+                    ],
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
+
             return new JsonResponse(
                 [
-                    'status' => 'success'
+                    'status' => 'success',
+                    'serviceRequest' => $serviceRequest
                 ],
                 Response::HTTP_OK
             );
@@ -53,13 +88,27 @@ class ServiceRequestController extends AbstractController
         }
     }
 
-    #[Route('/{id}/delete', name: 'delete', methods: ['DELETE'])]
-    public function deleteServiceRequest(int $id, Request $request): JsonResponse
+    #[Route('/{id}/cancel', name: 'delete', methods: ['DELETE'])]
+    public function cancelServiceRequest(int $id, Request $request): JsonResponse
     {
         try {
+            $user = $this->getUser();
+            $status = $this->serviceRequestService->cancelServiceRequestByCustomer($id, $user->getUserIdentifier());
+
+            if (!$status) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Bad request please try again later.'
+                    ],
+                    Response::HTTP_INTERNAL_SERVER_ERROR
+                );
+            }
+
             return new JsonResponse(
                 [
-                    'status' => 'success'
+                    'status' => 'success',
+                    'message' => 'Successfully cancelled service request.'
                 ],
                 Response::HTTP_OK
             );
@@ -78,9 +127,39 @@ class ServiceRequestController extends AbstractController
     public function createServiceRequest(Request $request): JsonResponse
     {
         try {
+            $errors  = $this->validator->validateRequest('service-request-schema.json');
+
+            if (count($errors) > 0) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Bad request.',
+                        'errors' => $errors
+                    ],
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
+
+            $user = $this->getUser();
+            $serviceRequest = $this->serviceRequestService->addServiceRequestByCustomer(
+                $request,
+                $user->getUserIdentifier()
+            );
+
+            if (!$serviceRequest) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'Bad request please try again. Check your payload.'
+                    ],
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
+
             return new JsonResponse(
                 [
-                    'status' => 'success'
+                    'status' => 'success',
+                    'serviceRequest' => $serviceRequest
                 ],
                 Response::HTTP_OK
             );

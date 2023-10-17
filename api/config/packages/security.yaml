@@ -78,6 +78,8 @@ security:
         - { path: ^/api/public/contract, roles: [IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER] }
         - { path: ^/api/service/request, roles: ROLE_ADMIN }
         - { path: ^/api/public/service/request, roles: [IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER] }
+        - { path: ^/api/service/visit, roles: ROLE_ADMIN }
+        - { path: ^/api/public/service/visit, roles: [ IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER ] }
         - { path: ^/api/offer, roles: ROLE_ACCESS_ADMIN_PANEL }
         - { path: ^/api/public/offer, roles: PUBLIC_ACCESS }
         - { path: ^/api/file/display/*, roles: PUBLIC_ACCESS }

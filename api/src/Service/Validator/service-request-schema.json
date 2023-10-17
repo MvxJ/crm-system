@@ -16,6 +16,9 @@
     },
     "contract": {
       "type": "integer"
+    },
+    "status": {
+      "type": "integer"
     }
   },
   "required": ["customer", "contract"],
@@ -26,6 +29,7 @@
     "type.contract": "Contract should be a integer. provide a valid number.",
     "type.isClosed": "Is Closed should be a bool. provide a valid number.",
     "type.description": "Description should be a string. provide a valid string.",
-    "type.user": "User should be a integer. provide a valid number."
+    "type.user": "User should be a integer. provide a valid number.",
+    "type.status": "Status should be a integer. Provide a valid int value."
   }
 }

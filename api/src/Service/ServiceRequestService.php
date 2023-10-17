@@ -41,12 +41,14 @@ class ServiceRequestService
         $orderBy = $request->get('orderBy', 'id');
         $user = $request->get('userId', 'all');
         $customer = $request->get('customerId', 'all');
-        $maxResults = $this->contractRepository->countContracts($user, $customer);
-        $serviceRequests = $this->contractRepository->findContractsWithPagination(
+        $status = $request->get('status', 'all');
+        $maxResults = $this->serviceRequestRepository->countServiceRequests($status, $user, $customer);
+        $serviceRequests = $this->serviceRequestRepository->getServiceRequestsWithPagination(
             (int)$page,
             (int)$itemsPerPage,
             $order,
             $orderBy,
+            $status,
             $user,
             $customer
         );
@@ -80,18 +82,8 @@ class ServiceRequestService
     public function getCustomerServiceRequests(Request $request, string $userEmail): ?array
     {
         $serviceRequestsArray = [];
-        $page = $request->get('page', 1);
-        $itemsPerPage = $request->get('items', 25);
-        $order = $request->get('order', 'asc');
-        $orderBy = $request->get('orderBy', 'id');
-        $maxResults = $this->contractRepository->countContractsByCustomer($userEmail);
-        $serviceRequests = $this->contractRepository->findContractsWithPagination(
-            (int)$page,
-            (int)$itemsPerPage,
-            $order,
-            $orderBy,
-            $userEmail
-        );
+        $maxResults = $this->serviceRequestRepository->countContractsByCustomer($userEmail);
+        $serviceRequests = $this->serviceRequestRepository->findContractsWithPaginationByCustomer($userEmail);
 
         if (count($serviceRequests) == 0) {
             return null;
@@ -125,6 +117,7 @@ class ServiceRequestService
         $serviceRequest = new ServiceRequest();
         $serviceRequest = $this->objectCreator($serviceRequest, $content);
         $serviceRequest->setCreatedDate(new \DateTime());
+        $serviceRequest->setStatus(ServiceRequest::STATUS_OPENED);
 
         $this->entityManager->persist($serviceRequest);
         $this->entityManager->flush();
@@ -142,9 +135,10 @@ class ServiceRequestService
         }
 
         $serviceRequest = new ServiceRequest();
+        $serviceRequest = $this->objectCreator($serviceRequest, $content);
         $serviceRequest->setCustomer($customer);
         $serviceRequest->setCreatedDate(new \DateTime());
-        $serviceRequest = $this->objectCreator($serviceRequest, $content);
+        $serviceRequest->setStatus(ServiceRequest::STATUS_OPENED);
 
         $this->entityManager->persist($serviceRequest);
         $this->entityManager->flush();
@@ -167,6 +161,21 @@ class ServiceRequestService
         $this->entityManager->flush();
 
         return $this->createServiceRequestArray($serviceRequest, true);
+    }
+
+    public function cancelServiceRequestByCustomer(int $serviceRequestId, string $userEmail): bool
+    {
+        $serviceRequest = $this->serviceRequestRepository->findOneBy(['id' => $serviceRequestId]);
+
+        if (!$serviceRequest || $userEmail != $serviceRequest->getCustomer()->getEmail()) {
+            return false;
+        }
+
+        $serviceRequest->setStatus(ServiceRequest::STATUS_CANCELLED);
+        $this->entityManager->persist($serviceRequest);
+        $this->entityManager->flush();
+
+        return true;
     }
 
     public function deleteServiceRequest(int $serviceRequestId): bool

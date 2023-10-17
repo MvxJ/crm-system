@@ -97,7 +97,7 @@ class ServiceRequestController extends AbstractController
                 );
             }
 
-            $serviceRequest  = $this->addServiceRequest($request);
+            $serviceRequest  = $this->serviceRequestService->addServiceRequestByAdmin($request);
 
             if (!$serviceRequest) {
                 return new JsonResponse(

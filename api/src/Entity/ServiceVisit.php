@@ -40,6 +40,9 @@ class ServiceVisit
     #[ORM\Column(type: Types::BOOLEAN, nullable: false)]
     private bool $isFinished = false;
 
+    #[ORM\Column(type: Types::BOOLEAN, nullable: false)]
+    private bool $cancelled = false;
+
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     private \DateTimeInterface $startTime;
 
@@ -185,5 +188,15 @@ class ServiceVisit
         $this->customer = $customer;
 
         return $this;
+    }
+
+    public function setCancelled(bool $cancelled): void
+    {
+        $this->cancelled = $cancelled;
+    }
+
+    public function isCancelled(): bool
+    {
+        return $this->cancelled;
     }
 }

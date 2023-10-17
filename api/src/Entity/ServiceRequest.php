@@ -11,6 +11,11 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ServiceRequestRepository::class)]
 class ServiceRequest
 {
+    public const STATUS_CANCELLED = 3;
+    public const STATUS_CLOSED = 2;
+    public const STATUS_OPENED = 0;
+    public const STATUS_REALIZATION = 1;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -46,6 +51,9 @@ class ServiceRequest
 
     #[ORM\ManyToOne(inversedBy: 'serviceRequests')]
     private ?Contract $contract = null;
+
+    #[ORM\Column(type: Types::SMALLINT, nullable: false)]
+    private int $status = 0;
 
     public function __construct()
     {
@@ -231,5 +239,15 @@ class ServiceRequest
         $this->contract = $contract;
 
         return $this;
+    }
+
+    public function getStatus(): int
+    {
+        return $this->status;
+    }
+
+    public function setStatus(int $status): void
+    {
+        $this->status = $status;
     }
 }
