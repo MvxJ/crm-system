@@ -23,9 +23,16 @@ class ServiceVisitController extends AbstractController
     public function getCustomerServiceVisits(Request $request): JsonResponse
     {
         try {
+            $user = $this->getUser();
+            $serviceVisits = $this->serviceVisitService->getCustomerServiceVisitList(
+                $request,
+                $user->getUserIdentifier()
+            );
+
             return new JsonResponse(
                 [
-                    'status' => 'success'
+                    'status' => 'success',
+                    'results' => $serviceVisits
                 ],
                 Response::HTTP_OK
             );
@@ -44,9 +51,23 @@ class ServiceVisitController extends AbstractController
     public function getCustomerServiceVisitDetails(int $id, Request $request): JsonResponse
     {
         try {
+            $customer = $this->getUser();
+            $serviceVisit = $this->serviceVisitService->getCustomerServiceVisitDetail($id, $customer->getUserIdentifier());
+
+            if (!$serviceVisit) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Bad request please try again later.'
+                    ],
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
+
             return new JsonResponse(
                 [
-                    'status' => 'success'
+                    'status' => 'success',
+                    'serviceVisit' => $serviceVisit
                 ],
                 Response::HTTP_OK
             );
@@ -65,9 +86,23 @@ class ServiceVisitController extends AbstractController
     public function cancalServiceVisit(int $id, Request $request): JsonResponse
     {
         try {
+            $user = $this->getUser();
+            $status = $this->serviceVisitService->cancelServiceVisit($id, $user->getUserIdentifier());
+
+            if (!$status) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Bad request, please try again later.'
+                    ],
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
+
             return new JsonResponse(
                 [
-                    'status' => 'success'
+                    'status' => 'success',
+                    'message' => 'Service request was successfully cancelled.'
                 ],
                 Response::HTTP_OK
             );

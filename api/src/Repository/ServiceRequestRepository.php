@@ -47,8 +47,8 @@ class ServiceRequestRepository extends ServiceEntityRepository
         string $order,
         string $orderBy,
         string $status,
-        string $customerId,
-        string $userId
+        string $userId,
+        string $customerId
     ): array {
         $queryBuilder = $this->createQueryBuilder('s');
         $queryBuilder->setMaxResults($itemsPerPage)
@@ -56,19 +56,20 @@ class ServiceRequestRepository extends ServiceEntityRepository
             ->orderBy('s.' . $orderBy, $order);
 
         if ($status != 'all' && !is_nan((int)$status)) {
-            $queryBuilder->where('s.status = :status')
+            $queryBuilder
+                ->andWhere('s.status = :status')
                 ->setParameter('status', (int)$status);
         }
 
         if ($customerId != 'all' && !is_nan((int)$customerId)) {
             $queryBuilder->innerJoin(Customer::class, 'c')
-                ->where('c.id = :customerId')
+                ->andWhere('c.id = :customerId')
                 ->setParameter('customerId', (int)$customerId);
         }
 
         if ($userId != 'all' && !is_nan((int)$userId)) {
             $queryBuilder->innerJoin(User::class, 'u')
-                ->where('u.id = :userId')
+                ->andWhere('u.id = :userId')
                 ->setParameter('userId', (int)$userId);
         }
 
@@ -81,19 +82,19 @@ class ServiceRequestRepository extends ServiceEntityRepository
             ->select('COUNT(s.id) as service_request_count');
 
         if ($status != 'all' && !is_nan((int)$status)) {
-            $queryBuilder->where('s.status = :status')
+            $queryBuilder->andWhere('s.status = :status')
                 ->setParameter('status', (int)$status);
         }
 
         if ($customerId != 'all' && !is_nan((int)$customerId)) {
             $queryBuilder->innerJoin(Customer::class, 'c')
-                ->where('c.id = :customerId')
+                ->andWhere('c.id = :customerId')
                 ->setParameter('customerId', (int)$customerId);
         }
 
         if ($userId != 'all' && !is_nan((int)$userId)) {
             $queryBuilder->innerJoin(User::class, 'u')
-                ->where('u.id = :userId')
+                ->andWhere('u.id = :userId')
                 ->setParameter('userId', (int)$userId);
         }
 
@@ -102,22 +103,22 @@ class ServiceRequestRepository extends ServiceEntityRepository
         return (int)$result;
     }
 
-    public function findContractsWithPaginationByCustomer(string $userEmail): array
+    public function findServiceRequestsWithPaginationByCustomer(string $userEmail): array
     {
         $queryBuilder = $this->createQueryBuilder('s')
-            ->innerJoin(Customer::class, 'u')
-            ->where('u.email = :email')
+            ->innerJoin('s.customer', 'c')
+            ->where('c.email = :email')
             ->setParameter('email', $userEmail);
 
         return $queryBuilder->getQuery()->getResult();
     }
 
-    public function countContractsByCustomer(string $userEmail): int
+    public function countServiceRequestsByCustomer(string $userEmail): int
     {
         $queryBuilder = $this->createQueryBuilder('s')
             ->select('COUNT(s.id) as service_request_count')
-            ->innerJoin(Customer::class, 'u')
-            ->where('u.email = :email')
+            ->innerJoin('s.customer', 'c')
+            ->where('c.email = :email')
             ->setParameter('email', $userEmail);
 
         $result = $queryBuilder->getQuery()->getSingleScalarResult();

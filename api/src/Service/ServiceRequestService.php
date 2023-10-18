@@ -82,8 +82,8 @@ class ServiceRequestService
     public function getCustomerServiceRequests(Request $request, string $userEmail): ?array
     {
         $serviceRequestsArray = [];
-        $maxResults = $this->serviceRequestRepository->countContractsByCustomer($userEmail);
-        $serviceRequests = $this->serviceRequestRepository->findContractsWithPaginationByCustomer($userEmail);
+        $maxResults = $this->serviceRequestRepository->countServiceRequestsByCustomer($userEmail);
+        $serviceRequests = $this->serviceRequestRepository->findServiceRequestsWithPaginationByCustomer($userEmail);
 
         if (count($serviceRequests) == 0) {
             return null;
@@ -255,13 +255,17 @@ class ServiceRequestService
                 'id' => $serviceRequest->getCustomer()->getId(),
                 'email' => $serviceRequest->getCustomer()->getEmail()
             ],
-            'user' => [
+            'closed' => $serviceRequest->getIsClosed(),
+            'createdDate' => $serviceRequest->getCreatedDate(),
+            'status' => $serviceRequest->getStatus()
+        ];
+
+        if ($serviceRequest->getUser() != null) {
+            $serviceRequestArray['user'] = [
                 'id' => $serviceRequest->getUser()->getId(),
                 'email' => $serviceRequest->getUser()->getEmail()
-            ],
-            'closed' => $serviceRequest->getIsClosed(),
-            'createdDate' => $serviceRequest->getCreatedDate()
-        ];
+            ];
+        }
 
         if ($details) {
             $serviceRequestArray['contract'] = [

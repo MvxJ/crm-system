@@ -41,7 +41,7 @@ class ServiceRequest
     private Collection $comments;
 
     #[ORM\ManyToOne(inversedBy: 'serviceRequests')]
-    private User $user;
+    private ?User $user = null;
 
     #[ORM\OneToMany(mappedBy: 'serviceRequest', targetEntity: ServiceVisit::class, orphanRemoval: true)]
     private Collection $serviceVisits;

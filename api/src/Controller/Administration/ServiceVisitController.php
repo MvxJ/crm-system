@@ -26,9 +26,35 @@ class ServiceVisitController extends AbstractController
     public function createServiceVisit(Request $request): JsonResponse
     {
         try {
+            $errors  = $this->validator->validateRequest('service-visit-schema.json');
+
+            if (count($errors) > 0) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Bad request.',
+                        'errors' => $errors
+                    ],
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
+
+            $serviceVisit = $this->serviceVisitService->addServiceVisit($request);
+
+            if (!$serviceVisit) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Bad request please try again.'
+                    ],
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
+
             return new JsonResponse(
                 [
-                    'status' => 'success'
+                    'status' => 'success',
+                    'serviceVisit' => $serviceVisit
                 ],
                 Response::HTTP_OK
             );
@@ -44,12 +70,25 @@ class ServiceVisitController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'edit', methods: ['PATCH'])]
-    public function editServiceVisit(Request $request): JsonResponse
+    public function editServiceVisit(int $id, Request $request): JsonResponse
     {
         try {
+            $serviceVisit = $this->serviceVisitService->editServiceVisit($id, $request);
+
+            if (!$serviceVisit) {
+                return new JsonResponse(
+                  [
+                      'status' => 'error',
+                      'message' => 'Bad request please try again later.'
+                  ],
+                  Response::HTTP_BAD_REQUEST
+                );
+            }
+
             return new JsonResponse(
                 [
-                    'status' => 'success'
+                    'status' => 'success',
+                    'serviceVisit' => $serviceVisit
                 ],
                 Response::HTTP_OK
             );
@@ -68,9 +107,12 @@ class ServiceVisitController extends AbstractController
     public function getServiceVisits(Request $request): JsonResponse
     {
         try {
+            $serviceVisits = $this->serviceVisitService->getServiceVisitList($request);
+
             return new JsonResponse(
                 [
-                    'status' => 'success'
+                    'status' => 'success',
+                    'serviceVisits' => $serviceVisits
                 ],
                 Response::HTTP_OK
             );
@@ -89,9 +131,22 @@ class ServiceVisitController extends AbstractController
     public function getServiceVisitDetails(int $id, Request $request): JsonResponse
     {
         try {
+            $serviceVisit = $this->serviceVisitService->getServiceVisitDetail($id);
+
+            if (!$serviceVisit) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Bad request please try again.'
+                    ],
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
+
             return new JsonResponse(
                 [
-                    'status' => 'success'
+                    'status' => 'success',
+                    'serviceVisit' => $serviceVisit
                 ],
                 Response::HTTP_OK
             );
@@ -110,9 +165,22 @@ class ServiceVisitController extends AbstractController
     public function deleteServiceVisit(int $id, Request $request): JsonResponse
     {
         try {
+            $status = $this->serviceVisitService->deleteServiceVisit($id);
+
+            if (!$status) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Bad request please try again later.'
+                    ],
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
+
             return new JsonResponse(
                 [
-                    'status' => 'success'
+                    'status' => 'success',
+                    'message' => 'Service visit was deleted successfully'
                 ],
                 Response::HTTP_OK
             );
