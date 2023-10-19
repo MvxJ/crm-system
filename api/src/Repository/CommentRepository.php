@@ -39,28 +39,34 @@ class CommentRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Comment[] Returns an array of Comment objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function countCommentsByServiceRequestId(int $serviceRequestId): int
+    {
+        $queryBuilder = $this->createQueryBuilder('c')
+            ->select('COUNT(c.id) as device_count')
+            ->innerJoin('c.serviceRequest', 's')
+            ->where('s.id = :serviceRequestId')
+            ->setParameter('serviceRequestId', $serviceRequestId);
 
-//    public function findOneBySomeField($value): ?Comment
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        $result = $queryBuilder->getQuery()->getSingleScalarResult();
+
+        return (int)$result;
+    }
+
+    public function getCommentsByServiceRequestId(
+        int $serviceRequestId,
+        int $page = 0,
+        int $itemsPerPage = 25,
+        string $order,
+        string $orderBy,
+    ): array {
+        $queryBuilder = $this->createQueryBuilder('c');
+        $queryBuilder->setMaxResults($itemsPerPage)
+            ->innerJoin('c.serviceRequest', 's')
+            ->where('s.id = :serviceRequestId')
+            ->setParameter('serviceRequestId', $serviceRequestId)
+            ->setFirstResult(($page - 1) * $itemsPerPage)
+            ->orderBy('c.' . $orderBy, $order);
+
+        return $queryBuilder->getQuery()->getResult();
+    }
 }

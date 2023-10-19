@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "user": {
+      "type": "integer"
+    },
+    "serviceRequest": {
+      "type": "integer"
+    },
+    "message": {
+      "type": "string"
+    },
+    "isHidden": {
+      "type": "boolean"
+    }
+  },
+  "required": ["user", "serviceRequest", "message"],
+  "errorMessage": {
+    "required.user": "User is required, Please provide value.",
+    "required.serviceRequest": "Service Request is required, Please provide value.",
+    "required.message": "Message is required, Please provide value.",
+    "type.user": "User should be a integer. provide a valid number.",
+    "type.serviceRequest": "Service Request should be a integer. provide a valid number.",
+    "type.message": "Message should be a string, please provide valid value.",
+    "type.isHidden": "isHidden should be a boolean, please provide a valid value."
+  }
+}

@@ -21,7 +21,7 @@ class Comment
     private ?\DateTimeInterface $editDate = null;
 
     #[ORM\Column(type: Types::BOOLEAN)]
-    private bool $isHiden = false;
+    private bool $isHidden = false;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
@@ -63,14 +63,14 @@ class Comment
         return $this;
     }
 
-    public function getIsHiden(): bool
+    public function getIsHidden(): bool
     {
-        return $this->isHiden;
+        return $this->isHidden;
     }
 
-    public function setIsHiden(bool $isHiden): self
+    public function setIsHidden(bool $isHidden): self
     {
-        $this->isHiden = $isHiden;
+        $this->isHidden = $isHidden;
 
         return $this;
     }

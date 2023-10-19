@@ -69,6 +69,7 @@ security:
         - { path: ^/api/login/2fa_check, roles: IS_AUTHENTICATED_2FA_IN_PROGRESS }
         - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
         - { path: ^/api/settings, roles: ROLE_ADMIN }
+        - { path: ^/api/comment, roles: ROLE_ADMIN }
         - { path: ^/api/model, roles: ROLE_ACCESS_ADMIN_PANEL }
         - { path: ^/api/public/model, roles: PUBLIC_ACCESS }
         - { path: ^/api/device, roles: ROLE_ACCESS_ADMIN_PANEL }
