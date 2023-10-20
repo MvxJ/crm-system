@@ -57,6 +57,9 @@ class Bill
     #[ORM\OneToMany(mappedBy: 'bill', targetEntity: Payment::class)]
     private Collection $payments;
 
+    #[ORM\Column(length: 255)]
+    private ?string $fileName = null;
+
     public function __construct()
     {
         $this->billPositions = new ArrayCollection();
@@ -196,12 +199,7 @@ class Bill
 
     public function removeBillPosition(BillPosition $billPosition): self
     {
-        if ($this->billPositions->removeElement($billPosition)) {
-            // set the owning side to null (unless already changed)
-            if ($billPosition->getBill() === $this) {
-                $billPosition->setBill(null);
-            }
-        }
+        $this->billPositions->removeElement($billPosition);
 
         return $this;
     }
@@ -232,6 +230,18 @@ class Bill
                 $payment->setBill(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getFileName(): ?string
+    {
+        return $this->fileName;
+    }
+
+    public function setFileName(string $fileName): self
+    {
+        $this->fileName = $fileName;
 
         return $this;
     }

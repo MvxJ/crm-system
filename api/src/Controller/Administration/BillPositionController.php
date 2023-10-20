@@ -2,7 +2,7 @@
 
 namespace App\Controller\Administration;
 
-use App\Service\BillService;
+use App\Service\BillPositionService;
 use App\Service\Validator\JsonValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -10,81 +10,23 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/api/bill', name: 'api_bill_')]
-class BillController extends AbstractController
+#[Route('/api/bill/position', name: 'api_bill_position_')]
+class BillPositionController extends AbstractController
 {
-    private BillService $billService;
+    private BillPositionService $billPositionService;
     private JsonValidator $validator;
 
-    public function __construct(BillService $billService, JsonValidator $validator)
+    public function __construct(BillPositionService $billPositionService, JsonValidator $validator)
     {
-        $this->billService = $billService;
+        $this->billPositionService = $billPositionService;
         $this->validator = $validator;
     }
 
-    #[Route('/list', name: 'list', methods: ['GET'])]
-    public function getBills(Request $request): JsonResponse
-    {
-        try {
-            $bills = $this->billService->getBills($request);
-
-            return new JsonResponse(
-                [
-                    'status' => 'success',
-                    'results' => $bills
-                ],
-                Response::HTTP_OK
-            );
-        } catch (\Exception $exception) {
-            return new JsonResponse(
-                [
-                    'status' => 'error',
-                    'message' => $exception->getMessage()
-                ],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
-        }
-    }
-
-    #[Route('/{id}/detail', name: 'detail', methods: ['GET'])]
-    public function getBillDetail(int $id, Request $request): JsonResponse
-    {
-        try {
-            $bill = $this->billService->getBillDetails($id);
-
-            if (!$bill) {
-                return new JsonResponse(
-                    [
-                        'status' => 'error',
-                        'message' => 'Bad request please try again later.'
-                    ],
-                    Response::HTTP_BAD_REQUEST
-                );
-            }
-
-            return new JsonResponse(
-                [
-                    'status' => 'success',
-                    'bill' => $bill
-                ],
-                Response::HTTP_OK
-            );
-        } catch (\Exception $exception) {
-            return new JsonResponse(
-                [
-                    'status' => 'error',
-                    'message' => $exception->getMessage()
-                ],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
-        }
-    }
-
     #[Route('/add', name: 'add', methods: ['POST'])]
-    public function addBill(Request $request): JsonResponse
+    public function addPosition(Request $request): JsonResponse
     {
         try {
-            $errors = $this->validator->validateRequest('bill-schema.json');
+            $errors = $this->validator->validateRequest('bill-position-schema.json');
 
             if (count($errors) > 0) {
                 return new JsonResponse(
@@ -97,9 +39,9 @@ class BillController extends AbstractController
                 );
             }
 
-            $bill = $this->billService->addBill($request);
+            $position = $this->billPositionService->addPosition($request);
 
-            if (!$bill) {
+            if (!$position) {
                 return new JsonResponse(
                     [
                         'status' => 'error',
@@ -112,7 +54,7 @@ class BillController extends AbstractController
             return new JsonResponse(
                 [
                     'status' => 'success',
-                    'bill' => $bill
+                    'position' => $position
                 ],
                 Response::HTTP_OK
             );
@@ -122,18 +64,18 @@ class BillController extends AbstractController
                     'status' => 'error',
                     'message' => $exception->getMessage()
                 ],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
+                Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     #[Route('/{id}/edit', name: 'edit', methods: ['PATCH'])]
-    public function editBill(int $id, Request $request): JsonResponse
+    public function editPosition(int $id, Request $request): JsonResponse
     {
         try {
-            $bill = $this->billService->editBill($id, $request);
+            $position = $this->billPositionService->editPosition($id, $request);
 
-            if (!$bill) {
+
+            if (!$position) {
                 return new JsonResponse(
                     [
                         'status' => 'error',
@@ -146,7 +88,7 @@ class BillController extends AbstractController
             return new JsonResponse(
                 [
                     'status' => 'success',
-                    'bill' => $bill
+                    'position' => $position
                 ],
                 Response::HTTP_OK
             );
@@ -156,16 +98,15 @@ class BillController extends AbstractController
                     'status' => 'error',
                     'message' => $exception->getMessage()
                 ],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
+                Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     #[Route('/{id}/delete', name: 'delete', methods: ['DELETE'])]
-    public function deleteBill(int $id): JsonResponse
+    public function deletePosition(int $id): JsonResponse
     {
         try {
-            $status  = $this->billService->deleteBill($id);
+            $status = $this->billPositionService->deletePosition($id);
 
             if (!$status) {
                 return new JsonResponse(
@@ -180,7 +121,7 @@ class BillController extends AbstractController
             return new JsonResponse(
                 [
                     'status' => 'success',
-                    'message' => 'Bill was deleted successfully.'
+                    'message' => 'Bill position was deleted successfully.'
                 ],
                 Response::HTTP_OK
             );
@@ -190,8 +131,40 @@ class BillController extends AbstractController
                     'status' => 'error',
                     'message' => $exception->getMessage()
                 ],
-                Response::HTTP_INTERNAL_SERVER_ERROR
+                Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    #[Route('/{billId}/list', name: 'list', methods: ['GET'])]
+    public function getPositions(int $billId, Request $request): JsonResponse
+    {
+        try {
+            $positions = $this->billPositionService->getPositionListsByBill($billId, $request);
+
+            if (!$positions) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Bad request please try again later'
+                    ],
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
+
+            return new JsonResponse(
+                [
+                    'status' => 'success',
+                    'positions' => $positions
+                ],
+                Response::HTTP_OK
             );
+        } catch (\Exception $exception) {
+            return new JsonResponse(
+                [
+                    'status' => 'error',
+                    'message' => $exception->getMessage()
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

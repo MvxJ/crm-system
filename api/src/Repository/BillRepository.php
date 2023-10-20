@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Bill;
+use App\Entity\Customer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -39,28 +40,69 @@ class BillRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Bill[] Returns an array of Bill objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('b')
-//            ->andWhere('b.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('b.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function countBills(string $status): int
+    {
+        $queryBuilder = $this->createQueryBuilder('b')
+            ->select('COUNT(b.id) as device_count');
 
-//    public function findOneBySomeField($value): ?Bill
-//    {
-//        return $this->createQueryBuilder('b')
-//            ->andWhere('b.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        if ($status != 'all' && !is_nan((int)$status)) {
+            $queryBuilder->where('b.status = :status')
+                ->setParameter('status', (int)$status);
+        }
+
+        $result = $queryBuilder->getQuery()->getSingleScalarResult();
+
+        return (int)$result;
+    }
+
+    public function findBillsWithPagination(
+        int $page = 0,
+        int $itemsPerPage = 25,
+        string $order,
+        string $orderBy,
+        string $status
+    ): array {
+        $queryBuilder = $this->createQueryBuilder('b');
+        $queryBuilder->setMaxResults($itemsPerPage)
+            ->setFirstResult(($page - 1) * $itemsPerPage)
+            ->orderBy('b.' . $orderBy, $order);
+
+        if ($status != 'all' && !is_nan((int)$status)) {
+            $queryBuilder->where('b.status = :status')
+                ->setParameter('status', (int)$status);
+        }
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function countCustomerBills(string $email): int
+    {
+        $queryBuilder = $this->createQueryBuilder('b')
+            ->select('COUNT(b.id) as bills_count')
+            ->innerJoin('b.customer', 'c')
+            ->where('c.email = :email')
+            ->setParameter('email', $email);
+
+        $result = $queryBuilder->getQuery()->getSingleScalarResult();
+
+        return (int)$result;
+    }
+
+    public function findCustomerBillsWithPagination(
+        int $page = 0,
+        int $itemsPerPage = 12,
+        string $order,
+        string $orderBy,
+        string $email
+    ): array {
+        $queryBuilder = $this->createQueryBuilder('b');
+        $queryBuilder->setMaxResults($itemsPerPage)
+            ->setFirstResult(($page - 1) * $itemsPerPage)
+            ->orderBy('b.' . $orderBy, $order)
+            ->innerJoin(Customer::class, 'c')
+            ->where('c.email = :email')
+            ->setParameter('email', $email);
+
+        return $queryBuilder->getQuery()->getResult();
+    }
 }

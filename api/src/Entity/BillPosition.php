@@ -21,15 +21,15 @@ class BillPosition
     #[ORM\Column(type: Types::SMALLINT, nullable: false)]
     private int $type = 0;
 
-    #[ORM\Column(Types::FLOAT, nullable: false)]
+    #[ORM\Column(type: Types::FLOAT, nullable: false)]
     private float $price;
 
-    #[ORM\Column(Types::INTEGER, nullable: false)]
+    #[ORM\Column(type: Types::INTEGER, nullable: false)]
     private int $amount = 1;
 
     #[ORM\ManyToOne(inversedBy: 'billPositions')]
     #[ORM\JoinColumn(nullable: false)]
-    private Bill $bill;
+    private ?Bill $bill;
 
     #[ORM\Column(length: 255, nullable: false)]
     private string $name;
@@ -83,7 +83,7 @@ class BillPosition
         return $this->bill;
     }
 
-    public function setBill(Bill $bill): self
+    public function setBill(?Bill $bill): self
     {
         $this->bill = $bill;
 

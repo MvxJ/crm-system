@@ -77,6 +77,8 @@ security:
         - { path: ^/api/public/document, roles: [IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER] }
         - { path: ^/api/contract, roles: ROLE_ADMIN }
         - { path: ^/api/public/contract, roles: [IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER] }
+        - { path: ^/api/bill, roles: ROLE_ADMIN }
+        - { path: ^/api/public/bill, roles: [ IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER ] }
         - { path: ^/api/service/request, roles: ROLE_ADMIN }
         - { path: ^/api/public/service/request, roles: [IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER] }
         - { path: ^/api/service/visit, roles: ROLE_ADMIN }
