@@ -16,6 +16,7 @@ class Bill
     public const STATUS_PAID_PARTIALLY = 2;
     public const STATUS_PAIMENT_DELAYED = 3;
     public const STATUS_NOT_PAID = 4;
+    public const STATUS_REFUNDED = 5;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
