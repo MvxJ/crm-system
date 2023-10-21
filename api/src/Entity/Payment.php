@@ -13,6 +13,8 @@ class Payment
     public const PAID_BY_BLIK = 1;
     public const PAID_BY_ONLINE_PAUMENT = 2;
     public const PAID_BY_CASH = 3;
+    public const PAYMENT_STATUS_PENDING = 0;
+    public const PAYMENT_STATUS_POSTED = 1;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -38,6 +40,9 @@ class Payment
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $note = null;
+
+    #[ORM\Column(type: Types::SMALLINT, nullable: false)]
+    private int $status = 0;
 
     public function getId(): ?int
     {
@@ -104,7 +109,7 @@ class Payment
         return $this;
     }
 
-    public function getNote(): string
+    public function getNote(): ?string
     {
         return $this->note;
     }
@@ -112,6 +117,18 @@ class Payment
     public function setNote(string $note): self
     {
         $this->note = $note;
+
+        return $this;
+    }
+
+    public function getStatus(): ?int
+    {
+        return $this->status;
+    }
+
+    public function setStatus(int $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }

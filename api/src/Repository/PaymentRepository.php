@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Customer;
 use App\Entity\Payment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -39,28 +40,75 @@ class PaymentRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Payment[] Returns an array of Payment objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('p.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function countPayments($status, $paidBy, $customer): int
+    {
+        $queryBuilder = $this->createQueryBuilder('p')
+            ->select('COUNT(p.id) as payments_count')
+            ->innerJoin('p.customer', 'c');
 
-//    public function findOneBySomeField($value): ?Payment
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        if ($status != 'all' && !is_nan((int)$status)) {
+            $queryBuilder->andWhere('p.status = :status')
+                ->setParameter('status', (int)$status);
+        }
+
+        if ($paidBy != 'all' && !is_nan((int)$paidBy)) {
+            $queryBuilder->andWhere('p.paidBy = :paidBy')
+                ->setParameter('paidBy', (int)$paidBy);
+        }
+
+        if ($customer != 'all' && !is_nan((int)$customer)) {
+            $queryBuilder->andWhere('c.id = :customerId')
+                ->setParameter('customerId', (int)$customer);
+        }
+
+        $result = $queryBuilder->getQuery()->getSingleScalarResult();
+
+        return (int)$result;
+    }
+
+    public function getPaymentsWithPagination(
+        $page,
+        $itemsPerPage,
+        $order,
+        $orderBy,
+        $status,
+        $paidBy,
+        $customer
+    ): array {
+        $queryBuilder = $this->createQueryBuilder('p');
+        $queryBuilder->setMaxResults($itemsPerPage)
+            ->setFirstResult(($page - 1) * $itemsPerPage)
+            ->orderBy('p.' . $orderBy, $order)
+            ->orderBy('p.createdAt', 'desc');
+
+        if ($status != 'all' && !is_nan((int)$status)) {
+            $queryBuilder->andWhere('p.status = :status')
+                ->setParameter('status', (int)$status);
+        }
+
+        if ($paidBy != 'all' && !is_nan((int)$paidBy)) {
+            $queryBuilder->andWhere('p.paidBy = :paidBy')
+                ->setParameter('paidBy', (int)$paidBy);
+        }
+
+        if ($customer != 'all' && !is_nan((int)$customer)) {
+            $queryBuilder->innerJoin(Customer::class, 'c')
+                ->andWhere('c.id = :customerId')
+                ->setParameter('customerId', (int)$customer);
+        }
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function findCustomerPayments(string $customerEmail): array
+    {
+        $queryBuilder = $this->createQueryBuilder('p');
+        $queryBuilder->setMaxResults(24)
+            ->orderBy('p.createdAt', 'desc')
+            ->innerJoin(Customer::class, 'c')
+            ->where('c.email = :email')
+            ->setParameter('email', $customerEmail);
+
+        return $queryBuilder->getQuery()->getResult();
+    }
 }

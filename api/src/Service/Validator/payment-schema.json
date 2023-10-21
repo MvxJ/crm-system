@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "bill": {
+      "type": "integer"
+    },
+    "customer": {
+      "type": "integer"
+    },
+    "paidBy": {
+      "type": "integer"
+    },
+    "amount": {
+      "type": "number"
+    },
+    "note": {
+      "type": "string"
+    },
+    "status": {
+      "type": "integer"
+    }
+  },
+  "required": ["bill", "customer", "paidBy", "amount", "status"],
+  "errorMessage": {
+    "required.bill": "Bill is required, Please provide value.",
+    "required.customer": "Customer is required, Please provide value.",
+    "required.paidBy": "Paid By is required, Please provide value.",
+    "required.amount": "Amount is required, Please provide value.",
+    "required.status": "Status is required, Please provide value.",
+    "type.bill": "Bill should be a integer. provide a valid value.",
+    "type.customer": "Customer should be a integer. provide a valid value.",
+    "type.paidBy": "Paid By should be a integer. provide a valid value.",
+    "type.amount": "Amount By should be a number. provide a valid value.",
+    "type.status": "Status should be a integer. provide a valid value.",
+    "type.note": "Note should be a string. provide a valid value."
+  }
+}
