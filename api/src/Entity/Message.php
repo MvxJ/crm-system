@@ -34,6 +34,12 @@ class Message
     #[ORM\ManyToOne(inversedBy: 'messages')]
     private ?ServiceRequest $serviceRequest = null;
 
+    #[ORM\Column(length: 30, nullable: true)]
+    private ?string $phoneNumber = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $email = null;
+
     public function getId(): int
     {
         return $this->id;
@@ -95,6 +101,30 @@ class Message
     public function setServiceRequest(ServiceRequest $serviceRequest): self
     {
         $this->serviceRequest = $serviceRequest;
+
+        return $this;
+    }
+
+    public function getPhoneNumber(): ?string
+    {
+        return $this->phoneNumber;
+    }
+
+    public function setPhoneNumber(?string $phoneNumber): self
+    {
+        $this->phoneNumber = $phoneNumber;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(?string $email): self
+    {
+        $this->email = $email;
 
         return $this;
     }

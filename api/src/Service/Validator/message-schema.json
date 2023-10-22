@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "serviceRequest": {
+      "type": "integer"
+    },
+    "customer": {
+      "type": "integer"
+    },
+    "type": {
+      "type": "integer"
+    },
+    "message": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "phoneNumber": {
+      "type": "string"
+    }
+  },
+  "required": ["customer", "type", "message"],
+  "errorMessage": {
+    "required.customer": "Customer is required. Please provide a value.",
+    "required.type": "Type is required. Please provide a value.",
+    "required.message": "Message is required. Please provide a value.",
+    "type.serviceRequest": "Service Request should be a int. Please provide a valid value.",
+    "type.customer": "Customer should be a int. Please provide a valid value.",
+    "type.type": "Type should be a int. Please provide a valid value.",
+    "type.message": "Message should be a string. Please provide a valid value.",
+    "type.email": "Email should be a string. Please provide a valid value.",
+    "type.phoneNumber": "Phone number should be a string. Please provide a valid value."
+  }
+}

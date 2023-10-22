@@ -34,9 +34,6 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Two
     #[ORM\Column(type: Types::BOOLEAN,nullable: false)]
     private bool $emailAuthEnabled = false;
 
-    #[ORM\OneToOne(inversedBy: 'customer', targetEntity: CustomerProfile::class, cascade: ['persist', 'remove'])]
-    private CustomerProfile $customerProfile;
-
     #[ORM\ManyToMany(targetEntity: Role::Class, inversedBy: "customers")]
     private Collection $roles;
 
@@ -61,6 +58,24 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Two
     #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Payment::class)]
     private Collection $payments;
 
+    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: CustomerAddress::class)]
+    private Collection $customerAddresses;
+
+    #[ORM\Column(length: 255)]
+    private ?string $firstName = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $secondName = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $lastName = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $birthDate = null;
+
+    #[ORM\Column(length: 13)]
+    private ?string $socialSecurityNumber = null;
+
     public function __construct()
     {
         $this->roles = new ArrayCollection();
@@ -71,6 +86,7 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Two
         $this->serviceVisits = new ArrayCollection();
         $this->bills = new ArrayCollection();
         $this->payments = new ArrayCollection();
+        $this->customerAddresses = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -198,18 +214,6 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Two
         $this->email = $email;
 
         return $this;
-    }
-
-    public function setProfile(CustomerProfile $profile): self
-    {
-        $this->customerProfile = $profile;
-
-        return $this;
-    }
-
-    public function getProfile(): ?CustomerProfile
-    {
-        return $this->customerProfile;
     }
 
     /**
@@ -402,6 +406,96 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Two
                 $payment->setCustomer(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CustomerAddress>
+     */
+    public function getCustomerAddresses(): Collection
+    {
+        return $this->customerAddresses;
+    }
+
+    public function addCustomerAddress(CustomerAddress $customerAddress): self
+    {
+        if (!$this->customerAddresses->contains($customerAddress)) {
+            $this->customerAddresses->add($customerAddress);
+            $customerAddress->setCustomer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCustomerAddress(CustomerAddress $customerAddress): self
+    {
+        if ($this->customerAddresses->removeElement($customerAddress)) {
+            // set the owning side to null (unless already changed)
+            if ($customerAddress->getCustomer() === $this) {
+                $customerAddress->setCustomer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getFirstName(): ?string
+    {
+        return $this->firstName;
+    }
+
+    public function setFirstName(string $firstName): self
+    {
+        $this->firstName = $firstName;
+
+        return $this;
+    }
+
+    public function getSecondName(): ?string
+    {
+        return $this->secondName;
+    }
+
+    public function setSecondName(?string $secondName): self
+    {
+        $this->secondName = $secondName;
+
+        return $this;
+    }
+
+    public function getLastName(): ?string
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName(string $lastName): self
+    {
+        $this->lastName = $lastName;
+
+        return $this;
+    }
+
+    public function getBirthDate(): ?\DateTimeInterface
+    {
+        return $this->birthDate;
+    }
+
+    public function setBirthDate(\DateTimeInterface $birthDate): self
+    {
+        $this->birthDate = $birthDate;
+
+        return $this;
+    }
+
+    public function getSocialSecurityNumber(): ?string
+    {
+        return $this->socialSecurityNumber;
+    }
+
+    public function setSocialSecurityNumber(string $socialSecurityNumber): self
+    {
+        $this->socialSecurityNumber = $socialSecurityNumber;
 
         return $this;
     }

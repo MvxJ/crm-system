@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\Customer;
-use App\Entity\CustomerProfile;
 use App\Entity\Role;
 use App\Repository\CustomerRepository;
 use App\Repository\RoleRepository;
@@ -48,9 +47,8 @@ class CustomerService
             $customers[] = [
                 'id' => $customer->getId(),
                 'email' => $customer->getEmail(),
-                'name' => $customer->getProfile() ? $customer->getProfile()->getFirstName() : '',
-                'surname' => $customer->getProfile() ? $customer->getProfile()->getSurname() : '',
-                'phoneNumber' => $customer->getProfile() ? $customer->getProfile()->getPhoneNumber() : ''
+                'name' => $customer->getFirstName(),
+                'surname' => $customer->getSecondName()
             ];
         }
 
@@ -73,26 +71,10 @@ class CustomerService
         $roleCustomer = $this->roleRepository->findOneBy(['role' => Role::ROLE_CUSTOMER]);
         $content = json_decode($request->getContent(), true);
         $customer = new Customer();
-        $profile = new CustomerProfile();
-
-        $profile->setSurname($content['surname']);
-        $profile->setFirstName($content['firstName']);
-        $profile->setSocialSecurityNumber($content['socialSecurityNumber']);
-        $profile->setPhoneNumber($content['phoneNumber']);
-        $profile->setCustomer($customer);
-
-        if (array_key_exists('birthDate', $content)) {
-            $profile->setBirthDate($content['birthDate']);
-        }
-
-        if (array_key_exists('secondName', $content)) {
-            $profile->setSecondName($content['secondName']);
-        }
 
         $customer->setPassword($this->userPasswordHasher->hashPassword($customer, $content['password']));
         $customer->setEmail($content['email']);
         $customer->addRole($roleCustomer);
-        $customer->setProfile($profile);
 
         $this->entityManager->persist($customer);
         $this->entityManager->flush();
@@ -108,33 +90,11 @@ class CustomerService
     public function editCustomer(Customer $customer, Request $request): void
     {
         $content = json_decode($request->getContent(), true);
-        $profile = $customer->getProfile();
 
         if (array_key_exists('email', $content)) {
             $customer->setEmail($content['email']);
         }
 
-        if (array_key_exists('firstName', $content)) {
-            $profile->setFirstName($content['firstName']);
-        }
-
-        if (array_key_exists('phoneNumber', $content)) {
-            $profile->setPhoneNumber($content['phoneNumber']);
-        }
-
-        if (array_key_exists('surname', $content)) {
-            $profile->setSurname($content['surname']);
-        }
-
-        if (array_key_exists('secondName', $content)) {
-            $profile->setSecondName($content['secondName']);
-        }
-
-        if (array_key_exists('socialSecurityNumber', $content)) {
-            $profile->setSocialSecurityNumber($content['socialSecurityNumber']);
-        }
-
-        $this->entityManager->persist($profile);
         $this->entityManager->persist($customer);
         $this->entityManager->flush();
     }

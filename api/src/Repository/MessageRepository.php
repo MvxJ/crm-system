@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Customer;
 use App\Entity\Message;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -39,28 +40,84 @@ class MessageRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Message[] Returns an array of Message objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('m.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function countMessages(string $customerId, string $type): int
+    {
+        $queryBuilder = $this->createQueryBuilder('m')
+            ->select('COUNT(m.id) as payments_count')
+            ->innerJoin('m.customer', 'c');
 
-//    public function findOneBySomeField($value): ?Message
-//    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        if ($customerId != 'all' && !is_nan((int)$customerId)) {
+            $queryBuilder->andWhere('c.id = :id')
+                ->setParameter('id', (int)$customerId);
+        }
+
+        if ($type != 'all' && !is_nan((int)$type)) {
+            $queryBuilder->andWhere('m.type = :type')
+                ->setParameter('type', (int)$type);
+        }
+
+
+        $result = $queryBuilder->getQuery()->getSingleScalarResult();
+
+        return (int)$result;
+    }
+
+    public function getMessagesWithPagination(
+        int $page = 1,
+        int $itemsPerPage = 25,
+        string $order,
+        string $orderBy,
+        string $customerId,
+        string $type
+    ): array {
+        $queryBuilder = $this->createQueryBuilder('m');
+        $queryBuilder->setMaxResults($itemsPerPage)
+            ->setFirstResult(($page - 1) * $itemsPerPage)
+            ->orderBy('m.' . $orderBy, $order);
+
+        if ($type != 'all' && !is_nan((int)$type)) {
+            $queryBuilder->andWhere('m.type = :type')
+                ->setParameter('type', (int)$type);
+        }
+
+        if ($customerId != 'all' && !is_nan((int)$customerId)) {
+            $queryBuilder->innerJoin(Customer::class, 'c')
+                ->andWhere('c.id = :customerId')
+                ->setParameter('customerId', (int)$customerId);
+        }
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function countCustomerMessages(string $userEmail): int
+    {
+        $queryBuilder = $this->createQueryBuilder('p')
+            ->select('COUNT(p.id) as payments_count')
+            ->innerJoin('p.customer', 'c')
+            ->where('c.email = :email')
+            ->setParameter('email', $userEmail);
+
+
+        $result = $queryBuilder->getQuery()->getSingleScalarResult();
+
+        return (int)$result;
+    }
+
+    public function getCustomerMessages(
+        int $page = 1,
+        int $itemsPerPage = 25,
+        string $order,
+        string $orderBy,
+        string $userEMail
+    ): array {
+        $queryBuilder = $this->createQueryBuilder('m');
+        $queryBuilder->setMaxResults($itemsPerPage)
+            ->setFirstResult(($page - 1) * $itemsPerPage)
+            ->orderBy('m.' . $orderBy, $order)
+            ->innerJoin(Customer::class, 'c')
+            ->where('c.email = :email')
+            ->setParameter('email', $userEMail);
+
+        return $queryBuilder->getQuery()->getResult();
+    }
 }
