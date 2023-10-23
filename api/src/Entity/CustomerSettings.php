@@ -27,6 +27,9 @@ class CustomerSettings
     #[ORM\JoinColumn(nullable: false)]
     private ?CustomerAddress $contactAddress = null;
 
+    #[ORM\OneToOne(mappedBy: 'settings', cascade: ['persist', 'remove'])]
+    private ?Customer $customer = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -76,6 +79,23 @@ class CustomerSettings
     public function setContactAddress(CustomerAddress $contactAddress): self
     {
         $this->contactAddress = $contactAddress;
+
+        return $this;
+    }
+
+    public function getCustomer(): ?Customer
+    {
+        return $this->customer;
+    }
+
+    public function setCustomer(Customer $customer): static
+    {
+        // set the owning side of the relation if necessary
+        if ($customer->getSettings() !== $this) {
+            $customer->setSettings($this);
+        }
+
+        $this->customer = $customer;
 
         return $this;
     }

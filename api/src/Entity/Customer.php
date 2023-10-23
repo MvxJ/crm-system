@@ -76,6 +76,13 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Two
     #[ORM\Column(length: 13)]
     private ?string $socialSecurityNumber = null;
 
+    #[ORM\OneToOne(inversedBy: 'customer', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?CustomerSettings $settings = null;
+
+    #[ORM\Column(length: 30, nullable: true)]
+    private ?string $phoneNumber = null;
+
     public function __construct()
     {
         $this->roles = new ArrayCollection();
@@ -496,6 +503,30 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Two
     public function setSocialSecurityNumber(string $socialSecurityNumber): self
     {
         $this->socialSecurityNumber = $socialSecurityNumber;
+
+        return $this;
+    }
+
+    public function getSettings(): ?CustomerSettings
+    {
+        return $this->settings;
+    }
+
+    public function setSettings(CustomerSettings $settings): static
+    {
+        $this->settings = $settings;
+
+        return $this;
+    }
+
+    public function getPhoneNumber(): ?string
+    {
+        return $this->phoneNumber;
+    }
+
+    public function setPhoneNumber(?string $phoneNumber): static
+    {
+        $this->phoneNumber = $phoneNumber;
 
         return $this;
     }

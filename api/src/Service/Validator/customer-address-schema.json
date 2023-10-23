@@ -2,12 +2,58 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
-    "email": {
+    "type": {
+      "type": "integer"
+    },
+    "city": {
+      "type": "string"
+    },
+    "zipCode": {
+      "type": "string",
+      "maxLength": 30
+    },
+    "address": {
+      "type": "string"
+    },
+    "phoneNumber": {
+      "type": "string",
+      "maxLength": 30
+    },
+    "emailAddress": {
+      "type": "string"
+    },
+    "companyName": {
+      "type": "string"
+    },
+    "taxId": {
+      "type": "string"
+    },
+    "customer": {
+      "type": "integer"
+    },
+    "country": {
       "type": "string"
     }
   },
-  "required": ["password"],
+  "required": ["type", "city", "zipCode", "address", "customer", "country"],
   "errorMessage": {
-    "required.password": "Description is required. Please provide a value.",
+    "required.type": "Type is required. Please provide a value.",
+    "required.city": "City is required. Please provide a value.",
+    "required.zipCode": "Zip-Code is required. Please provide a value.",
+    "required.address": "Address is required. Please provide a value.",
+    "required.customer": "Customer is required. Please provide a value.",
+    "required.country": "Country is required. Please provide a value.",
+    "type.type": "Type should be a int, PLease provide valid int.",
+    "type.city": "City should be a string, PLease provide valid string.",
+    "type.zipCode": "Zip-Code should be a string please provide valid string",
+    "maxLength.zipCode": "Zip-Code should be < 30 chars, Please provide valid string",
+    "type.address": "Address should be a string. Please provide a valid string",
+    "type.phoneNumber": "Phone number should be a string. Please provide a valid string",
+    "maxLength.phoneNumber": "Phone number should be < 30 chars, Please provide valid string",
+    "type.emailAddress": "Email Address should be a string please provide a valid value.",
+    "type.companyName": "Company name should be a string please provide a valid value.",
+    "type.taxId": "Tax id should be a string please provide valid value.",
+    "type.customer": "Customer should be a int please provide a valid value.",
+    "type.country": "Country should be a string, please provide a valid value."
   }
 }

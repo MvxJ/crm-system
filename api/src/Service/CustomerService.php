@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\Customer;
+use App\Entity\CustomerSettings;
 use App\Entity\Role;
 use App\Repository\CustomerRepository;
 use App\Repository\RoleRepository;
@@ -71,10 +72,12 @@ class CustomerService
         $roleCustomer = $this->roleRepository->findOneBy(['role' => Role::ROLE_CUSTOMER]);
         $content = json_decode($request->getContent(), true);
         $customer = new Customer();
+        $settings = new CustomerSettings();
 
         $customer->setPassword($this->userPasswordHasher->hashPassword($customer, $content['password']));
         $customer->setEmail($content['email']);
         $customer->addRole($roleCustomer);
+        $customer->setSettings($settings);
 
         $this->entityManager->persist($customer);
         $this->entityManager->flush();
@@ -97,5 +100,28 @@ class CustomerService
 
         $this->entityManager->persist($customer);
         $this->entityManager->flush();
+    }
+
+    private function createCustomerArray(Customer $customer, ?bool $details = false): array
+    {
+        $customerArray = [
+            'id' => $customer->getId(),
+            'firstName' => $customer->getFirstName(),
+            'secondName' => $customer->getSecondName(),
+            'lastName' => $customer->getLastName(),
+            'email' => $customer->getEmail(),
+            'phoneNumber' => $customer->getPhoneNumber()
+        ];
+
+        if ($details) {
+            $customerArray['numberOfContracts'] = count($customer->getContracts());
+        }
+
+        return  $customerArray;
+    }
+
+    private function objectCreator(Customer $customer): ?Customer
+    {
+        return $customer;
     }
 }

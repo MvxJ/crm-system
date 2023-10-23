@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Customer;
 use App\Entity\CustomerAddress;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -39,28 +40,26 @@ class CustomerAddressRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return CustomerAddress[] Returns an array of CustomerAddress objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function findAddressesByCustomerId(string $customerId): array
+    {
+        $queryBuilder = $this->createQueryBuilder('a')
+            ->innerJoin(Customer::class, 'c');
 
-//    public function findOneBySomeField($value): ?CustomerAddress
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        if ($customerId != 'all' && !is_nan((int)$customerId)) {
+            $queryBuilder->where('c.id = :id')
+                ->setParameter('id', (int)$customerId);
+        }
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function findCustomerAddresses(string $userEmail): array
+    {
+        $queryBuilder = $this->createQueryBuilder('a')
+            ->innerJoin(Customer::class, 'c')
+            ->where('c.email = :email')
+            ->setParameter('email', $userEmail);
+
+        return $queryBuilder->getQuery()->getResult();
+    }
 }
