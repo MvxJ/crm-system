@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "contactAddress": {
+      "type": "integer"
+    },
+    "billingAddress": {
+      "type": "integer"
+    },
+    "smsNotifications": {
+      "type": "boolean"
+    },
+    "emailNotifications": {
+      "type": "boolean"
+    },
+    "2fa": {
+      "type": "boolean"
+    }
+  },
+  "errorMessage": {
+    "type.contactAddress": "Contact address be a int, PLease provide valid int.",
+    "type.billingAddress": "Billing address should be a int, PLease provide valid string.",
+    "type.smsNotifications": "Sms notifications should be bool, please provide valid string",
+    "type.emailNotifications": "Email notifications should be bool, Please provide valid string",
+    "type.2fa": "2FA should be bool. Please provide a valid string"
+  }
+}

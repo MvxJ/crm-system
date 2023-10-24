@@ -26,6 +26,19 @@ class CustomerAddressController extends AbstractController
     public function addAddress(Request $request): JsonResponse
     {
         try {
+            $errors = $this->validator->validateRequest('customer-address-schema.json');
+
+            if (count($errors) > 0) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Bad request.',
+                        'errors' => $errors
+                    ],
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
+
             $address = $this->customerAddressService->addAddress($request);
 
             if (!$address) {
