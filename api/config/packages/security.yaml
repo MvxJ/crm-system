@@ -68,31 +68,31 @@ security:
         - { path: ^/api/login/2fa, roles: IS_AUTHENTICATED_2FA_IN_PROGRESS  }
         - { path: ^/api/login/2fa_check, roles: IS_AUTHENTICATED_2FA_IN_PROGRESS }
         - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
-        - { path: ^/api/settings, roles: ROLE_ADMIN }
-        - { path: ^/api/users, roles: ROLE_ADMIN }
-        - { path: ^/api/comment, roles: ROLE_ADMIN }
+        - { path: ^/api/settings, roles: ROLE_ACCESS_ADMIN_PANEL }
+        - { path: ^/api/users, roles: ROLE_ACCESS_ADMIN_PANEL }
+        - { path: ^/api/comment, roles: ROLE_ACCESS_ADMIN_PANEL }
         - { path: ^/api/model, roles: ROLE_ACCESS_ADMIN_PANEL }
         - { path: ^/api/public/model, roles: PUBLIC_ACCESS }
         - { path: ^/api/device, roles: ROLE_ACCESS_ADMIN_PANEL }
         - { path: ^/api/document, roles: ROLE_ACCESS_ADMIN_PANEL }
         - { path: ^/api/public/document, roles: [IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER] }
-        - { path: ^/api/contract, roles: ROLE_ADMIN }
+        - { path: ^/api/contract, roles: ROLE_ACCESS_ADMIN_PANEL }
         - { path: ^/api/public/contract, roles: [IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER] }
-        - { path: ^/api/bill, roles: ROLE_ADMIN }
+        - { path: ^/api/bill, roles: ROLE_ACCESS_ADMIN_PANEL }
         - { path: ^/api/public/bill, roles: [ IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER ] }
-        - { path: ^/api/message, roles: ROLE_ADMIN }
+        - { path: ^/api/message, roles: ROLE_ACCESS_ADMIN_PANEL }
         - { path: ^/api/public/message, roles: [ IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER ] }
-        - { path: ^/api/payment, roles: ROLE_ADMIN }
+        - { path: ^/api/payment, roles: ROLE_ACCESS_ADMIN_PANEL }
         - { path: ^/api/public/payment, roles: [ IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER ] }
-        - { path: ^/api/service/request, roles: ROLE_ADMIN }
+        - { path: ^/api/service/request, roles: ROLE_ACCESS_ADMIN_PANEL }
         - { path: ^/api/public/service/request, roles: [IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER] }
-        - { path: ^/api/service/visit, roles: ROLE_ADMIN }
+        - { path: ^/api/service/visit, roles: ROLE_ACCESS_ADMIN_PANEL }
         - { path: ^/api/public/service/visit, roles: [ IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER ] }
-        - { path: ^/api/customers/address, roles: [ ROLE_ADMIN ] }
+        - { path: ^/api/customers/address, roles: [ ROLE_ACCESS_ADMIN_PANEL ] }
         - { path: ^/api/public/customers/address, roles: [ IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER ] }
-        - { path: ^/api/customers/settings, roles: [ ROLE_ADMIN ] }
+        - { path: ^/api/customers/settings, roles: [ ROLE_ACCESS_ADMIN_PANEL ] }
         - { path: ^/api/public/customers/settings, roles: [ IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER ] }
-        - { path: ^/api/customers, roles: [ ROLE_ADMIN ] }
+        - { path: ^/api/customers, roles: [ ROLE_ACCESS_ADMIN_PANEL ] }
         - { path: ^/api/public/profile, roles: [ IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER ] }
         - { path: ^/api/offer, roles: ROLE_ACCESS_ADMIN_PANEL }
         - { path: ^/api/public/offer, roles: PUBLIC_ACCESS }

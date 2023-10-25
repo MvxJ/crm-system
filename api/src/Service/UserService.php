@@ -41,7 +41,7 @@ class UserService
 
         /** @var User $user */
         foreach ($results as $user) {
-            $users[] = $this->createUserArray($user);
+            $users[] = $this->createUserArray($user, false);
         }
 
         return [
@@ -58,7 +58,7 @@ class UserService
             return null;
         }
 
-        return $this->createUserArray($user);
+        return $this->createUserArray($user, true);
     }
 
     public function deleteUser(int $userId): bool
@@ -87,7 +87,7 @@ class UserService
             return null;
         }
 
-        $roleAdmin = $this->roleRepository->findOneBy(['role' => Role::ROLE_ADMIN]);
+        $roleAdmin = $this->roleRepository->findOneBy(['role' => Role::ROLE_ACCESS_ADMIN_PANEL]);
         $user->addRole($roleAdmin);
         $user->setEmailAuth(true);
         $user->setIsDeleted(false);
@@ -99,7 +99,7 @@ class UserService
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
-        return $this->createUserArray($user);
+        return $this->createUserArray($user, true);
     }
 
     public function editUser(int $userId, Request $request): ?array
@@ -120,7 +120,7 @@ class UserService
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
-        return $this->createUserArray($user);
+        return $this->createUserArray($user, true);
     }
 
     public function changePassword(int $userId, Request $request): bool
@@ -205,9 +205,9 @@ class UserService
         return $user;
     }
 
-    private function createUserArray(User $user): array
+    private function createUserArray(User $user, bool $details = false): array
     {
-        return [
+        $userArray = [
             'username' => $user->getUsername(),
             'id' => $user->getId(),
             'email' => $user->getEmail(),
@@ -215,5 +215,23 @@ class UserService
             'surname' => $user->getSurname(),
             'phoneNumber' => $user->getPhoneNumber()
         ];
+
+        if ($details) {
+            $roles = $user->getObjRoles();
+            $rolesArray  = [];
+
+            /** @var Role $role */
+            foreach ($roles as $role) {
+                $rolesArray[] = [
+                    'name' => $role->getName(),
+                    'role' => $role->getRole(),
+                    'id' => $role->getId()
+                ];
+            }
+
+            $userArray['roles'] = $rolesArray;
+        }
+
+        return $userArray;
     }
 }
