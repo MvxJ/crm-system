@@ -4,6 +4,7 @@ namespace App\Controller\Administration;
 
 use App\Entity\Customer;
 use App\Service\CustomerService;
+use App\Service\Validator\JsonValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,10 +14,12 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route("/api/customers", name: "api_customers_")]
 class CustomerController extends AbstractController
 {
+    private JsonValidator $validator;
     private CustomerService $customerService;
 
-    public function __construct(CustomerService $customerService)
+    public function __construct(JsonValidator $validator, CustomerService $customerService)
     {
+        $this->validator = $validator;
         $this->customerService = $customerService;
     }
 
@@ -24,78 +27,105 @@ class CustomerController extends AbstractController
     public function addCustomer(Request $request): JsonResponse
     {
         try {
-            return new JsonResponse(
-                [
-                    'status' => 'success',
-                    'customerId' => $this->customerService->addCustomer($request)
-                ],
-                Response::HTTP_OK
-            );
-        } catch (\Exception $exception) {
-            return new JsonResponse(
-                [
-                    'status' => 'error',
-                    'message' => $exception->getMessage()
-                ],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
-        }
-    }
+            $errors = $this->validator->validateRequest('customer-schema.json');
 
-    #[Route("/edit/{customer}", name: "edit", methods: ["POST", "PUT", "PATCH"])]
-    public function editCustomer(Customer $customer, Request $request): JsonResponse
-    {
-        if (!$customer) {
-            return new JsonResponse(
-                [
-                    'status' => 'success',
-                    'message' => 'Customer not found'
-                ],
-                Response::HTTP_NOT_FOUND
-            );
-        }
+            if (count($errors) > 0) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Bad request.',
+                        'errors' => $errors
+                    ],
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
 
-        try {
-            $this->customerService->editCustomer($customer, $request);
+            $customer  = $this->customerService->addCustomer($request);
 
-            return new JsonResponse(
-                [
-                    'status' => 'success'
-                ],
-                Response::HTTP_OK
-            );
-        } catch (\Exception $exception) {
-            return new JsonResponse(
-                [
-                    'status' => 'error',
-                    'message' => $exception->getMessage()
-                ],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
-        }
-    }
-
-    #[Route("/delete/{customer}", name: "delete", methods: ["DELETE"])]
-    public function deleteCustomer(Customer $customer): JsonResponse
-    {
-        try {
             if (!$customer) {
                 return new JsonResponse(
                     [
-                        'status' => 'success',
-                        'message' => 'Customer not found'
+                    'status' => 'error',
+                    'message' => 'Bad request please try again later.'
+                    ],
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
+
+            return new JsonResponse(
+                [
+                    'status' => 'success',
+                    'customer' => $customer
+                ],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $exception) {
+            return new JsonResponse(
+                [
+                    'status' => 'error',
+                    'message' => $exception->getMessage()
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    #[Route("/{customerId}/edit", name: "edit", methods: ["PATCH"])]
+    public function editCustomer(int $customerId, Request $request): JsonResponse
+    {
+        try {
+            $customer  = $this->customerService->editCustomer($customerId, $request);
+
+            if (!$customer) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Bad request please try again later.'
+                    ],
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
+
+            return new JsonResponse(
+              [
+                  'status' => 'success',
+                  'customer' => $customer
+              ],
+              Response::HTTP_OK
+            );
+        } catch (\Exception $exception) {
+            return new JsonResponse(
+                [
+                    'status' => 'error',
+                    'message' => $exception->getMessage()
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    #[Route("/{customerId}/delete", name: "delete", methods: ["DELETE"])]
+    public function deleteCustomer(int $customerId): JsonResponse
+    {
+        try {
+            $status = $this->customerService->deleteCustomer($customerId);
+
+            if (!$status) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Customer not found.'
                     ],
                     Response::HTTP_NOT_FOUND
                 );
             }
 
-            $this->customerService->deleteCustomer($customer);
-
             return new JsonResponse(
                 [
                     'status' => 'success',
                     'message' => 'Customer deleted successfully.'
-                ]
+                ],
+                Response::HTTP_OK
             );
         } catch (\Exception $exception) {
             return new JsonResponse(
@@ -108,52 +138,52 @@ class CustomerController extends AbstractController
         }
     }
 
-    #[Route("/detail/{customer}", name: "detail", methods: ["GET"])]
-    public function getCustomerDetail(Customer $customer): JsonResponse
+    #[Route("/{customerId}/detail", name: "detail", methods: ["GET"])]
+    public function getCustomerDetail(int $customerId): JsonResponse
     {
-        if ($customer) {
+        try {
+            $customer = $this->customerService->getCustomer($customerId);
+
+            if (!$customer) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Customer not found.'
+                    ],
+                    Response::HTTP_NOT_FOUND
+                );
+            }
+
             return new JsonResponse(
                 [
                     'status' => 'success',
-                    'customer' => [
-                        'id' => $customer->getId(),
-                        'email' => $customer->getEmail(),
-                        'firstName' => $customer->getFirstName(),
-                        'secondName' => $customer->getSecondName(),
-                        'surname' => $customer->getLastName(),
-                        'socialSecurityNumber' => $customer->getSocialSecurityNumber(),
-                        'is_verified' => $customer->isVerified(),
-                        'email_auth' => $customer->isEmailAuthEnabled(),
-                        'roles' => $customer->getRoles(),
-                    ]
+                    'customer' => $customer
                 ],
                 Response::HTTP_OK
             );
+        } catch (\Exception $exception) {
+            return new JsonResponse(
+                [
+                    'status' => 'error',
+                    'message' => $exception->getMessage()
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
-
-        return new JsonResponse(
-            [
-                'status' => 'success',
-                'message' => 'Customer not found'
-            ],
-            Response::HTTP_NOT_FOUND
-        );
     }
 
     #[Route("/list", name: "list", methods: ["GET"])]
     public function index(Request $request): JsonResponse
     {
         try {
-            $response = $this->customerService->getCustomers($request);
+            $customers = $this->customerService->getCustomers($request);
 
             return new JsonResponse(
-                [
-                    'status' => 'success',
-                    'items' => $response['customers'],
-                    'page' => $response['page'],
-                    'limit' => $response['limit']
-                ],
-                Response::HTTP_OK
+              [
+                  'status' => 'success',
+                  'results' => $customers
+              ],
+              Response::HTTP_OK
             );
         } catch (\Exception $exception) {
             return new JsonResponse(

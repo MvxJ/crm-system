@@ -45,37 +45,55 @@ class CustomerService
 
         /** @var Customer $customer */
         foreach ($results as $customer) {
-            $customers[] = [
-                'id' => $customer->getId(),
-                'email' => $customer->getEmail(),
-                'name' => $customer->getFirstName(),
-                'surname' => $customer->getSecondName()
-            ];
+            $customers[] = $this->createCustomerArray($customer);
         }
 
         return [
             'customers' => $customers,
-            'totalItems' => $totalItems,
-            'page' => $page,
-            'limit' => $itemsPerPage
+            'maxResults' => $totalItems
         ];
     }
 
-    public function deleteCustomer(Customer $customer): void
+    public function getCustomer(int $customerId): ?array
     {
-        $this->entityManager->remove($customer);
-        $this->entityManager->flush();
+        $customer  = $this->customerRepository->findOneBy(['id' => $customerId]);
+
+        if (!$customer) {
+            return null;
+        }
+
+        return $this->createCustomerArray($customer);
     }
 
-    public function addCustomer(Request $request): int
+    public function deleteCustomer(int $customerId): bool
     {
-        $roleCustomer = $this->roleRepository->findOneBy(['role' => Role::ROLE_CUSTOMER]);
+        $customer = $this->customerRepository->findOneBy(['id' => $customerId]);
+
+        if (!$customer) {
+            return false;
+        }
+
+        $customer->setIsDisabled(true);
+
+        $this->entityManager->persist($customer);
+        $this->entityManager->flush();
+
+        return true;
+    }
+
+    public function addCustomer(Request $request): ?array
+    {
         $content = json_decode($request->getContent(), true);
         $customer = new Customer();
+        $customer = $this->objectCreator($customer, $content);
+
+        if (!$customer) {
+            return null;
+        }
+
+        $roleCustomer = $this->roleRepository->findOneBy(['role' => Role::ROLE_CUSTOMER]);
         $settings = new CustomerSettings();
 
-        $customer->setPassword($this->userPasswordHasher->hashPassword($customer, $content['password']));
-        $customer->setEmail($content['email']);
         $customer->addRole($roleCustomer);
         $customer->setSettings($settings);
 
@@ -87,19 +105,83 @@ class CustomerService
             $customer
         );
 
-        return $customer->getId();
+        return $this->createCustomerArray($customer);
     }
 
-    public function editCustomer(Customer $customer, Request $request): void
+    public function editCustomer(int $customerId, Request $request): ?array
     {
-        $content = json_decode($request->getContent(), true);
+        $customer = $this->customerRepository->findOneBy(['id' => $customerId]);
 
-        if (array_key_exists('email', $content)) {
-            $customer->setEmail($content['email']);
+        if (!$customer) {
+            return null;
+        }
+
+        $content = json_decode($request->getContent(), true);
+        $customer = $this->objectCreator($customer, $content);
+
+        if (!$customer) {
+            return null;
         }
 
         $this->entityManager->persist($customer);
         $this->entityManager->flush();
+
+        return $this->createCustomerArray($customer);
+    }
+
+    public function getCustomerProfile(string $customerEmail): ?array
+    {
+        $customer = $this->customerRepository->findOneBy(['email' => $customerEmail]);
+
+        if (!$customer) {
+            return null;
+        }
+
+        return $this->createCustomerArray($customer);
+    }
+
+    public function editCustomerProfile(string $customerEmail, Request $request): ?array
+    {
+        $customer = $this->customerRepository->findOneBy(['email' => $customerEmail]);
+
+        if (!$customer) {
+            return null;
+        }
+
+        $content = json_decode($request->getContent(), true);
+        $customer = $this->objectCreator($customer, $content);
+
+        if (!$customer) {
+            return null;
+        }
+
+        return $this->createCustomerArray($customer);
+    }
+
+    public function changePassword(string $customerEmail, Request $request): bool
+    {
+        $customer = $this->customerRepository->findOneBy(['email' => $customerEmail]);
+
+        if (!$customer) {
+            return false;
+        }
+
+        $content = json_decode($request->getContent(), true);
+
+        if (!array_key_exists('newPassword', $content) || !array_key_exists('oldPassword', $content)) {
+            return false;
+        }
+
+        if ($customer->getPassword() != $this->userPasswordHasher->hashPassword($customer, $content['oldPassword'])) {
+            return false;
+        }
+
+        $customer->setPassword($this->userPasswordHasher->hashPassword($customer, $content['newPassword']));
+
+        $this->entityManager->persist($customer);
+        $this->entityManager->flush();
+
+        return true;
     }
 
     private function createCustomerArray(Customer $customer, ?bool $details = false): array
@@ -115,13 +197,31 @@ class CustomerService
 
         if ($details) {
             $customerArray['numberOfContracts'] = count($customer->getContracts());
+            $customerArray['numberOfDevices'] = count($customer->getDevices());
+            $customerArray['numberOfServiceRequests'] = count($customer->getServiceRequests());
+            $customerArray['numberOfBills'] = count($customer->getBills());
+            $customerArray['numberOfPayments'] = count($customer->getPayments());
         }
 
         return  $customerArray;
     }
 
-    private function objectCreator(Customer $customer): ?Customer
+    private function objectCreator(Customer $customer, array $content): ?Customer
     {
+        foreach ($content as $fieldName => $fieldValue) {
+            if (property_exists(Customer::class, $fieldName)) {
+                $setterMethod = 'set' . ucfirst($fieldName);
+
+                if ($setterMethod == 'setPassword') {
+                    $customer->setPassword($this->userPasswordHasher->hashPassword($customer, $fieldValue));
+                } elseif ($setterMethod == 'setBirthDate') {
+                    $customer->setBirthDate(new \DateTime($fieldValue));
+                } elseif (method_exists($customer, $setterMethod)) {
+                    $customer->$setterMethod($fieldValue);
+                }
+            }
+        }
+
         return $customer;
     }
 }

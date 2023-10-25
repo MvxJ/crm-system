@@ -83,6 +83,9 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Two
     #[ORM\Column(length: 30, nullable: true)]
     private ?string $phoneNumber = null;
 
+    #[ORM\Column]
+    private ?bool $isDisabled = null;
+
     public function __construct()
     {
         $this->roles = new ArrayCollection();
@@ -285,18 +288,6 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Two
         return $this;
     }
 
-    public function removeMessage(Message $message): self
-    {
-        if ($this->messages->removeElement($message)) {
-            // set the owning side to null (unless already changed)
-            if ($message->getCustomer() === $this) {
-                $message->setCustomer(null);
-            }
-        }
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, Contract>
      */
@@ -310,18 +301,6 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Two
         if (!$this->contracts->contains($contract)) {
             $this->contracts->add($contract);
             $contract->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeContract(Contract $contract): self
-    {
-        if ($this->contracts->removeElement($contract)) {
-            // set the owning side to null (unless already changed)
-            if ($contract->getUser() === $this) {
-                $contract->setUser(null);
-            }
         }
 
         return $this;
@@ -375,18 +354,6 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Two
         return $this;
     }
 
-    public function removeBill(Bill $bill): self
-    {
-        if ($this->bills->removeElement($bill)) {
-            // set the owning side to null (unless already changed)
-            if ($bill->getCustomer() === $this) {
-                $bill->setCustomer(null);
-            }
-        }
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, Payment>
      */
@@ -405,18 +372,6 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Two
         return $this;
     }
 
-    public function removePayment(Payment $payment): self
-    {
-        if ($this->payments->removeElement($payment)) {
-            // set the owning side to null (unless already changed)
-            if ($payment->getCustomer() === $this) {
-                $payment->setCustomer(null);
-            }
-        }
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, CustomerAddress>
      */
@@ -430,18 +385,6 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Two
         if (!$this->customerAddresses->contains($customerAddress)) {
             $this->customerAddresses->add($customerAddress);
             $customerAddress->setCustomer($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCustomerAddress(CustomerAddress $customerAddress): self
-    {
-        if ($this->customerAddresses->removeElement($customerAddress)) {
-            // set the owning side to null (unless already changed)
-            if ($customerAddress->getCustomer() === $this) {
-                $customerAddress->setCustomer(null);
-            }
         }
 
         return $this;
@@ -527,6 +470,18 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Two
     public function setPhoneNumber(?string $phoneNumber): static
     {
         $this->phoneNumber = $phoneNumber;
+
+        return $this;
+    }
+
+    public function isIsDisabled(): ?bool
+    {
+        return $this->isDisabled;
+    }
+
+    public function setIsDisabled(bool $isDisabled): self
+    {
+        $this->isDisabled = $isDisabled;
 
         return $this;
     }

@@ -14,7 +14,7 @@
     "secondName": {
       "type": "string"
     },
-    "surname": {
+    "lastName": {
       "type": "string"
     },
     "socialSecurityNumber": {
@@ -27,12 +27,12 @@
       "type": "string"
     }
   },
-  "required": ["password", "email", "firstName", "surname", "socialSecurityNumber", "phoneNumber"],
+  "required": ["password", "email", "firstName", "lastName", "socialSecurityNumber", "phoneNumber"],
   "errorMessage": {
     "required.password": "Description is required. Please provide a value.",
     "required.email": "Email is required. Please provide a value.",
     "required.firstName": "First name is required. Please provide a value.",
-    "required.surname": "Surname is required. Please provide a value.",
+    "required.lastName": "Surname is required. Please provide a value.",
     "required.socialSecurityNumber": "Social security number is required. Please provide a value.",
     "required.phoneNumber": "Phone number is required. Please provide a value."
   }
