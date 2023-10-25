@@ -18,16 +18,13 @@ class UserController extends AbstractController
 {
     private UserService $userService;
     private JsonValidator $validator;
-    private SerializerInterface $serializer;
 
     public function __construct(
         UserService $userService,
         JsonValidator $validator,
-        SerializerInterface $serializer
     ) {
         $this->userService = $userService;
         $this->validator = $validator;
-        $this->serializer = $serializer;
     }
 
     #[Route("/list", name: "list", methods: ["GET"])]
@@ -39,9 +36,75 @@ class UserController extends AbstractController
             return new JsonResponse(
                 [
                     'status' => 'success',
-                    'items' => $usersArray['users'],
-                    'page' => $usersArray['page'],
-                    'limit' => $usersArray['limit']
+                    'results' => $usersArray
+                ],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $exception) {
+            return new JsonResponse(
+                [
+                    'status' => 'error',
+                    'message' => $exception->getMessage()
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    #[Route("/{userId}/password/change", name: "password_change", methods: ["POST"])]
+    public function changePassword(int $userId, Request $request): JsonResponse
+    {
+        try {
+            $status = $this->userService->changePassword($userId, $request);
+
+            if (!$status) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Bad request please try again later.'
+                    ],
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
+
+            return new JsonResponse(
+                [
+                    'status' => 'success',
+                    'message' => 'Successfully changed password.'
+                ],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $exception) {
+            return new JsonResponse(
+                [
+                    'status' => 'error',
+                    'message' => $exception->getMessage()
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    #[Route("/{userId}/roles/edit", name: "roles_edit", methods: ["POST"])]
+    public function editRoles(int $userId, Request $request): JsonResponse
+    {
+        try {
+            $status = $this->userService->editRoles($userId, $request);
+
+            if (!$status) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Bad request please try again later.'
+                    ],
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
+
+            return new JsonResponse(
+                [
+                    'status' => 'success',
+                    'message' => 'Successfully edited user roles.'
                 ],
                 Response::HTTP_OK
             );
@@ -59,25 +122,35 @@ class UserController extends AbstractController
     #[Route("/add", name: "add", methods: ["POST"])]
     public function addUser(Request $request): JsonResponse
     {
-        $errors = $this->validator->validateRequest('user-schema.json');
-
-        if (count($errors) > 0) {
-            return new JsonResponse(
-                [
-                    'status' => 'error',
-                    'errors' => $errors
-                ],
-                Response::HTTP_BAD_REQUEST
-            );
-        }
-
         try {
-            $userId = $this->userService->addUser($request);
+            $errors = $this->validator->validateRequest('user-schema.json');
+
+            if (count($errors) > 0) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'errors' => $errors
+                    ],
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
+
+            $user = $this->userService->addUser($request);
+
+            if (!$user) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Bad request please try again later.'
+                    ],
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
 
             return new JsonResponse(
                 [
                     'status' => 'success',
-                    'userId' => $userId
+                    'user' => $user
                 ],
                 Response::HTTP_OK
             );
@@ -92,11 +165,21 @@ class UserController extends AbstractController
         }
     }
 
-    #[Route("/delete/{user}", name: "delete", methods: ["DELETE"])]
-    public function deleteUser(User $user): JsonResponse
+    #[Route("/{userId}/delete/", name: "delete", methods: ["DELETE"])]
+    public function deleteUser(int $userId): JsonResponse
     {
         try {
-            $this->userService->deleteUser($user);
+            $status = $this->userService->deleteUser($userId);
+
+            if (!$status) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Bad request, please try again later.'
+                    ],
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
 
             return new JsonResponse(
                 [
@@ -116,25 +199,26 @@ class UserController extends AbstractController
         }
     }
 
-    #[Route("/edit/{user}", name: "edit", methods: ["POST", "PUT", "PATCH"])]
-    public function editUser(User $user, Request $request): JsonResponse
+    #[Route("/{userId}/edit/", name: "edit", methods: ["PATCH"])]
+    public function editUser(int $userId, Request $request): JsonResponse
     {
-        if (!$user) {
-            return new JsonResponse(
-                [
-                    'status' => 'error',
-                    'message' => 'User not found.'
-                ],
-                Response::HTTP_NOT_FOUND
-            );
-        }
-
         try {
-            $this->userService->editUser($user, $request);
+            $user  = $this->userService->editUser($userId, $request);
+
+            if (!$user) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'User not found.'
+                    ],
+                    Response::HTTP_NOT_FOUND
+                );
+            }
 
             return new JsonResponse(
                 [
                     'status' => 'success',
+                    'user' => $user
                 ],
                 Response::HTTP_OK
             );
@@ -149,35 +233,37 @@ class UserController extends AbstractController
         }
     }
 
-    #[Route("/{user}", name: "detail", methods: ["GET"])]
-    public function getUserDetail(User $user): JsonResponse
+    #[Route("/{userId}/detail", name: "detail", methods: ["GET"])]
+    public function getUserDetail(int $userId): JsonResponse
     {
-        if ($user) {
+        try {
+            $user = $this->userService->getUser($userId);
+
+            if (!$user) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'User not found'
+                    ],
+                    Response::HTTP_NOT_FOUND
+                );
+            }
+
             return new JsonResponse(
                 [
                     'status' => 'success',
-                    'user' => [
-                        'id' => $user->getId(),
-                        'email' => $user->getEmail(),
-                        'username' => $user->getUsername(),
-                        'surname' => $user->getSurname(),
-                        'name' => $user->getName(),
-                        'phoneNumber' => $user->getPhoneNumber(),
-                        'is_verified' => $user->isVerified(),
-                        'email_auth' => $user->isEmailAuthEnabled(),
-                        'roles' => $user->getRoles(),
-                    ]
+                    'user' => $user
                 ],
                 Response::HTTP_OK
             );
+        } catch (\Exception $exception) {
+            return new JsonResponse(
+                [
+                    'status' => 'error',
+                    'message' => $exception->getMessage()
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
-
-        return new JsonResponse(
-            [
-                'status' => 'error',
-                'message' => 'User not found'
-            ],
-            Response::HTTP_NOT_FOUND
-        );
     }
 }

@@ -41,42 +41,56 @@ class UserService
 
         /** @var User $user */
         foreach ($results as $user) {
-            $users[] = [
-                'username' => $user->getUsername(),
-                'id' => $user->getId(),
-                'email' => $user->getEmail(),
-                'name' => $user->getName(),
-                'surname' => $user->getSurname(),
-                'phoneNumber' => $user->getPhoneNumber()
-            ];
+            $users[] = $this->createUserArray($user);
         }
 
         return [
             'users' => $users,
-            'totalItems' => $totalItems,
-            'page' => $page,
-            'limit' => $itemsPerPage
+            'maxResults' => $totalItems
         ];
     }
 
-    public function deleteUser(User $user): void
+    public function getUser(int $userId): ?array
     {
-        $this->entityManager->remove($user);
-        $this->entityManager->flush();
+        $user  = $this->userRepository->findOneBy(['id' => $userId]);
+
+        if (!$user) {
+            return null;
+        }
+
+        return $this->createUserArray($user);
     }
 
-    public function addUser(Request $request): int
+    public function deleteUser(int $userId): bool
     {
-        $roleAdmin = $this->roleRepository->findOneBy(['role' => Role::ROLE_ADMIN]);
+        $user = $this->userRepository->findOneBy(['id' => $userId]);
+
+        if (!$user) {
+            return false;
+        }
+
+        $user->setIsDeleted(true);
+
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        return true;
+    }
+
+    public function addUser(Request $request): ?array
+    {
         $content = json_decode($request->getContent(), true);
         $user = new User();
+        $user  = $this->objectCreator($user, $content);
 
-        $user->setUsername($content['username']);
-        $user->setName($content['name']);
-        $user->setSurname($content['surname']);
-        $user->setPassword($this->userPasswordHasher->hashPassword($user, $content['password']));
-        $user->setEmail($content['email']);
+        if (!$user) {
+            return null;
+        }
+
+        $roleAdmin = $this->roleRepository->findOneBy(['role' => Role::ROLE_ADMIN]);
         $user->addRole($roleAdmin);
+        $user->setEmailAuth(true);
+        $user->setIsDeleted(false);
 
         if (array_key_exists('phoneNumber', $content)) {
             $user->setPhoneNumber($content['phoneNumber']);
@@ -85,38 +99,121 @@ class UserService
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
-        return $user->getId();
+        return $this->createUserArray($user);
     }
 
-    public function editUser(User $user, Request $request): void
+    public function editUser(int $userId, Request $request): ?array
     {
+        $user = $this->userRepository->findOneBy(['id' => $userId]);
+
+        if (!$user) {
+            return null;
+        }
+
         $content = json_decode($request->getContent(), true);
+        $user = $this->objectCreator($user, $content);
 
-        if (array_key_exists('email', $content)) {
-            $user->setEmail($content['email']);
-        }
-
-        if (array_key_exists('username', $content)) {
-            $user->setUsername($content['username']);
-        }
-
-        if (array_key_exists('password', $content)) {
-            $user->setPassword($this->userPasswordHasher->hashPassword($user, $content['password']));
-        }
-
-        if (array_key_exists('name', $content)) {
-            $user->setName($content['name']);
-        }
-
-        if (array_key_exists('surname', $content)) {
-            $user->setSurname($content['surname']);
-        }
-
-        if (array_key_exists('phoneNumber', $content)) {
-            $user->setPhoneNumber($content['phoneNumber']);
+        if (!$user) {
+            return null;
         }
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
+
+        return $this->createUserArray($user);
+    }
+
+    public function changePassword(int $userId, Request $request): bool
+    {
+        $user = $this->userRepository->findOneBy(['id' => $userId]);
+
+        if (!$user) {
+            return false;
+        }
+
+        $content = json_decode($request->getContent(), true);
+
+        if (!array_key_exists('newPassword', $content) || !array_key_exists('oldPassword', $content)) {
+            return false;
+        }
+
+        if ($user->getPassword() != $this->userPasswordHasher->hashPassword($user, $content['oldPassword'])) {
+            return false;
+        }
+
+        $user->setPassword($this->userPasswordHasher->hashPassword($user, $content['newPassword']));
+
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        return true;
+    }
+
+    public function editRoles(int $userId, Request $request): bool
+    {
+        $user = $this->userRepository->findOneBy(['id' => $userId]);
+        $content= json_decode($request->getContent(), true);
+
+        if (!array_key_exists('rolesIds', $content)) {
+            return false;
+        }
+
+        $rolesIds  = $content['rolesIds'];
+        $roles = $this->roleRepository->findAll();
+        $roleIdsArray = array_map(function ($role) {
+            return $role->getId();
+        }, $roles);
+
+        $userRoles = $user->getObjRoles();
+
+        /** @var Role $userRole */
+        foreach ($userRoles as $userRole) {
+            if (!in_array($userRole->getId(), $rolesIds, true)) {
+                $user->removeRole($userRole);
+            }
+        }
+
+        foreach ($rolesIds as $roleId) {
+            if (in_array($roleId, $roleIdsArray, true)) {
+                $role = $roles[array_search($roleId, $roleIdsArray, true)];
+                if ($role && !$user->hasObjRole($role)) {
+                    $user->addRole($role);
+                }
+            }
+        }
+
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        return true;
+    }
+
+    private function objectCreator(User $user, array $content): ?User
+    {
+        foreach ($content as $fieldName => $fieldValue) {
+            if (property_exists(User::class, $fieldName)) {
+                $setterMethod = 'set' . ucfirst($fieldName);
+
+                if ($setterMethod == 'setPassword') {
+                    $user->setPassword($this->userPasswordHasher->hashPassword($user, $fieldValue));
+                } elseif (method_exists($user, $setterMethod)) {
+                    $user->$setterMethod($fieldValue);
+                }
+            }
+        }
+
+        return $user;
+    }
+
+    private function createUserArray(User $user): array
+    {
+        return [
+            'username' => $user->getUsername(),
+            'id' => $user->getId(),
+            'email' => $user->getEmail(),
+            'name' => $user->getName(),
+            'surname' => $user->getSurname(),
+            'phoneNumber' => $user->getPhoneNumber()
+        ];
     }
 }

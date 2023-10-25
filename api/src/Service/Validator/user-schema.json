@@ -19,6 +19,9 @@
     },
     "phoneNumber": {
       "type": "string"
+    },
+    "emailAuth": {
+      "type": "boolean"
     }
   },
   "required": ["username", "password", "email", "name", "surname"],

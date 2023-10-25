@@ -7,6 +7,7 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Scheb\TwoFactorBundle\Model\Email\TwoFactorInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -39,7 +40,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     private ?string $authCode;
 
     #[ORM\Column]
-    private bool $emailAuth = false;
+            private bool $emailAuth = false;
 
     #[ORM\Column(nullable: true)]
     private ?string $name = null;
@@ -64,6 +65,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Notification::class, orphanRemoval: true)]
     private Collection $notifications;
+
+    #[ORM\Column(type: Types::BOOLEAN)]
+    private bool $isDeleted = false;
 
     public function __construct()
     {
@@ -432,6 +436,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
                 $notification->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isIsDeleted(): ?bool
+    {
+        return $this->isDeleted;
+    }
+
+    public function setIsDeleted(bool $isDeleted): self
+    {
+        $this->isDeleted = $isDeleted;
 
         return $this;
     }
