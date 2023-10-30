@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Message;
-use App\Repository\CustomerAddressRepository;
+use App\Helper\MessageHelper;
 use App\Repository\CustomerRepository;
 use App\Repository\MessageRepository;
 use App\Repository\ServiceRequestRepository;
@@ -16,20 +16,20 @@ class MessageService
     private EntityManagerInterface $entityManager;
     private CustomerRepository $customerRepository;
     private ServiceRequestRepository $serviceRequestRepository;
-    private CustomerAddressRepository $customerAddressRepository;
+    private MessageHelper $messageHelper;
 
     public function __construct(
         MessageRepository $messageRepository,
         EntityManagerInterface $entityManager,
         CustomerRepository $customerRepository,
-        CustomerAddressRepository $customerAddressRepository,
-        ServiceRequestRepository $serviceRequestRepository
+        ServiceRequestRepository $serviceRequestRepository,
+        MessageHelper $messageHelper
     ) {
         $this->messageRepository = $messageRepository;
         $this->entityManager = $entityManager;
         $this->customerRepository = $customerRepository;
-        $this->customerAddressRepository = $customerAddressRepository;
         $this->serviceRequestRepository = $serviceRequestRepository;
+        $this->messageHelper = $messageHelper;
     }
 
     public function createMessage(Request $request): ?array
@@ -105,7 +105,7 @@ class MessageService
 
     private function sendMessage(Message $message): void
     {
-
+        $this->messageHelper->sendMessageToCustomer($message);
     }
 
     private function objectCreator(Message $message, array $content): ?Message

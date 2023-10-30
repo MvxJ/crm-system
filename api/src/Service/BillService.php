@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Bill;
 use App\Entity\BillPosition;
+use App\Helper\BillHelper;
 use App\Repository\BillRepository;
 use App\Repository\ContractRepository;
 use App\Repository\CustomerRepository;
@@ -16,17 +17,20 @@ class BillService
     private EntityManagerInterface $entityManager;
     private CustomerRepository $customerRepository;
     private ContractRepository $contractRepository;
+    private BillHelper $billHelper;
 
     public function __construct(
         BillRepository $billRepository,
         EntityManagerInterface $entityManager,
         CustomerRepository $customerRepository,
-        ContractRepository $contractRepository
+        ContractRepository $contractRepository,
+        BillHelper $billHelper
     ) {
         $this->billRepository = $billRepository;
         $this->entityManager = $entityManager;
         $this->customerRepository = $customerRepository;
         $this->contractRepository = $contractRepository;
+        $this->billHelper = $billHelper;
     }
 
     public function getBills(Request $request): ?array
@@ -210,6 +214,19 @@ class BillService
         }
 
         return $bill;
+    }
+
+    public function generateBill(int $billId): bool
+    {
+        $bill = $this->billRepository->findOneBy(['id' => $billId]);
+
+        if (!$bill) {
+            return false;
+        }
+
+        $this->billHelper->generateBillPdf($bill);
+
+        return true;
     }
 
     private function createBillArray(Bill $bill, bool $details = false): array

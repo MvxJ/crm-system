@@ -1,0 +1,50 @@
+{% block pdf_bill %}
+    <div>
+        <h4>Invoice NO: {{ bill.number }}</h4>
+        <div>
+            <h5>Customer: </h5>
+            {% if billingAddress.type == 0 %}
+                <p>Company: {{ billingAddress.companyName }}</p>
+                <p>City: {{ billingAddress.city }}</p>
+                <p>Address: {{ billingAddress.address }}</p>
+                <p>Zip-Code: {{ billingAddress.zipCode }}</p>
+                <p>TaxId: {{ billingAddress.taxId }}</p>
+            {% else %}
+                <p>Name: {{ customer.firstName }}</p>
+                <p>Surname: {{ customer.lastName }}</p>
+                <p>City: {{ billingAddress.city }}</p>
+                <p>Address: {{ billingAddress.address }}</p>
+                <p>Zip-Code: {{ billingAddress.zipCode }}</p>
+            {% endif %}
+        </div>
+        <div>
+            <h5>Seller: </h5>
+            <p>Company name</p>
+            <p>Company city</p>
+            <p>Company address</p>
+            <p>Company taxId</p>
+        </div>
+        <H4>Invoice details:</H4>
+        <div>
+            <table style="border: 1px solid black;">
+                {% for position in positions %}
+                    <tr>
+                        <td>
+                            Name: {{ position.name }}
+                        </td>
+                        <td>
+                            Amount: {{ position.amount }}
+                        </td>
+                        <td>
+                            Price: {{ position.price }}
+                        </td>
+                        <td>
+                            Total price: {{ (position.price * position.amount) }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <h5>Total amount: {{ bill.totalAmount }}</h5>
+        </div>
+    </div>
+{% endblock %}

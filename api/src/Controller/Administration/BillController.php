@@ -194,4 +194,38 @@ class BillController extends AbstractController
             );
         }
     }
+
+    #[Route('/{id}/generatePdfFile', name: 'generate_pdf_file', methods: ['POST'])]
+    public function generatePdfFile(int $id): JsonResponse
+    {
+        try {
+            $status = $this->billService->generateBill($id);
+
+            if (!$status) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Bad request please try again later.'
+                    ],
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
+
+            return new JsonResponse(
+                [
+                    'status' => 'success',
+                    'message' => 'Successfully generated bill file and notified customer.'
+                ],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $exception) {
+            return new JsonResponse(
+                [
+                    'status' => 'error',
+                    'message' => $exception->getMessage()
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 }
