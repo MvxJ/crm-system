@@ -43,7 +43,7 @@ class CustomerRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('c')
             ->setMaxResults($limit)
-            ->setFirstResult(($page) * $limit)
+            ->setFirstResult(($page - 1) * $limit)
             ->orderBy('c.id', 'ASC')
             ->getQuery()
             ->getResult();

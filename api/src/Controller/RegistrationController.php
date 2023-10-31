@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Customer;
+use App\Entity\CustomerSettings;
 use App\Entity\Role;
 use App\Entity\User;
 use App\Repository\CustomerRepository;
@@ -76,6 +77,7 @@ class RegistrationController extends AbstractController
         try {
             $roleClient = $this->roleRepository->findOneBy(['role' => Role::ROLE_CUSTOMER]);
             $customer = new Customer();
+            $settings = new CustomerSettings();
             $requestContent = json_decode($request->getContent(), true);
 
             $customer->setEmail($requestContent['email']);
@@ -85,6 +87,7 @@ class RegistrationController extends AbstractController
             ));
             $customer->addRole($roleClient);
             $customer->setEmailAuthEnabled(true);
+            $customer->setSettings($settings);
 
             $this->entityManager->persist($customer);
             $this->entityManager->flush();

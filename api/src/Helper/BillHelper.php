@@ -79,6 +79,9 @@ class BillHelper
             'We have issued a new invoice to your account for the amount - ' . $bill->getTotalAmount()
         );
 
+        $bill->setFileName($pdfPath);
+
+        $this->entityManager->persist($bill);
         $this->entityManager->persist($message);
         $this->entityManager->flush();
 

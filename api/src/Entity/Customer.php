@@ -84,7 +84,7 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Two
     private ?string $phoneNumber = null;
 
     #[ORM\Column]
-    private ?bool $isDisabled = null;
+    private bool $isDisabled = false;
 
     public function __construct()
     {

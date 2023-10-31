@@ -62,7 +62,7 @@ class CustomerService
             return null;
         }
 
-        return $this->createCustomerArray($customer);
+        return $this->createCustomerArray($customer, true);
     }
 
     public function deleteCustomer(int $customerId): bool
@@ -105,7 +105,7 @@ class CustomerService
             $customer
         );
 
-        return $this->createCustomerArray($customer);
+        return $this->createCustomerArray($customer, true);
     }
 
     public function editCustomer(int $customerId, Request $request): ?array
@@ -126,7 +126,7 @@ class CustomerService
         $this->entityManager->persist($customer);
         $this->entityManager->flush();
 
-        return $this->createCustomerArray($customer);
+        return $this->createCustomerArray($customer, true);
     }
 
     public function getCustomerProfile(string $customerEmail): ?array
@@ -137,7 +137,7 @@ class CustomerService
             return null;
         }
 
-        return $this->createCustomerArray($customer);
+        return $this->createCustomerArray($customer, true);
     }
 
     public function editCustomerProfile(string $customerEmail, Request $request): ?array
@@ -155,7 +155,10 @@ class CustomerService
             return null;
         }
 
-        return $this->createCustomerArray($customer);
+        $this->entityManager->persist($customer);
+        $this->entityManager->flush();
+
+        return $this->createCustomerArray($customer, true);
     }
 
     public function changePassword(string $customerEmail, Request $request): bool
@@ -172,7 +175,7 @@ class CustomerService
             return false;
         }
 
-        if ($customer->getPassword() != $this->userPasswordHasher->hashPassword($customer, $content['oldPassword'])) {
+        if (!$this->userPasswordHasher->isPasswordValid($customer, $content['oldPassword'])) {
             return false;
         }
 

@@ -137,7 +137,7 @@ class UserService
             return false;
         }
 
-        if ($user->getPassword() != $this->userPasswordHasher->hashPassword($user, $content['oldPassword'])) {
+        if (!$this->userPasswordHasher->isPasswordValid($user, $content['oldPassword'])) {
             return false;
         }
 

@@ -21,10 +21,11 @@ class CustomerSettings
     private bool $smsNotifications = true;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true)]
     private ?CustomerAddress $billingAddress = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?CustomerAddress $contactAddress = null;
 
     #[ORM\OneToOne(mappedBy: 'settings', cascade: ['persist', 'remove'])]
