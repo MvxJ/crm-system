@@ -6,9 +6,7 @@ import { ButtonBase } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 
 // project import
-import Logo from './Logo';
-import config from 'config';
-import { activeItem } from 'store/reducers/menu';
+import customerCareLogo from 'assets/images/customer-retention_logo.png'
 
 // ==============================|| MAIN LOGO ||============================== //
 
@@ -16,7 +14,10 @@ const LogoSection = ({ sx, to }) => {
   const { defaultId } = useSelector((state) => state.menu);
   const dispatch = useDispatch();
   return (
+    <>
+      {/* <img src={customerCareLogo} alt="customer_care" /> */}
       <h4>CRM System</h4>
+    </>
   );
 };
 
