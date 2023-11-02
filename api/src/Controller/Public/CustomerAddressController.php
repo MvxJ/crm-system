@@ -2,6 +2,7 @@
 
 namespace App\Controller\Public;
 
+use App\Entity\CustomerAddress;
 use App\Service\CustomerAddressService;
 use App\Service\Validator\JsonValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -66,7 +67,7 @@ class CustomerAddressController extends AbstractController
 
             $address = $this->customerAddressService->addAddress($request);
 
-            if ($address) {
+            if (!$address) {
                 return new JsonResponse(
                     [
                         'status' => 'error',
@@ -100,6 +101,41 @@ class CustomerAddressController extends AbstractController
         try {
             $customer  = $this->getUser();
             $address = $this->customerAddressService->editAddress($id, $request, $customer->getUserIdentifier());
+
+            if (!$address) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Bad request please try again later.'
+                    ],
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
+
+            return new JsonResponse(
+                [
+                    'status' => 'success',
+                    'address' => $address
+                ],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $exception) {
+            return new JsonResponse(
+                [
+                    'status' => 'error',
+                    'message' => $exception->getMessage()
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    #[Route("/{id}/details", name: "details", methods: ['GET'])]
+    public function addressDetail(int $id): JsonResponse
+    {
+        try {
+            $customer = $this->getUser();
+            $address = $this->customerAddressService->getAddress($id, $customer->getUserIdentifier());
 
             if (!$address) {
                 return new JsonResponse(

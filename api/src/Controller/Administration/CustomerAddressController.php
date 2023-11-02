@@ -141,7 +141,7 @@ class CustomerAddressController extends AbstractController
     public function getCustomerAddresses(Request $request): JsonResponse
     {
         try {
-            $addresses = $this->getCustomerAddresses($request);
+            $addresses = $this->customerAddressService->getCustomerAddresses($request);
 
             return new JsonResponse(
                 [

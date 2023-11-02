@@ -35,7 +35,7 @@ class CustomerSettingsService
         /** @var Customer $customer */
         $customer = $this->customerRepository->findOneBy(['id' => $customerId]);
 
-        if (!$customer || $this->canUserAccessSettings($customer, $userEmail)) {
+        if (!$customer || !$this->canUserAccessSettings($customer, $userEmail)) {
             return null;
         }
 
@@ -66,7 +66,7 @@ class CustomerSettingsService
     {
         $customer = $this->customerRepository->findOneBy(['id' => $customerId]);
 
-        if (!$customer || $this->canUserAccessSettings($customer, $customerEmail)) {
+        if (!$customer || ($customerEmail != null && !$this->canUserAccessSettings($customer, $customerEmail))) {
             return null;
         }
 
@@ -102,7 +102,7 @@ class CustomerSettingsService
 
     private function canUserAccessSettings(Customer $customer, ?string $customerEmail = null): bool
     {
-        return !($customerEmail != null && $customerEmail == $customer->getEmail());
+        return ($customerEmail != null && $customerEmail == $customer->getEmail());
     }
 
     private function createSettingsArray(CustomerSettings $settings): array

@@ -34,6 +34,9 @@ class CustomerAddressService
             return null;
         }
 
+        $this->entityManager->persist($address);
+        $this->entityManager->flush();
+
         return $this->createAddressArray($address);
     }
 
@@ -51,6 +54,9 @@ class CustomerAddressService
         if (!$address) {
             return null;
         }
+
+        $this->entityManager->persist($address);
+        $this->entityManager->flush();
 
         return $this->createAddressArray($address);
     }
@@ -83,11 +89,15 @@ class CustomerAddressService
         return true;
     }
 
-    public function getAddress(int $addressId): ?array
+    public function getAddress(int $addressId, ?string $customerEmail = null): ?array
     {
         $address = $this->addressRepository->findOneBy(['id' => $addressId]);
 
         if (!$address) {
+            return null;
+        }
+
+        if ($customerEmail && $customerEmail != $address->getCustomer()->getEmail()) {
             return null;
         }
 

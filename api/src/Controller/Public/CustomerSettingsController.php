@@ -22,7 +22,7 @@ class CustomerSettingsController extends AbstractController
         $this->validator = $validator;
     }
 
-    #[Route("/detail", name: "detail", methods: ['GET'])]
+    #[Route("/{customerId}/detail", name: "detail", methods: ['GET'])]
     public function getCustomerSettings(int $customerId, Request $request): JsonResponse
     {
         try {

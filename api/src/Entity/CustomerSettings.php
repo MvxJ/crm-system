@@ -36,7 +36,7 @@ class CustomerSettings
         return $this->id;
     }
 
-    public function getEmailNotifications(): ?int
+    public function getEmailNotifications(): ?bool
     {
         return $this->emailNotifications;
     }
