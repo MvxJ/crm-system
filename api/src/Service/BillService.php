@@ -154,7 +154,7 @@ class BillService
 
         $bill->setDateOfIssue(new \DateTime());
         $bill->setNumber($this->generateBillNumber($bill));
-        $bill->setFileName($this->generateBillNumber($bill) . '.pdf');
+        $bill->setFileName('');
         $bill->setTotalAmount($this->calculateBillAmount($bill));
 
         $this->entityManager->persist($bill);

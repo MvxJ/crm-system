@@ -4,6 +4,7 @@ namespace App\Helper;
 
 use App\Entity\Bill;
 use App\Entity\Message;
+use App\Service\BillService;
 use Doctrine\ORM\EntityManagerInterface;
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -16,7 +17,6 @@ class BillHelper
     private Environment $twig;
     private KernelInterface $kernel;
     private EntityManagerInterface $entityManager;
-
     public function __construct (
         MessageHelper $messageHelper,
         Environment $twig,
@@ -48,7 +48,7 @@ class BillHelper
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', 'portrait');
         $subFolder = (new \DateTime())->format('Y-m-d');
-        $pdfPath = $this->kernel->getProjectDir() . '/public/bills/pdf/' . $subFolder  . '/' . $bill->getFileName();
+        $pdfPath = $this->kernel->getProjectDir() . '/public/bills/pdf/' . $subFolder  . '/' . $bill->getNumber() . 'pdf';
         $dompdf->render();
         $pdfOutput = $dompdf->output();
 
