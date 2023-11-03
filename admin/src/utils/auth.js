@@ -9,6 +9,7 @@ const logout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     localStorage.removeItem("refresh_token");
+    localStorage.removeItem("expiration_date");
 };
 
 const getCurrentUser = () => {

@@ -55,6 +55,21 @@ function a11yProps(index) {
 // ==============================|| HEADER CONTENT - PROFILE ||============================== //
 
 const Profile = () => {
+  const styles = {
+    userInicials: {
+      width: '35px',
+      height: '35px',
+      borderRadius: '50%',
+      border: '1px solid #1890ff',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: '#e6f7ff',
+      color: '#1890ff',
+      fontWeight: 'bold'
+    }
+  }
+
   const theme = useTheme();
   const navigate = useNavigate();
 
@@ -76,6 +91,45 @@ const Profile = () => {
     setOpen(false);
   };
 
+  const getNameAndSurname = () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (user) {
+      const name = user.name;
+      const surname = user.surname;
+  
+      return name + ' ' + surname;
+    }
+
+    return '';
+  }
+
+  const getUserNameAndUserRole = () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (user) {
+      const username = user.username;
+      const roles = user.roles;
+  
+      return username + ' (' + roles[0] + ')';
+    }
+
+    return '';
+  }
+  
+  const getUserInicials = () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (user) {
+      const name = user.name;
+      const surname = user.surname;
+  
+      return name.slice(0,1).toUpperCase() + surname.slice(0,1).toUpperCase();
+    }
+
+    return '';
+  }
+  
   const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
@@ -99,8 +153,11 @@ const Profile = () => {
         aria-haspopup="true"
         onClick={handleToggle}
       >
+        <div style={styles.userInicials}>
+          { getUserInicials() }
+        </div>
         <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>
-          <Typography variant="subtitle1">John Doe</Typography>
+          <Typography variant="subtitle1">{ getNameAndSurname() }</Typography>
         </Stack>
       </ButtonBase>
       <Popper
@@ -142,9 +199,9 @@ const Profile = () => {
                         <Grid item>
                           <Stack direction="row" spacing={1.25} alignItems="center">
                             <Stack>
-                              <Typography variant="h6">John Doe</Typography>
+                              <Typography variant="h6">{ getNameAndSurname() }</Typography>
                               <Typography variant="body2" color="textSecondary">
-                                UI/UX Designer
+                                { getUserNameAndUserRole() }
                               </Typography>
                             </Stack>
                           </Stack>

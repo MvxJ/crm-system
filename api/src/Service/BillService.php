@@ -284,10 +284,10 @@ class BillService
         $contract = $bill->getContract();
 
         if ($bill->getContract()) {
-            $billNumber .= '/' . $contract->getNumber() . '/FV/';
+            $billNumber .= "-" . $contract->getNumber() . "-FV-";
         }
 
-        $billNumber .= $date->format('Y-m-d') . '/';
+        $billNumber .= $date->format('Y-m-d') . "-";
         $billNumber .= (string)($numberOfBills + 1);
 
         return $billNumber;

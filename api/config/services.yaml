@@ -8,6 +8,7 @@ parameters:
     app.no_reply_address: '%env(NO_REPLY_EMAIL_ADDRESS)%'
     app.mailer_name: '%env(MAILER_NAME)%'
     app.upload_directory: '%kernel.project_dir%/public/uploads'
+    app.bills_directory: '%kernel.project_dir%/bills/pdf'
 services:
     # default configuration for services in *this* file
     _defaults:

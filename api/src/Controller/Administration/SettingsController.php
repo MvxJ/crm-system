@@ -30,14 +30,14 @@ class SettingsController extends AbstractController
         $this->serializer = $serializer;
     }
 
-    #[Route("/{id}", name: "detail", methods: ["GET"])]
-    public function getSystemSettings(int $id):JsonResponse
+    #[Route("/", name: "detail", methods: ["GET"])]
+    public function getSystemSettings():JsonResponse
     {
         try {
             return new JsonResponse(
                 [
                     'status' => 'success',
-                    'settings' => $this->serializer->normalize($this->settingsService->getSystemSettings($id))
+                    'settings' => $this->serializer->normalize($this->settingsService->getSystemSettings())
                 ],
                 Response::HTTP_OK
             );

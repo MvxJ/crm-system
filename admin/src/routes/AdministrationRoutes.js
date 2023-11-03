@@ -7,11 +7,12 @@ import MainLayout from 'layout/MainLayout';
 // render - utilities
 const UsersList = Loadable(lazy(() => import('pages/administration/users/UsersList')));
 const SystemSettingsPage = Loadable(lazy(() => import('pages/administration/SystemSettingsPage')));
+const UserForm = Loadable(lazy(() => import('pages/administration/users/UserForm')));
+const UserDetail = Loadable(lazy(() => import('pages/administration/users/Detail')));
 
-// ==============================|| MAIN ROUTING ||============================== //
 
 const AdministrationRoutes = {
-  path: '/administration',
+  path: '/',
   element: <MainLayout />,
   children: [
     {
@@ -21,6 +22,18 @@ const AdministrationRoutes = {
     {
       path: '/administration/users',
       element: <UsersList />
+    },
+    {
+      path: '/administration/users/add',
+      element: <UserForm />
+    },
+    {
+      path: '/administration/users/edit/:id',
+      element: <UserForm />
+    },
+    {
+      path: '/administration/users/detail/:id',
+      element: <UserDetail />
     }
   ]
 };

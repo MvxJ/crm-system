@@ -213,7 +213,8 @@ class UserService
             'email' => $user->getEmail(),
             'name' => $user->getName(),
             'surname' => $user->getSurname(),
-            'phoneNumber' => $user->getPhoneNumber()
+            'phoneNumber' => $user->getPhoneNumber(),
+            'twoFactorAuth' => (bool)$user->isEmailAuthEnabled()
         ];
 
         if ($details) {

@@ -46,14 +46,6 @@ const MainLayout = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [drawerOpen]);
 
-  // const navigate = useNavigate();
-  // const isLoggedIn = AuthService.isAuthenticated();
-
-  // if (!isLoggedIn) {
-  //   navigate('/login');
-  //   return null;
-  // }
-
   return (
     <Box sx={{ display: 'flex', width: '100%' }}>
       <Header open={open} handleDrawerToggle={handleDrawerToggle} />

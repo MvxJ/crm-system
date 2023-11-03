@@ -1,6 +1,6 @@
 import axios from "axios";
-import TokenService from "./token.service";
-import AuthService from "./auth.service";
+import TokenService from "./Token";
+import AuthService from "./auth";
 
 const loader = document.getElementById("loader");
 const instance = axios.create({

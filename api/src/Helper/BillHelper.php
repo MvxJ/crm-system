@@ -48,7 +48,7 @@ class BillHelper
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', 'portrait');
         $subFolder = (new \DateTime())->format('Y-m-d');
-        $pdfPath = $this->kernel->getProjectDir() . '/public/bills/pdf/' . $subFolder  . '/' . $bill->getNumber() . 'pdf';
+        $pdfPath = $this->kernel->getProjectDir() . '/public/bills/pdf/' . $subFolder  . '/' . $bill->getNumber() . '.pdf';
         $dompdf->render();
         $pdfOutput = $dompdf->output();
 
@@ -79,7 +79,7 @@ class BillHelper
             'We have issued a new invoice to your account for the amount - ' . $bill->getTotalAmount()
         );
 
-        $bill->setFileName($pdfPath);
+        $bill->setFileName($subFolder  . '/' . $bill->getNumber() . 'pdf');
 
         $this->entityManager->persist($bill);
         $this->entityManager->persist($message);

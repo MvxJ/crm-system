@@ -1,40 +1,37 @@
-import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import React, { useRef, useState } from 'react';
 
-// material-ui
 import {
   Button,
   Checkbox,
-  Divider,
   FormControlLabel,
   FormHelperText,
   Grid,
-  Link,
   IconButton,
   InputAdornment,
   InputLabel,
   OutlinedInput,
   Stack,
-  Typography
+  Typography,
 } from '@mui/material';
 
-// third party
 import * as Yup from 'yup';
 import { Formik } from 'formik';
-
-// project import
-import FirebaseSocial from './FirebaseSocial';
 import AnimateButton from 'components/@extended/AnimateButton';
-
-// assets
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+import AuthService from 'utils/auth';
 
-// ============================|| FIREBASE - LOGIN ||============================ //
+import { notification } from 'antd';
+import { useNavigate } from '../../../../node_modules/react-router-dom/dist/index';
+import axios from '../../../../node_modules/axios/index';
+import { jwtDecode } from '../../../../node_modules/jwt-decode/build/cjs/index';
+import { isAuthenticated } from 'utils/Guard';
 
 const AuthLogin = () => {
-  const [checked, setChecked] = React.useState(false);
+  const [checked, setChecked] = useState(localStorage.getItem('rememberMe') === 'true');
+  const [showPassword, setShowPassword] = useState(false);
+  const formikRef = useRef(); 
+  const navigate = useNavigate();
 
-  const [showPassword, setShowPassword] = React.useState(false);
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -43,43 +40,85 @@ const AuthLogin = () => {
     event.preventDefault();
   };
 
+  const handleLogin = (event) => {
+    event.preventDefault();
+    const { email, password } = formikRef.current.values;
+
+    if (email != '' && password != '') {
+        axios.post('http://localhost:8000/api/login/check', {
+            username: email, 
+            password: password
+        }).then(response => {
+            const decoded = jwtDecode(response.data.token);
+            AuthService.login(response.data.token, response.data.refresh_token, response.data.user, decoded.exp);
+            navigate("/");
+
+            notification.success({
+              message: 'Login Successful',
+              description: 'You have successfully logged in.',
+              type: "success",
+              placement: 'bottomRight'
+            });
+
+            if (checked) {
+              localStorage.setItem('username', email);
+              localStorage.setItem('password', password);
+              localStorage.setItem("rememberMe", true);
+            } else {
+              localStorage.removeItem('username');
+              localStorage.removeItem('password');
+              localStorage.setItem("rememberMe", false);
+            }
+        }).catch(e => {
+            if (e.response.status == 403) {
+              notification.error({
+                message: 'Login Error',
+                description: 'Access denied. Please check your credentials.',
+                type: "error",
+                placement: 'bottomRight'
+              });
+            } else {
+              notification.error({
+                message: 'Login Error',
+                description: 'Bad credentials please try again.',
+                type: "error",
+                placement: 'bottomRight'
+              });
+            }
+        });
+    } else {
+    }
+}
+
+
   return (
     <>
       <Formik
+        innerRef={formikRef}
         initialValues={{
-          email: 'info@codedthemes.com',
-          password: '123456',
-          submit: null
+          email: localStorage.getItem('username') || '',
+          password: localStorage.getItem('password') || '',
+          submit: null,
         }}
         validationSchema={Yup.object().shape({
-          email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-          password: Yup.string().max(255).required('Password is required')
+          email: Yup.string().max(255).required('Email is required'),
+          password: Yup.string().max(255).required('Password is required'),
         })}
-        onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
-          try {
-            setStatus({ success: false });
-            setSubmitting(false);
-          } catch (err) {
-            setStatus({ success: false });
-            setErrors({ submit: err.message });
-            setSubmitting(false);
-          }
-        }}
       >
-        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
-          <form noValidate onSubmit={handleSubmit}>
+        {({ errors, handleBlur, handleChange, isSubmitting, touched, values }) => (
+          <form noValidate>
             <Grid container spacing={3}>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="email-login">Email Address</InputLabel>
+                  <InputLabel htmlFor="email-login">Username</InputLabel>
                   <OutlinedInput
                     id="email-login"
-                    type="email"
+                    type="text" // Change to text, as it's a username
                     value={values.email}
                     name="email"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="Enter email address"
+                    placeholder="Enter username"
                     fullWidth
                     error={Boolean(touched.email && errors.email)}
                   />
@@ -96,7 +135,7 @@ const AuthLogin = () => {
                   <OutlinedInput
                     fullWidth
                     error={Boolean(touched.password && errors.password)}
-                    id="-password-login"
+                    id="password-login"
                     type={showPassword ? 'text' : 'password'}
                     value={values.password}
                     name="password"
@@ -137,7 +176,7 @@ const AuthLogin = () => {
                         size="small"
                       />
                     }
-                    label={<Typography variant="h6">Keep me sign in</Typography>}
+                    label={<Typography variant="h6">Remember me</Typography>}
                   />
                 </Stack>
               </Grid>
@@ -148,7 +187,7 @@ const AuthLogin = () => {
               )}
               <Grid item xs={12}>
                 <AnimateButton>
-                  <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
+                  <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary" onClick={handleLogin}>
                     Login
                   </Button>
                 </AnimateButton>
