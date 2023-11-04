@@ -440,7 +440,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         return $this;
     }
 
-    public function isIsDeleted(): ?bool
+    public function isDeleted(): ?bool
     {
         return $this->isDeleted;
     }

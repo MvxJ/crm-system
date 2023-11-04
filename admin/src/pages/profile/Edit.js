@@ -54,7 +54,6 @@ const EditProfile = () => {
     try {
       const user = JSON.parse(localStorage.getItem("user"));
       const response = await instance.get(`/users/${user.id}/detail`);
-      console.log(response);
 
       setFormData({
         name: response.data.user.name,
@@ -66,7 +65,7 @@ const EditProfile = () => {
     } catch (error) {
       notification.error({
         message: "Can't fetch user data.",
-        type: error.message,
+        type: 'error',
         placement: 'bottomRight'
       });
     }

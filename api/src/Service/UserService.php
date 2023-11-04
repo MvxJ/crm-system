@@ -214,7 +214,9 @@ class UserService
             'name' => $user->getName(),
             'surname' => $user->getSurname(),
             'phoneNumber' => $user->getPhoneNumber(),
-            'twoFactorAuth' => (bool)$user->isEmailAuthEnabled()
+            'twoFactorAuth' => (bool)$user->isEmailAuthEnabled(),
+            'isVerified' => (bool)$user->isVerified(),
+            'isActive' => (bool)!$user->isDeleted()
         ];
 
         if ($details) {

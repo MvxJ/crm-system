@@ -8,12 +8,15 @@ import { DataGrid } from '@mui/x-data-grid';
 import { Menu, MenuItem } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useNavigate } from '../../../../node_modules/react-router-dom/dist/index';
+import './Users.css';
+import UsersService from 'utils/UserService';
 
 const UsersList = () => {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [totalRows, setTotalRows] = useState(0);
   const [currentId, setCurrentId] = useState(null);
+  const [currentStateRowParams, setCurrentStateRowParams] = useState(null);
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 25,
     page: 1,
@@ -50,25 +53,28 @@ const UsersList = () => {
 
   const handleDelete = async (id) => {
     try {
-      // await UsersService.deleteUser(id);
+      await UsersService.deleteUser(id);
+      
       fetchData();
       setAnchorEl(null);
       setCurrentId(null);
-      showNotification('User deleted successfully', 'success');
+      showNotification('User deleted successfully.', 'success');
     } catch (error) {
-      showNotification('Failed to delete user', 'error');
+      showNotification('Failed to delete user.', 'error');
     }
   };
 
-  const handleClick = (event, id) => {
+  const handleClick = (event, id, params) => {
     event.stopPropagation();
     setAnchorEl(event.currentTarget);
+    setCurrentStateRowParams(params);
     setCurrentId(id);
   };
 
   const handleClose = () => {
     setAnchorEl(null);
     setCurrentId(null);
+    setCurrentStateRowParams(null);
   };
 
   const fetchData = async () => {
@@ -102,18 +108,43 @@ const UsersList = () => {
     { field: 'name', headerName: 'Name', width: 300 },
     { field: 'surname', headerName: 'Surname', width: 300 },
     {
+      field: 'isVerified',
+      headerName: 'Verified',
+      width: 100,
+      renderCell: (params) => (
+        <div className="badge" style={{ backgroundColor: params.row.isVerified ? 'hsl(102, 53%, 61%)' : '#f50' }}>
+          {params.row.isVerified ? 'Verified' : 'No-Verified'}
+        </div>
+      ),
+    },
+    {
+      field: 'isActive',
+      headerName: 'Active',
+      width: 100,
+      renderCell: (params) => (
+        <div className="badge" style={{ backgroundColor: params.row.isActive ? 'hsl(102, 53%, 61%)' : '#f50' }}>
+          {params.row.isActive ? 'Active' : 'Deleted'}
+        </div>
+      ),
+    },
+    {
       field: 'actions',
       headerName: 'Actions',
       type: 'actions',
-      width: 150,
+      width: 100,
       renderCell: (params) => (
         <div className="actionColumn">
-          <MoreOutlined onClick={(event) => handleClick(event, params.row.id)} />
+          <MoreOutlined onClick={(event) => handleClick(event, params.row.id, params)} />
           <Menu
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}
             onClose={handleClose}
             onClick={handleClose}
+            PaperProps={{
+              style: {
+                boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)', // Adjust the shadow as needed
+              },
+            }}
           >
             <MenuItem>
               <Link to={`/administration/users/detail/${currentId}`} className="text-decoration-none">
@@ -125,9 +156,11 @@ const UsersList = () => {
                 <EditOutlined /> Edit user
               </Link>
             </MenuItem>
+            {currentStateRowParams && currentStateRowParams.row.isActive ? (
             <MenuItem onClick={() => handleDelete(currentId)}>
               <DeleteOutlined /> Delete
             </MenuItem>
+          ) : null}
           </Menu>
         </div>
       ),
