@@ -161,7 +161,7 @@ const UserForm = () => {
 
   return (
     <>
-      <MainCard title="User Form">
+      <MainCard title={id ? 'Edit User' : 'Create User'}>
         <Row>
           <Col span={22} offset={1} style={{ textAlign: 'right' }}>
             {id ?

@@ -81,9 +81,7 @@ const UsersList = () => {
     try {
       var { page, pageSize } = paginationModel;
 
-      if (page < 1) {
-        page = 1;
-      }
+      page += 1;
 
       const response = await instance.get(`/users/list?page=${page}&items=${pageSize}`);
       setData(response.data.results.users);

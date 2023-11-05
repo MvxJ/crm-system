@@ -6,7 +6,10 @@ import MainLayout from 'layout/MainLayout';
 
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
 const CustomersList = Loadable(lazy(() => import('pages/main/customers/CustomersList')));
+const CustomerDetails = Loadable(lazy(() => import('pages/main/customers/CustomerDetails')));
 const MessagesList = Loadable(lazy(() => import('pages/main/messages/MessagesList')));
+const MessageForm = Loadable(lazy(() => import('pages/main/messages/MessageForm')));
+const MessageDetails = Loadable(lazy(() => import('pages/main/messages/MessageDetails')));
 
 const MainRoutes = {
   path: '/',
@@ -21,8 +24,20 @@ const MainRoutes = {
       element: <CustomersList />
     },
     {
+      path: '/customers/detail/:id',
+      element: <CustomerDetails />
+    },
+    {
       path: '/messages',
       element: <MessagesList />
+    },
+    {
+      path: '/messages/create',
+      element: <MessageForm />
+    },
+    {
+      path: '/messages/detail/:id',
+      element: <MessageDetails />
     }
   ]
 };

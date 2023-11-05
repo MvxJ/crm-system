@@ -31,7 +31,7 @@ class MessageController extends AbstractController
             return new JsonResponse(
                 [
                     'status' => 'success',
-                    'messages' => $messages
+                    'results' => $messages
                 ],
                 Response::HTTP_OK
             );

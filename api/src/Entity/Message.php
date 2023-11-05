@@ -40,6 +40,9 @@ class Message
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $subject = null;
+
     public function getId(): int
     {
         return $this->id;
@@ -125,6 +128,18 @@ class Message
     public function setEmail(?string $email): self
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function getSubject(): ?string
+    {
+        return $this->subject;
+    }
+
+    public function setSubject(?string $subject): static
+    {
+        $this->subject = $subject;
 
         return $this;
     }

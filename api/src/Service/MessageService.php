@@ -145,8 +145,11 @@ class MessageService
             'id' => $message->getId(),
             'customer' => [
                 'id' => $message->getCustomer()->getId(),
-                'email' => $message->getCustomer()->getEmail()
+                'email' => $message->getCustomer()->getEmail(),
+                'name' => $message->getCustomer()->getFirstName(),
+                'surname' => $message->getCustomer()->getLastName()
             ],
+            'subject' => $message->getSubject(),
             'message' => $message->getMessage(),
             'type' => $message->getType(),
             'createdAt' => $message->getCreatedDate(),
