@@ -195,7 +195,9 @@ class CustomerService
             'secondName' => $customer->getSecondName(),
             'lastName' => $customer->getLastName(),
             'email' => $customer->getEmail(),
-            'phoneNumber' => $customer->getPhoneNumber()
+            'phoneNumber' => $customer->getPhoneNumber(),
+            'isVerified' => (bool)$customer->isVerified(),
+            'isActive' => (bool)!$customer->isDisabled()
         ];
 
         if ($details) {

@@ -41,28 +41,12 @@ class RoleRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Role[] Returns an array of Role objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('u.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Role
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    public function getUserRoles(): array
+    {
+        return $this->createQueryBuilder('r')
+        ->where('r.role != :role')
+        ->setParameter('role', Role::ROLE_CUSTOMER)
+        ->getQuery()
+        ->getResult();    
+    }
 }

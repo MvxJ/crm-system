@@ -266,4 +266,28 @@ class UserController extends AbstractController
             );
         }
     }
+
+    #[Route("/roles", name: "roles", methods: ["GET"])]
+    public function getAvailableUserRoles(Request $request): JsonResponse
+    {
+        try {
+            $roles = $this->userService->getAvailableRoles();
+
+            return new JsonResponse(
+                [
+                    'status' => 'success',
+                    'roles' => $roles
+                ],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $exception) {
+            return new JsonResponse(
+                [
+                    'status' => 'error',
+                    'message' => $exception->getMessage()
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 }

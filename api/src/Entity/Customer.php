@@ -474,7 +474,7 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Two
         return $this;
     }
 
-    public function isIsDisabled(): ?bool
+    public function isDisabled(): ?bool
     {
         return $this->isDisabled;
     }

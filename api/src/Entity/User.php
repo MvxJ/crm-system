@@ -183,6 +183,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         return $this;
     }
 
+    public function clearRoles(): self
+    {
+        $this->roles = new ArrayCollection();
+
+        return $this;
+    }
+
     /**
      * @return bool
      */
