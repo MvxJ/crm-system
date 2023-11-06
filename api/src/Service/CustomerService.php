@@ -39,8 +39,9 @@ class CustomerService
     {
         $page = $request->get('page', 1);
         $itemsPerPage = $request->get('items', 25);
+        $searchQuery = $request->get('searchTerm', null);
         $totalItems = count($this->customerRepository->findAll());
-        $results = $this->customerRepository->getCustomersWithPagination((int)$itemsPerPage, (int)$page);
+        $results = $this->customerRepository->getCustomersWithPagination((int)$itemsPerPage, (int)$page, $searchQuery);
         $customers = [];
 
         /** @var Customer $customer */
@@ -197,7 +198,8 @@ class CustomerService
             'email' => $customer->getEmail(),
             'phoneNumber' => $customer->getPhoneNumber(),
             'isVerified' => (bool)$customer->isVerified(),
-            'isActive' => (bool)!$customer->isDisabled()
+            'isActive' => (bool)!$customer->isDisabled(),
+            'socialSecurityNumber' => $customer->getSocialSecurityNumber()
         ];
 
         if ($details) {

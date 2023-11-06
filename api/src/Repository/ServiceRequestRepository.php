@@ -62,13 +62,13 @@ class ServiceRequestRepository extends ServiceEntityRepository
         }
 
         if ($customerId != 'all' && !is_nan((int)$customerId)) {
-            $queryBuilder->innerJoin(Customer::class, 'c')
+            $queryBuilder->innerJoin('s.customer', 'c')
                 ->andWhere('c.id = :customerId')
                 ->setParameter('customerId', (int)$customerId);
         }
 
         if ($userId != 'all' && !is_nan((int)$userId)) {
-            $queryBuilder->innerJoin(User::class, 'u')
+            $queryBuilder->innerJoin('s.user', 'u')
                 ->andWhere('u.id = :userId')
                 ->setParameter('userId', (int)$userId);
         }
@@ -87,13 +87,13 @@ class ServiceRequestRepository extends ServiceEntityRepository
         }
 
         if ($customerId != 'all' && !is_nan((int)$customerId)) {
-            $queryBuilder->innerJoin(Customer::class, 'c')
+            $queryBuilder->innerJoin('s.customer', 'c')
                 ->andWhere('c.id = :customerId')
                 ->setParameter('customerId', (int)$customerId);
         }
 
         if ($userId != 'all' && !is_nan((int)$userId)) {
-            $queryBuilder->innerJoin(User::class, 'u')
+            $queryBuilder->innerJoin('s.user', 'u')
                 ->andWhere('u.id = :userId')
                 ->setParameter('userId', (int)$userId);
         }

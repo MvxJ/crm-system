@@ -6,17 +6,9 @@ import { PlusOutlined } from '@ant-design/icons';
 import './Administration.css'
 import {
   Button,
-  Cascader,
-  Checkbox,
   DatePicker,
   Form,
   Input,
-  InputNumber,
-  Radio,
-  Select,
-  Slider,
-  Switch,
-  TreeSelect,
   Upload,
 } from 'antd';
 

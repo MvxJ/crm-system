@@ -39,14 +39,23 @@ class CustomerRepository extends ServiceEntityRepository
         }
     }
 
-    public function getCustomersWithPagination(int $limit = 25, int $page = 1)
+    public function getCustomersWithPagination(int $limit = 25, int $page = 1, ?string $searchTerm = null)
     {
-        return $this->createQueryBuilder('c')
+        $queryBuilder = $this->createQueryBuilder('c')
             ->setMaxResults($limit)
             ->setFirstResult(($page - 1) * $limit)
-            ->orderBy('c.id', 'ASC')
-            ->getQuery()
-            ->getResult();
+            ->orderBy('c.id', 'ASC');
 
+        if ($searchTerm) {
+            $queryBuilder
+                ->andWhere(
+                     $queryBuilder->expr()->orX(
+                        $queryBuilder->expr()->like('c.firstName', ':searchTerm'),
+                        $queryBuilder->expr()->like('c.lastName', ':searchTerm')
+                    )
+                )->setParameter('searchTerm', '%' . $searchTerm . '%');
+        }    
+
+        return $queryBuilder->getQuery()->getResult();
     }
 }
