@@ -1,15 +1,25 @@
 import MainCard from 'components/MainCard';
-import { Button, Col, Form, Input, Row, Select } from '../../../../node_modules/antd/es/index';
+import { Button, Col, Form, Input, Row, Select, notification } from '../../../../node_modules/antd/es/index';
 import instance from 'utils/api';
 import DebounceSelect from 'utils/DebounceSelect';
 import  { SendOutlined } from '@ant-design/icons';
 import { useState, useEffect } from 'react';
+import { useNavigate } from '../../../../node_modules/react-router-dom/dist/index';
 
 
 const MessageForm = () => {
   const { TextArea } = Input;
   const [selectedCustomerId, setSelectedCustomerId] = useState(null);
   const [serviceRequests, setServiceRequests] = useState([]);
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    subject: '',
+    message: '',
+    type: '',
+    serviceRequest: '',
+    phoneNumber: '',
+    email: ''
+  });
   
   async function searchCustomers(inputValue) {
     try {
@@ -35,14 +45,58 @@ const MessageForm = () => {
         setServiceRequests(response.data.results.serviceRequests);
       }
     } catch (error) {
-      console.log(error);
       setServiceRequests([]);
     }
   }
 
   const sendMessage = async () => {
+    try {
+      const request = {
+        customer: parseInt(selectedCustomerId.value),
+        message: formData.message,
+        subject: formData.subject,
+        type: parseInt(formData.type),
+        email: formData.email,
+        phoneNumber: formData.phoneNumber
+      };
 
+      if (formData.serviceRequest != null) {
+        request.serviceRequest = formData.serviceRequest
+      }
+
+      const response = await instance.post(`/message/create`, 
+        request
+      )
+
+      if (response.status != 200) {
+        notification.error({
+          message: 'An error ocured during sending message.',
+          type: 'error',
+          placement: 'bottomRight'
+        });
+      }
+
+      notification.success({
+        message: 'Successfully send notification.',
+        type: 'success',
+        placement: 'bottomRight'
+      });
+
+      navigate(`/messages/detail/${response.data.results.id}`)
+    } catch (e) {
+      notification.error({
+        message: 'An error ocured during sending message.',
+        description: e.message,
+        type: 'error',
+        placement: 'bottomRight'
+      });
+    }
   }
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));  
+  };
 
   useEffect(() => {
     if (selectedCustomerId) {
@@ -62,7 +116,7 @@ const MessageForm = () => {
         <Row>
           <Col span={22} offset={1}>
             <Form.Item label="Subject" required tooltip="This is a required field">
-              <Input name="subject" />
+              <Input name="subject" onChange={handleInputChange} />
             </Form.Item>
           </Col>
         </Row>
@@ -77,6 +131,9 @@ const MessageForm = () => {
                   { value: 1, label: 'Reminder' },
                   { value: 2, label: 'Message' },
                 ]}
+                onChange={(value) => {
+                  setFormData((prevFormData) => ({ ...prevFormData, type: value }));
+                }}
               />
             </Form.Item>
           </Col>
@@ -98,10 +155,25 @@ const MessageForm = () => {
         </Row>
         <Row>
           <Col span={10} offset={1}>
+            <Form.Item label="Email" required tooltip="This is a required field">
+              <Input name="email" onChange={handleInputChange} />
+            </Form.Item>
+          </Col>
+          <Col span={10} offset={2} >
+            <Form.Item label="Phone Number" required tooltip="This is a required field">
+                <Input name="phoneNumber" onChange={handleInputChange} />
+            </Form.Item>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={10} offset={1}>
             <Form.Item label="Service Request">
               <Select
                 name="serviceRequest"
                 placeholder="Select a service request"
+                onChange={(value) => {
+                  setFormData((prevFormData) => ({ ...prevFormData, serviceRequest: value }));
+                }}
               >
                 {serviceRequests.map((request) => (
                   <Select.Option key={request.id} value={request.id}>
@@ -120,7 +192,8 @@ const MessageForm = () => {
                 maxLength={1500}
                 style={{ height: 250, resize: 'none' }}
                 placeholder="Message..."
-                name="message" 
+                name="message"
+                onChange={handleInputChange}
               />
             </Form.Item>
           </Col>

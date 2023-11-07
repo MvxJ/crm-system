@@ -19,7 +19,7 @@ const MessagesList = () => {
   const [currentId, setCurrentId] = useState(null);
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 25,
-    page: 1,
+    page: 0,
   });
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -68,11 +68,10 @@ const MessagesList = () => {
 
       page += 1;
 
-      const response = await instance.get(`/message/list?page=${page}&items=${pageSize}`);
+      const response = await instance.get(`/message/list?page=${page}&items=${pageSize}&order=DESC&orderBy=createdDate`);
       setData(response.data.results.messages);
       setTotalRows(response.data.results.maxResults);
     } catch (error) {
-      console.log(error);
       showNotification('Error fetching messages list', 'error');
     }
   };

@@ -1,11 +1,14 @@
 import MainCard from 'components/MainCard';
 import { useEffect, useState } from 'react';
-import { useParams } from '../../../../node_modules/react-router-dom/dist/index';
+import { useNavigate, useParams } from '../../../../node_modules/react-router-dom/dist/index';
 import { Button, Col, Row, notification } from '../../../../node_modules/antd/es/index';
 import instance from 'utils/api';
+import { UserOutlined, IssuesCloseOutlined } from '@ant-design/icons';
+
 
 const MessageForm = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [message, setMessage] = useState({
     id: null,
     customer: null,
@@ -20,7 +23,7 @@ const MessageForm = () => {
 
   const fetchData = async () => {
     try {
-      const response = await instance.get(`/messages/detail/${id}`);
+      const response = await instance.get(`/message/detail/${id}`);
 
       if (response.status != 200) {
         notification.error({
@@ -74,35 +77,39 @@ const MessageForm = () => {
   }, [id]);
 
   return (
-  <>
-    <MainCard title="Message Details">
-      <Row>
-        <Col span={22} offset={1} style={{textAlign: 'right'}}>
-          <Button type="primary" onClick={navigateUserDetail}>
-            Customer
-          </Button>
-          <Button type="primary" onClick={navigateServiceRequest}>
-            Service Request
-          </Button>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={22} offset={1}>
-          Subject - {message.subject}
-        </Col>
-      </Row>
-      <Row>
-        <Col span={22} offset={1}>
-          Date
-        </Col>
-      </Row>
-      <Row>
-        <Col span={22} offset={1}>
-           {message.message}
-        </Col>
-      </Row>
-    </MainCard>
-  </>
-)};
+    <>
+      <MainCard title="Message Details">
+        <Row>
+          <Col span={22} offset={1} style={{ textAlign: 'right' }}>
+            <Button type="primary" onClick={navigateUserDetail}>
+              <UserOutlined /> {message.customer?.name} {message.customer?.surname}
+            </Button>
+            {message.serviceRequest ?
+              <Button type="primary" onClick={navigateServiceRequest} style={{ marginLeft: '5px' }}>
+                <IssuesCloseOutlined /> Service Request #{message.serviceRequest?.id}
+              </Button>
+              : null
+            }
+          </Col>
+        </Row>
+        <Row>
+          <Col span={22} offset={1}>
+            Subject - {message.subject}
+          </Col>
+        </Row>
+        <Row>
+          <Col span={22} offset={1}>
+            Date
+          </Col>
+        </Row>
+        <Row>
+          <Col span={22} offset={1}>
+            {message.message}
+          </Col>
+        </Row>
+      </MainCard>
+    </>
+  )
+};
 
 export default MessageForm;

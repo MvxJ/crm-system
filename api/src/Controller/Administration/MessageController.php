@@ -46,6 +46,40 @@ class MessageController extends AbstractController
         }
     }
 
+    #[Route('/detail/{id}', name: 'detail', methods: ['GET'])]
+    public function getMessageDetails(int $id, Request $request): JsonResponse
+    {
+        try {
+            $message = $this->messageService->getMessage($id);
+
+            if (!$message) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Bad request please try again.'
+                    ],
+                    Response::HTTP_INTERNAL_SERVER_ERROR
+                );
+            }
+
+            return new JsonResponse(
+                [
+                    'status' => 'success',
+                    'message' => $message
+                ],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $exception) {
+            return new JsonResponse(
+                [
+                    'status' => 'error',
+                    'message' => $exception->getMessage()
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
     #[Route('/create', name: 'create', methods: ['POST'])]
     public function sendMessage(Request $request): JsonResponse
     {

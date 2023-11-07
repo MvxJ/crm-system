@@ -52,6 +52,17 @@ class MessageService
         return $this->createMessageArray($message);
     }
 
+    public function getMessage(int $id): ?array
+    {
+        $message = $this->messageRepository->findOneBy(['id' => $id]);
+
+        if (!$message) {
+            return null;
+        }
+
+        return $this->createMessageArray($message);
+    }
+
     public function getMessages(Request $request): array
     {
         $messagesArray = [];
@@ -162,6 +173,8 @@ class MessageService
                 'id' => $message->getServiceRequest()->getId(),
                 'contractNumber' => $message->getServiceRequest()->getContract()->getNumber()
             ];
+        } else {
+            $messageArray['serviceRequest'] = null;
         }
 
         return $messageArray;

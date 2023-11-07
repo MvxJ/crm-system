@@ -18,7 +18,7 @@ const CustomersList = () => {
   const [currentStateRowParams, setCurrentStateRowParams] = useState(null);
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 25,
-    page: 1,
+    page: 0,
   });
   const [anchorEl, setAnchorEl] = useState(null);
 
