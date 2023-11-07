@@ -40,13 +40,15 @@ class BillService
         $itemsPerPage = $request->get('items', 25);
         $order = $request->get('order', 'asc');
         $orderBy = $request->get('orderBy', 'id');
+        $customerId = $request->get('customerId', 'all');
         $status = $request->get('status', 'all');
         $bills = $this->billRepository->findBillsWithPagination(
             (int)$page,
             (int)$itemsPerPage,
             $order,
             $orderBy,
-            $status
+            $status,
+            $customerId
         );
         $maxResults = $this->billRepository->countBills($status);
 

@@ -1,13 +1,13 @@
 import MainCard from 'components/MainCard';
 import { Badge, Button, Col, Row, Tabs, notification } from '../../../../node_modules/antd/es/index';
-import { 
-  MessageOutlined, 
-  WalletOutlined, 
-  SolutionOutlined, 
-  FilePdfOutlined, 
-  IssuesCloseOutlined, 
-  EditOutlined, 
-  ClusterOutlined, 
+import {
+  MessageOutlined,
+  WalletOutlined,
+  SolutionOutlined,
+  FilePdfOutlined,
+  IssuesCloseOutlined,
+  EditOutlined,
+  ClusterOutlined,
   DeleteOutlined,
   MailOutlined,
   PhoneOutlined,
@@ -20,9 +20,10 @@ import { useParams } from '../../../../node_modules/react-router-dom/dist/index'
 import { useEffect, useState } from 'react';
 import './Customers.css';
 import instance from 'utils/api';
+import CustomerIncoicesTab from 'components/CustomerInvoicesTab';
 
 const CustomerDetails = () => {
-  const {id} = useParams();
+  const { id } = useParams();
   const [customer, setCustomer] = useState({
     id: id,
     firstName: '',
@@ -51,7 +52,7 @@ const CustomerDetails = () => {
         <span className='tabLabel'>
           <SolutionOutlined />
           Contracts
-          <Badge count={customer.numberOfContracts} showZero color="rgb(24, 144, 255)" style={{marginLeft: '5px'}}/>
+          <Badge count={customer.numberOfContracts} showZero color="rgb(24, 144, 255)" style={{ marginLeft: '5px' }} />
         </span>
       ),
       children: 'Content of contracts',
@@ -62,10 +63,10 @@ const CustomerDetails = () => {
         <span className='tabLabel'>
           <FilePdfOutlined />
           Invoices
-          <Badge count={customer.numberOfBills} showZero color="rgb(24, 144, 255)" style={{marginLeft: '5px'}}/>
+          <Badge count={customer.numberOfBills} showZero color="rgb(24, 144, 255)" style={{ marginLeft: '5px' }} />
         </span>
       ),
-      children: 'Content of invoices',
+      children: (<CustomerIncoicesTab customerId={id}/>),
     },
     {
       key: 'payments',
@@ -73,7 +74,7 @@ const CustomerDetails = () => {
         <span className='tabLabel'>
           <WalletOutlined />
           Payments
-          <Badge count={customer.numberOfPayments} showZero color="rgb(24, 144, 255)" style={{marginLeft: '5px'}}/>
+          <Badge count={customer.numberOfPayments} showZero color="rgb(24, 144, 255)" style={{ marginLeft: '5px' }} />
         </span>
       ),
       children: 'Content of payments',
@@ -84,7 +85,7 @@ const CustomerDetails = () => {
         <span className='tabLabel'>
           <IssuesCloseOutlined />
           Service Requests
-          <Badge count={customer.numberOfServiceRequests} showZero color="rgb(24, 144, 255)" style={{marginLeft: '5px'}}/>
+          <Badge count={customer.numberOfServiceRequests} showZero color="rgb(24, 144, 255)" style={{ marginLeft: '5px' }} />
         </span>
       ),
       children: 'Content service requests',
@@ -95,7 +96,7 @@ const CustomerDetails = () => {
         <span className='tabLabel'>
           <MessageOutlined />
           Messages
-          <Badge count={customer.numberOfMessages} showZero color="rgb(24, 144, 255)" style={{marginLeft: '5px'}}/>
+          <Badge count={customer.numberOfMessages} showZero color="rgb(24, 144, 255)" style={{ marginLeft: '5px' }} />
         </span>
       ),
       children: 'Content of messages',
@@ -106,7 +107,7 @@ const CustomerDetails = () => {
         <span className='tabLabel'>
           <ClusterOutlined />
           Devices
-          <Badge count={customer.numberOfDevices} showZero color="rgb(24, 144, 255)" style={{marginLeft: '5px'}}/>
+          <Badge count={customer.numberOfDevices} showZero color="rgb(24, 144, 255)" style={{ marginLeft: '5px' }} />
         </span>
       ),
       children: 'Content of devices'
@@ -114,7 +115,7 @@ const CustomerDetails = () => {
   ];
 
   const getCustomerNameAndSurname = () => {
-    var string = customer.firstName  + ' ';
+    var string = customer.firstName + ' ';
 
     if (customer.secondName != null && customer.secondName.length > 0) {
       string += customer.secondName + ' ';
@@ -124,15 +125,23 @@ const CustomerDetails = () => {
   }
 
   const getCustomerInicials = () => {
-    return customer.firstName.slice(0,1).toUpperCase() + customer.lastName.slice(0,1).toUpperCase();
+    return customer.firstName.slice(0, 1).toUpperCase() + customer.lastName.slice(0, 1).toUpperCase();
   }
 
   const getBadgeDetails = () => {
     if (!customer.isActive) {
-      return {text: 'Deleted', color: '#f50'};
+      return { text: 'Deleted', color: '#f50' };
     }
 
-    return customer.isVerified ? {text: 'Verified', color: 'hsl(102, 53%, 61%)'} : {text: 'No-Verified', color: '#f50'};
+    return customer.isVerified ? { text: 'Verified', color: 'hsl(102, 53%, 61%)' } : { text: 'No-Verified', color: '#f50' };
+  }
+
+  const formatBirthDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
   }
 
   const fetchCustomerData = async () => {
@@ -183,100 +192,101 @@ const CustomerDetails = () => {
   );
 
   return (
-  <>
-    <MainCard title={`Customer Details #${id}`}>
-      <Row>
-        <Col span={22} offset={1} style={{textAlign: 'right'}}>
-          <Button type="primary">
-            <EditOutlined /> Edit
-          </Button>
-          {customer.isActive ? 
-            <Button type="primary" danger style={{marginLeft: '5px'}}>
-              <DeleteOutlined /> Delete
+    <>
+      <MainCard title={`Customer Details #${id}`}>
+        <Row>
+          <Col span={22} offset={1} style={{ textAlign: 'right' }}>
+            <Button type="primary">
+              <EditOutlined /> Edit
             </Button>
-            :
-            null
-          }
-        </Col>
-      </Row>
-      <Row>
-        <Col span={22} offset={1}>
-          <h4>Customer Profile</h4>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={22} offset={1}>
-          <Row>
-            <Col>
-              <div className='headerContainer'>
-                <div className='customerProfileIcon'>
-                  {getCustomerInicials()}
+            {customer.isActive ?
+              <Button type="primary" danger style={{ marginLeft: '5px' }}>
+                <DeleteOutlined /> Delete
+              </Button>
+              :
+              null
+            }
+          </Col>
+        </Row>
+        <Row>
+          <Col span={22} offset={1}>
+            <h4>Customer Profile</h4>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={22} offset={1}>
+            <Row>
+              <Col>
+                <div className='headerContainer'>
+                  <div className='customerProfileIcon'>
+                    {getCustomerInicials()}
+                  </div>
+                  <div className='userName' style={{ marginLeft: '15px' }}>
+                    {getCustomerNameAndSurname()}
+                  </div>
+                  <div className='badge' style={{ backgroundColor: getBadgeDetails().color, marginLeft: '15px' }}>
+                    {getBadgeDetails().text}
+                  </div>
                 </div>
-                <div className='userName' style={{marginLeft: '15px'}}>
-                  {getCustomerNameAndSurname()}
-                </div>
-                <div className='badge' style={{backgroundColor: getBadgeDetails().color, marginLeft: '15px'}}>
-                  {getBadgeDetails().text}
-                </div>
-              </div>
-            </Col>
-          </Row>
-          <Row style={{marginTop: '15px'}}>
-            <MailOutlined />&nbsp;Email:&nbsp; {customer.email ? customer.email : 'empty'}
-          </Row>
-          <Row>
-            <PhoneOutlined />&nbsp;Phone number:&nbsp; {customer.phoneNumber ? customer.phoneNumber : 'empty'}
-          </Row>
-          <Row>
-            <IdcardOutlined />&nbsp;Social Security number:&nbsp; {customer.socialSecurityNumber ? customer.socialSecurityNumber : 'empty'}
-          </Row>
-          <Row>
-            <CalendarOutlined />&nbsp;Birth date:&nbsp; {customer.birthDate ? customer.birthDate.date : 'empty'}
-          </Row>
-          <Row>
-            <SafetyOutlined />&nbsp;2fa enabled:&nbsp; {customer.twoFactorAuth == true ? <span style={{color: 'hsl(102, 53%, 61%)'}}> true</span> : <span style={{color: '#f50'}}> false</span>}
-          </Row>
-          <Row>
-            <NotificationOutlined />&nbsp;Email Norifications:&nbsp; {customer.emailNotification == true ? <span style={{color: 'hsl(102, 53%, 61%)'}}> enabled</span> : <span style={{color: '#f50'}}> disabled</span>}
-          </Row>
-          <Row>
-            <NotificationOutlined />&nbsp;Sms Notifications:&nbsp; {customer.smsNotification == true ? <span style={{color: 'hsl(102, 53%, 61%)'}}> enabled</span> : <span style={{color: '#f50'}}> disabled</span> }
-          </Row>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={22} offset={1}>
-          <h4>Addresses</h4>
-        </Col>
-      </Row>
-      <Row>  
-        <Col span={22} offset={1}>
-          <Row>
-            <Col span={12}>
-              <Row>
-                <span>Contact Address</span>
-              </Row>
-            </Col>
-            <Col span={12}>
-              <Row>
-                <span>Billing Address</span>
-              </Row>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={22} offset={1}>
-          <h4>Customer data</h4>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={22} offset={1}>
-          <Tabs defaultActiveKey="contracts" items={tabs} />
-        </Col>
-      </Row>
-    </MainCard>
-  </>
-)};
+              </Col>
+            </Row>
+            <Row style={{ marginTop: '15px' }}>
+              <MailOutlined />&nbsp;Email:&nbsp; {customer.email ? customer.email : 'empty'}
+            </Row>
+            <Row>
+              <PhoneOutlined />&nbsp;Phone number:&nbsp; {customer.phoneNumber ? customer.phoneNumber : 'empty'}
+            </Row>
+            <Row>
+              <IdcardOutlined />&nbsp;Social Security number:&nbsp; {customer.socialSecurityNumber ? customer.socialSecurityNumber : 'empty'}
+            </Row>
+            <Row>
+              <CalendarOutlined />&nbsp;Birth date:&nbsp; {customer.birthDate ? formatBirthDate(customer.birthDate.date) : 'empty'}
+            </Row>
+            <Row>
+              <SafetyOutlined />&nbsp;2fa enabled:&nbsp; {customer.twoFactorAuth == true ? <span style={{ color: 'hsl(102, 53%, 61%)' }}> true</span> : <span style={{ color: '#f50' }}> false</span>}
+            </Row>
+            <Row>
+              <NotificationOutlined />&nbsp;Email Norifications:&nbsp; {customer.emailNotification == true ? <span style={{ color: 'hsl(102, 53%, 61%)' }}> enabled</span> : <span style={{ color: '#f50' }}> disabled</span>}
+            </Row>
+            <Row>
+              <NotificationOutlined />&nbsp;Sms Notifications:&nbsp; {customer.smsNotification == true ? <span style={{ color: 'hsl(102, 53%, 61%)' }}> enabled</span> : <span style={{ color: '#f50' }}> disabled</span>}
+            </Row>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={22} offset={1}>
+            <h4>Addresses</h4>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={22} offset={1}>
+            <Row>
+              <Col span={12}>
+                <Row>
+                  <span>Contact Address</span>
+                </Row>
+              </Col>
+              <Col span={12}>
+                <Row>
+                  <span>Billing Address</span>
+                </Row>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={22} offset={1}>
+            <h4>Customer data</h4>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={22} offset={1}>
+            <Tabs defaultActiveKey="contracts" items={tabs} />
+          </Col>
+        </Row>
+      </MainCard>
+    </>
+  )
+};
 
 export default CustomerDetails;
