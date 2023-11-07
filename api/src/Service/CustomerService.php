@@ -203,11 +203,16 @@ class CustomerService
         ];
 
         if ($details) {
+            $customerArray['birthDate'] = $customer->getBirthDate();
+            $customerArray['twoFactorAuth'] = $customer->isEmailAuthEnabled();
+            $customerArray['smsNotification'] = $customer->getSettings() ? $customer->getSettings()->isSmsNotifications() : null;
+            $customerArray['emailNotification'] = $customer->getSettings() ? $customer->getSettings()->getEmailNotifications(): null;
             $customerArray['numberOfContracts'] = count($customer->getContracts());
             $customerArray['numberOfDevices'] = count($customer->getDevices());
             $customerArray['numberOfServiceRequests'] = count($customer->getServiceRequests());
             $customerArray['numberOfBills'] = count($customer->getBills());
             $customerArray['numberOfPayments'] = count($customer->getPayments());
+            $customerArray['numberOfMessages'] = count($customer->getMessages());
         }
 
         return  $customerArray;

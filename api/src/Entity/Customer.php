@@ -34,7 +34,7 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Two
     #[ORM\Column(type: Types::BOOLEAN,nullable: false)]
     private bool $emailAuthEnabled = false;
 
-    #[ORM\ManyToMany(targetEntity: Role::Class, inversedBy: "customers")]
+    #[ORM\ManyToMany(targetEntity: Role::class, inversedBy: "customers")]
     private Collection $roles;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Device::class)]
@@ -43,7 +43,7 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface, Two
     #[ORM\OneToMany(mappedBy: 'customer', targetEntity: ServiceRequest::class)]
     private Collection $serviceRequests;
 
-    #[ORM\OneToMany(mappedBy: 'Customer', targetEntity: Message::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Message::class, orphanRemoval: true)]
     private Collection $messages;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Contract::class, orphanRemoval: true)]

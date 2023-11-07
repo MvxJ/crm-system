@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from '../../../../node_modules/react-router-dom/dist/index';
 import { Button, Col, Row, notification } from '../../../../node_modules/antd/es/index';
 import instance from 'utils/api';
-import { UserOutlined, IssuesCloseOutlined } from '@ant-design/icons';
+import { UserOutlined, IssuesCloseOutlined, MailOutlined, PhoneOutlined, CalendarOutlined } from '@ant-design/icons';
 
 
 const MessageForm = () => {
@@ -41,11 +41,11 @@ const MessageForm = () => {
         message: response.data.message.message,
         type: response.data.message.type,
         email: response.data.message.email,
-        phoneNumber: response.data.message.phoneNumber,
+        phoneNumber: response.data.message.phone,
         createdAt: response.data.message.createdAt
       });
 
-
+      console.log(message.createdAt);
     } catch (e) {
       notification.error({
         type: 'error',
@@ -56,12 +56,21 @@ const MessageForm = () => {
     }
   }
 
-  const getServiceRequestData = () => {
-
-  }
-
-  const getUserData = () => {
-
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const options = {
+      weekday: 'long',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    };
+  
+    const formattedDate = date.toLocaleString('en-US', options);
+  
+    return `${formattedDate}`;
   }
 
   const navigateServiceRequest = () => {
@@ -94,12 +103,42 @@ const MessageForm = () => {
         </Row>
         <Row>
           <Col span={22} offset={1}>
-            Subject - {message.subject}
+            <h4>Subject:</h4>
           </Col>
         </Row>
         <Row>
           <Col span={22} offset={1}>
-            Date
+            {message.subject}
+          </Col>
+        </Row>
+        <Row>
+          <Col span={22} offset={1}>
+            <h4>Send Date:</h4>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={22} offset={1}>
+            <CalendarOutlined /> {formatDate(message.createdAt?.date)}
+          </Col>
+        </Row>
+        <Row>
+          <Col span={22} offset={1}>
+            <h4>Recipient data: </h4>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={22} offset={1}>
+          <MailOutlined /> Email Address: {message.email}
+          </Col>
+        </Row>
+        <Row>
+          <Col span={22} offset={1}>
+          <PhoneOutlined /> Phone Number: {message.phoneNumber}
+          </Col>
+        </Row>
+        <Row>
+          <Col span={22} offset={1}>
+            <h4>Message: </h4>
           </Col>
         </Row>
         <Row>
