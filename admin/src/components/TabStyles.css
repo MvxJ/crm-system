@@ -26,6 +26,7 @@
     padding: 5px;
     text-align: center;
     min-width: 75px;
+    max-width: 150px;
     height: 25px;
     display: flex;
     justify-content: center;
@@ -34,5 +35,7 @@
 }
 
 .number-of-showing {
+    width: 100%;
     font-style: italic;
+    text-align: right;
 }

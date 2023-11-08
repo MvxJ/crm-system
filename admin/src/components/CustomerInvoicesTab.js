@@ -35,10 +35,10 @@ const CustomerIncoicesTab = ({ customerId }) => {
         return;
       }
 
-        const newData = response.data.results.bills;
+      const newData = response.data.results.bills;
 
-        setMaxResults(response.data.results.maxResults);
-        setData(newData);
+      setMaxResults(response.data.results.maxResults);
+      setData(newData);
     } catch (error) {
       notification.error({
         message: "Can't fetch user invoices.",
@@ -62,7 +62,7 @@ const CustomerIncoicesTab = ({ customerId }) => {
     try {
       const encodedFileName = encodeURIComponent(fileName);
       const downloadUrl = `/file/download?file=${encodedFileName}`;
-      const {data} = await instance.get(downloadUrl, {responseType: 'blob',});
+      const { data } = await instance.get(downloadUrl, { responseType: 'blob', });
 
       if (action == 'open') {
         openPdfInNewTab(data);
@@ -119,12 +119,12 @@ const CustomerIncoicesTab = ({ customerId }) => {
     <>
       {loading ? (
         <Row>
-            <Col span={24} style={{textAlign: 'center'}}>
-                <Spin />
-            </Col>
+          <Col span={24} style={{ textAlign: 'center' }}>
+            <Spin />
+          </Col>
         </Row>
       ) : (
-        <div>            
+        <div>
           <Row className="number-of-showing">
             Showing {data.length} of {maxResults}
           </Row>
@@ -132,58 +132,66 @@ const CustomerIncoicesTab = ({ customerId }) => {
             dataSource={data}
             renderItem={(item) => (
               <List.Item key={item.id}>
-                <div className='box-wrapper' style={{width: '100%'}}>
-                  <div className='heading-name'>
-                    <div className='status-badge' style={{backgroundColor: FormatUtils.getBillBadgeDetails(item.status).color}}>
-                      {FormatUtils.getBillBadgeDetails(item.status).text}
-                    </div>
-                    <div>
-                      <b>File name:</b> {FormatUtils.extractFileName(item.fileName)} &nbsp;
-                    </div>
-                    <div>
-                      <b>Issued At:</b> {FormatUtils.formatDateWithTime(item.dateOfIssue.date)} &nbsp;
-                    </div>
-                  </div>
-                  <div className="actionColumn">
-                    <MoreOutlined onClick={(event) => handleClick(event, item)} />
-                    <Menu
-                      anchorEl={anchorEl}
-                      open={Boolean(anchorEl)}
-                      onClose={handleClose}
-                      onClick={handleClose}
-                      PaperProps={{
-                        style: {
-                          boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-                        },
-                      }}
-                    >
-                      <MenuItem onClick={openDetailBillPage}>
-                        <Link className="text-decoration-none">
-                          <EyeOutlined /> Invoice Detail
-                        </Link>
-                      </MenuItem>
-                      <MenuItem>
-                        <Link onClick={() => downloadPDF(item.fileName, 'open')} className="text-decoration-none">
-                          <EyeOutlined /> View File
-                        </Link>
-                      </MenuItem>
-                      <MenuItem>
-                        <Link onClick={() => downloadPDF(item.fileName, 'download')} className="text-decoration-none">
-                          <DownloadOutlined /> Download File
-                        </Link>
-                      </MenuItem>
-                    </Menu>
-                  </div>
-                </div>                
-            </List.Item>
+                <div style={{ width: '100%' }}>
+                  <Row>
+                    <Col span={23}>
+                      <Row>
+                        <Col>
+                          <div className='status-badge' style={{ backgroundColor: FormatUtils.getBillBadgeDetails(item.status).color }}>
+                            {FormatUtils.getBillBadgeDetails(item.status).text}
+                          </div>
+                        </Col>
+                        <Col>
+                          <b>File name:</b> {FormatUtils.extractFileName(item.fileName)} &nbsp;
+                        </Col>
+                        <Col>
+                          <b>Issued At:</b> {FormatUtils.formatDateWithTime(item.dateOfIssue.date)} &nbsp;
+                        </Col>
+                      </Row>
+                    </Col>
+                    <Col span={1}>
+                      <div className="actionColumn">
+                        <MoreOutlined onClick={(event) => handleClick(event, item)} />
+                        <Menu
+                          anchorEl={anchorEl}
+                          open={Boolean(anchorEl)}
+                          onClose={handleClose}
+                          onClick={handleClose}
+                          PaperProps={{
+                            style: {
+                              boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+                            },
+                          }}
+                        >
+                          <MenuItem onClick={openDetailBillPage}>
+                            <Link className="text-decoration-none">
+                              <EyeOutlined /> Invoice Detail
+                            </Link>
+                          </MenuItem>
+                          <MenuItem>
+                            <Link onClick={() => downloadPDF(item.fileName, 'open')} className="text-decoration-none">
+                              <EyeOutlined /> View File
+                            </Link>
+                          </MenuItem>
+                          <MenuItem>
+                            <Link onClick={() => downloadPDF(item.fileName, 'download')} className="text-decoration-none">
+                              <DownloadOutlined /> Download File
+                            </Link>
+                          </MenuItem>
+                        </Menu>
+                      </div>
+                    </Col>
+                  </Row>
+                </div>
+              </List.Item>
             )}
           />
           {
             data.length < maxResults ?
-            <div style={{textAlign: 'center', width: '100%'}}>
+              <div style={{ textAlign: 'center', width: '100%' }}>
                 <a onClick={handleFetchMore}>Fetch More Data</a>
-            </div>
-            : null
+              </div>
+              : null
           }
         </div>
       )}

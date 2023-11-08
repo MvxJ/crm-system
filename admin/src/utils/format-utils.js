@@ -28,31 +28,35 @@ const formatDateWithTime = (dateString) => {
     return `${formattedDate}`;
 }
 
-const getBillBadgeDetails = (status) => {
+const getContractBadgeDetails = (status) => {
     var obj = {
       text: '',
       color: ''
     }
 
     switch (status) {
+      case 0:
+        obj.text = 'Awaiting Activation';
+        obj.color = '#69c0ff';
+        break;
       case 1:
         obj.text = 'Closed';
         obj.color = '#f5222d';
-        break;
+        break
       case 2:
         obj.text = 'Active';
         obj.color = '#95de64';
-        break
-      case 3:
-        obj.text = 'Inactive';
-        obj.color = '#ffd666';
-        break; 
+        break;
+        case 3:
+          obj.text = 'Inactive';
+          obj.color = '#ffd666';
+          break; 
     }
 
     return obj;
   }
 
-const getContractBadgeDetails = (status) => {
+const getBillBadgeDetails = (status) => {
     var obj = {
       text: '',
       color: ''

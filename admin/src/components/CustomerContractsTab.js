@@ -71,7 +71,7 @@ const CustomerContractsTab = ({ customerId }) => {
     };
 
     const handleNavigateConractDetail = () => {
-        navigate(`/contracts/detail/${c}`)
+        navigate(`/contracts/detail/${currentId}`)
     }
 
     useEffect(() => {
@@ -94,8 +94,9 @@ const CustomerContractsTab = ({ customerId }) => {
                         dataSource={data}
                         renderItem={(item) => (
                             <List.Item key={item.id}>
+                                <div style={{width: '100%'}}>
                                 <Row>
-                                    <Col spam={22}>
+                                    <Col span={23}>
                                         <Row>
                                             <Col>
                                                 <div className='status-badge' style={{ backgroundColor: FormatUtils.getContractBadgeDetails(item.status).color }}>
@@ -114,7 +115,7 @@ const CustomerContractsTab = ({ customerId }) => {
                                             </Col>
                                         </Row>
                                     </Col>
-                                    <Col span={2}>
+                                    <Col span={1} style={{textAlign: 'right'}}>
                                         <div className="actionColumn">
                                             <MoreOutlined onClick={(event) => handleClick(event, item)} />
                                             <Menu
@@ -137,6 +138,7 @@ const CustomerContractsTab = ({ customerId }) => {
                                         </div>
                                     </Col>
                                 </Row>
+                                </div>
                             </List.Item>
                         )}
                     />

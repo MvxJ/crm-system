@@ -30,10 +30,10 @@ const CustomerServiceRequestsTab = ({ customerId }) => {
         return;
       }
 
-        const newData = response.data.results.serviceRequests;
+      const newData = response.data.results.serviceRequests;
 
-        setMaxResults(response.data.results.maxResults);
-        setData(newData);
+      setMaxResults(response.data.results.maxResults);
+      setData(newData);
     } catch (error) {
       notification.error({
         message: "Can't fetch user service requests.",
@@ -61,32 +61,32 @@ const CustomerServiceRequestsTab = ({ customerId }) => {
     <>
       {loading ? (
         <Row>
-            <Col span={24} style={{textAlign: 'center'}}>
-                <Spin />
-            </Col>
+          <Col span={24} style={{ textAlign: 'center' }}>
+            <Spin />
+          </Col>
         </Row>
       ) : (
         <div>
-                        <Row className="number-of-showing">
-                Showing {data.length} of {maxResults}
-            </Row>
+          <Row className="number-of-showing">
+            Showing {data.length} of {maxResults}
+          </Row>
           <List
             dataSource={data}
             renderItem={(item) => (
               <List.Item key={item.id}>
-                {item.id} 
+                {item.id}
                 <div>
-                    <EyeOutlined />Details
+                  <EyeOutlined />Details
                 </div>
-            </List.Item>
+              </List.Item>
             )}
           />
           {
             data.length < maxResults ?
-            <div style={{textAlign: 'center', width: '100%'}}>
+              <div style={{ textAlign: 'center', width: '100%' }}>
                 <a onClick={handleFetchMore}>Fetch More Data</a>
-            </div>
-            : null
+              </div>
+              : null
           }
         </div>
       )}
