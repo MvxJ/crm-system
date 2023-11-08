@@ -3,21 +3,28 @@ import { List, Spin } from 'antd';
 import instance from 'utils/api';
 import { notification } from 'antd';
 import { Col, Row } from '../../node_modules/antd/es/index';
-import { DownloadOutlined, EyeOutlined } from '@ant-design/icons';
+import { DownloadOutlined, EyeOutlined, MoreOutlined } from '@ant-design/icons';
+import { Menu, MenuItem } from "@mui/material";
+import { Link } from "react-router-dom";
+import './TabStyles.css';
+import FormatUtils from 'utils/format-utils';
+import { useNavigate } from '../../node_modules/react-router-dom/dist/index';
 
 const CustomerIncoicesTab = ({ customerId }) => {
   const [data, setData] = useState([]);
   const [pageItems, setPageItems] = useState(12);
   const [loading, setLoading] = useState(false);
-  const [fetchingMore, setFetchingMore] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [currentId, setCurrentId] = useState(null);
   const [maxResults, setMaxResults] = useState(0);
+  const navigate = useNavigate();
 
-  const fetchData = async () => {
+  const fetchData = async (items) => {
     setLoading(true);
     setData([]);
 
     try {
-      const response = await instance.get(`/bill/list?customerId=${customerId}`);
+      const response = await instance.get(`/bill/list?customerId=${customerId}&items=${items}`);
 
       if (response.status !== 200) {
         notification.error({
@@ -42,21 +49,70 @@ const CustomerIncoicesTab = ({ customerId }) => {
     }
 
     setLoading(false);
-    setFetchingMore(false);
   };
 
   const handleFetchMore = () => {
-    setPageItems(pageItems + 12);
+    const maxItems = pageItems + 12;
+    setPageItems(maxItems);
 
-    // Set fetchingMore to true to clear the data array
-    setFetchingMore(true);
-
-    // Fetch more data
-    fetchData();
+    fetchData(maxItems);
   };
 
+  const downloadPDF = async (fileName, action) => {
+    try {
+      const encodedFileName = encodeURIComponent(fileName);
+      const downloadUrl = `/file/download?file=${encodedFileName}`;
+      const {data} = await instance.get(downloadUrl, {responseType: 'blob',});
+
+      if (action == 'open') {
+        openPdfInNewTab(data);
+      } else if (action == 'download') {
+        downloadFile(data, fileName);
+      }
+
+    } catch (e) {
+      notification.error({
+        message: "There was an error while downloading file.",
+        description: e.message,
+        placement: "bottomRight",
+        type: "error"
+      })
+    }
+  }
+
+  const openPdfInNewTab = (pdfContent) => {
+    const blob = new Blob([pdfContent], { type: 'application/pdf' });
+    const dataUrl = URL.createObjectURL(blob);
+    window.open(dataUrl, '_blank');
+  };
+
+  const downloadFile = (pdfContent, fileName) => {
+    const blob = new Blob([pdfContent], { type: 'application/pdf' });
+    const dataUrl = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+
+    anchor.href = dataUrl;
+    anchor.download = FormatUtils.extractFileName(fileName);
+    anchor.click();
+  }
+
+  const handleClick = (event, item) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+    setCurrentId(item.id);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+    setCurrentId(null);
+  };
+
+  const openDetailBillPage = () => {
+    navigate(`/invoices/detail/${currentId}`);
+  }
+
   useEffect(() => {
-    fetchData();
+    fetchData(pageItems);
   }, [customerId]);
 
   return (
@@ -68,18 +124,57 @@ const CustomerIncoicesTab = ({ customerId }) => {
             </Col>
         </Row>
       ) : (
-        <div>
+        <div>            
+          <Row className="number-of-showing">
+            Showing {data.length} of {maxResults}
+          </Row>
           <List
             dataSource={data}
             renderItem={(item) => (
               <List.Item key={item.id}>
-                {item.number} 
-                <div>
-                    <DownloadOutlined /> Download PDF
-                </div>
-                <div>
-                    <EyeOutlined />Details
-                </div>
+                <div className='box-wrapper' style={{width: '100%'}}>
+                  <div className='heading-name'>
+                    <div className='status-badge' style={{backgroundColor: FormatUtils.getBillBadgeDetails(item.status).color}}>
+                      {FormatUtils.getBillBadgeDetails(item.status).text}
+                    </div>
+                    <div>
+                      <b>File name:</b> {FormatUtils.extractFileName(item.fileName)} &nbsp;
+                    </div>
+                    <div>
+                      <b>Issued At:</b> {FormatUtils.formatDateWithTime(item.dateOfIssue.date)} &nbsp;
+                    </div>
+                  </div>
+                  <div className="actionColumn">
+                    <MoreOutlined onClick={(event) => handleClick(event, item)} />
+                    <Menu
+                      anchorEl={anchorEl}
+                      open={Boolean(anchorEl)}
+                      onClose={handleClose}
+                      onClick={handleClose}
+                      PaperProps={{
+                        style: {
+                          boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+                        },
+                      }}
+                    >
+                      <MenuItem onClick={openDetailBillPage}>
+                        <Link className="text-decoration-none">
+                          <EyeOutlined /> Invoice Detail
+                        </Link>
+                      </MenuItem>
+                      <MenuItem>
+                        <Link onClick={() => downloadPDF(item.fileName, 'open')} className="text-decoration-none">
+                          <EyeOutlined /> View File
+                        </Link>
+                      </MenuItem>
+                      <MenuItem>
+                        <Link onClick={() => downloadPDF(item.fileName, 'download')} className="text-decoration-none">
+                          <DownloadOutlined /> Download File
+                        </Link>
+                      </MenuItem>
+                    </Menu>
+                  </div>
+                </div>                
             </List.Item>
             )}
           />

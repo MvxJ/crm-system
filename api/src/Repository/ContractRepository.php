@@ -46,6 +46,7 @@ class ContractRepository extends ServiceEntityRepository
         string $order,
         string $orderBy,
         string $status,
+        string $customerId
     ): array {
         $queryBuilder = $this->createQueryBuilder('c');
         $queryBuilder->setMaxResults($itemsPerPage)
@@ -57,10 +58,15 @@ class ContractRepository extends ServiceEntityRepository
                 ->setParameter('status', (int)$status);
         }
 
+        if ($customerId != 'all' && !is_nan((int)$customerId)) {
+            $queryBuilder->innerJoin('c.user', 'customer')->where('customer.id = :customerId')
+                ->setParameter('customerId', (int)$customerId);
+        }
+
         return $queryBuilder->getQuery()->getResult();
     }
 
-    public function countContracts(string $status): int
+    public function countContracts(string $status, string $customerId): int
     {
         $queryBuilder = $this->createQueryBuilder('c')
             ->select('COUNT(c.id) as device_count');
@@ -68,6 +74,11 @@ class ContractRepository extends ServiceEntityRepository
         if ($status != 'all' && !is_nan((int)$status)) {
             $queryBuilder->where('c.status = :status')
                 ->setParameter('status', (int)$status);
+        }
+
+        if ($customerId != 'all' && !is_nan((int)$customerId)) {
+            $queryBuilder->innerJoin('c.user', 'customer')->where('customer.id = :customerId')
+                ->setParameter('customerId', (int)$customerId);
         }
 
         $result = $queryBuilder->getQuery()->getSingleScalarResult();

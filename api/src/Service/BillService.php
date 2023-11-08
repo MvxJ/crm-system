@@ -241,7 +241,8 @@ class BillService
             'dateOfIssue' => $bill->getDateOfIssue(),
             'paymentDate' => $bill->getPaymentDate(),
             'payDue' => $bill->getPayDue(),
-            'updatedAt' => $bill->getUpdateDate()
+            'updatedAt' => $bill->getUpdateDate(),
+            'fileName' => $bill->getFileName()
         ];
 
         if ($details) {

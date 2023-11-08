@@ -1,0 +1,38 @@
+.actionColumn {
+    box-shadow: none !important;
+    text-align: right;
+    position: relative;
+    top: 0;
+    right: 0;
+}
+
+.text-decoration-none {
+    color: #000;
+    text-decoration: none;
+}
+
+.box-wrapper {
+    display: flex;
+}
+
+.heading-name {
+    height: 25px;
+    align-items: center;
+    display: flex;
+}
+
+.status-badge {
+    border-radius: 15px;
+    padding: 5px;
+    text-align: center;
+    min-width: 75px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 15px;
+}
+
+.number-of-showing {
+    font-style: italic;
+}

@@ -37,14 +37,16 @@ class ContractService
         $order = $request->get('order', 'asc');
         $orderBy = $request->get('orderBy', 'id');
         $status = $request->get('status', 'all');
+        $customerId = $request->get('customerId', 'all');
         $contracts = $this->contractRepository->findContractsWithPagination(
             (int)$page,
             (int)$itemsPerPage,
             $order,
             $orderBy,
-            $status
+            $status,
+            $customerId
         );
-        $maxResults = $this->contractRepository->countContracts($status);
+        $maxResults = $this->contractRepository->countContracts($status, $customerId);
 
         if (count($contracts) == 0) {
             return null;

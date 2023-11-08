@@ -23,7 +23,7 @@ const MessageForm = () => {
 
   const fetchData = async () => {
     try {
-      const response = await instance.get(`/message/detail/${id}`);
+      const response = await instance.get(`/messages/detail/${id}`);
 
       if (response.status != 200) {
         notification.error({

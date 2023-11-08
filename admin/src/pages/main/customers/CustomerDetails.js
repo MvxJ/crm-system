@@ -21,6 +21,11 @@ import { useEffect, useState } from 'react';
 import './Customers.css';
 import instance from 'utils/api';
 import CustomerIncoicesTab from 'components/CustomerInvoicesTab';
+import CustomerContractsTab from 'components/CustomerContractsTab';
+import CustomerPaymentsTab from 'components/CustomerPaymentsTab';
+import CustomerMessagesTab from 'components/CustomerMessagesTab';
+import CustomerServiceRequestsTab from 'components/CustomerServiceRequestsTab';
+import CustomerDevicesTab from 'components/CustomerDevicesTab';
 
 const CustomerDetails = () => {
   const { id } = useParams();
@@ -55,7 +60,7 @@ const CustomerDetails = () => {
           <Badge count={customer.numberOfContracts} showZero color="rgb(24, 144, 255)" style={{ marginLeft: '5px' }} />
         </span>
       ),
-      children: 'Content of contracts',
+      children: (<CustomerContractsTab customerId={id}/>),
     },
     {
       key: 'invoices',
@@ -77,18 +82,18 @@ const CustomerDetails = () => {
           <Badge count={customer.numberOfPayments} showZero color="rgb(24, 144, 255)" style={{ marginLeft: '5px' }} />
         </span>
       ),
-      children: 'Content of payments',
+      children: (<CustomerPaymentsTab customerId={id}/>),
     },
     {
       key: 'service-requests',
       label: (
         <span className='tabLabel'>
-          <IssuesCloseOutlined />
+          <IssuesCloseOutlined/>
           Service Requests
           <Badge count={customer.numberOfServiceRequests} showZero color="rgb(24, 144, 255)" style={{ marginLeft: '5px' }} />
         </span>
       ),
-      children: 'Content service requests',
+      children: (<CustomerServiceRequestsTab customerId={id}/>),
     },
     {
       key: 'messages',
@@ -99,7 +104,7 @@ const CustomerDetails = () => {
           <Badge count={customer.numberOfMessages} showZero color="rgb(24, 144, 255)" style={{ marginLeft: '5px' }} />
         </span>
       ),
-      children: 'Content of messages',
+      children: (<CustomerMessagesTab customerId={id}/>),
     },
     {
       key: 'devices',
@@ -110,7 +115,7 @@ const CustomerDetails = () => {
           <Badge count={customer.numberOfDevices} showZero color="rgb(24, 144, 255)" style={{ marginLeft: '5px' }} />
         </span>
       ),
-      children: 'Content of devices'
+      children: (<CustomerDevicesTab customerId={id}/>)
     }
   ];
 

@@ -68,7 +68,7 @@ const MessagesList = () => {
 
       page += 1;
 
-      const response = await instance.get(`/message/list?page=${page}&items=${pageSize}&order=DESC&orderBy=createdDate`);
+      const response = await instance.get(`/messages/list?page=${page}&items=${pageSize}&order=DESC&orderBy=createdDate`);
       setData(response.data.results.messages);
       setTotalRows(response.data.results.maxResults);
     } catch (error) {

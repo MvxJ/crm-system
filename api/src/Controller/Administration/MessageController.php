@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/api/message', name: 'api_message_')]
+#[Route('/api/messages', name: 'api_message_')]
 class MessageController extends AbstractController
 {
     private MessageService $messageService;

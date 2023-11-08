@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/api/contract', name: 'api_contract_')]
+#[Route('/api/contracts', name: 'api_contract_')]
 class ContractController extends AbstractController
 {
     private ContractService $contractService;

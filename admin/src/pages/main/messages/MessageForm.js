@@ -40,7 +40,7 @@ const MessageForm = () => {
 
   async function fetchServiceRequests(customerId) {
     try {
-      const response = await instance.get(`/service/request/list?customerId=${customerId.value}&status=0`);
+      const response = await instance.get(`/service-requests/list?customerId=${customerId.value}&status=0`);
       if (response.data.results.serviceRequests) {
         setServiceRequests(response.data.results.serviceRequests);
       }
@@ -64,7 +64,7 @@ const MessageForm = () => {
         request.serviceRequest = formData.serviceRequest
       }
 
-      const response = await instance.post(`/message/create`, 
+      const response = await instance.post(`/messages/create`, 
         request
       )
 

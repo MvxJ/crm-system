@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/api/public/service/request', name: 'api_public_service_request_')]
+#[Route('/api/public/service-requests', name: 'api_public_service_request_')]
 class ServiceRequestController extends AbstractController
 {
     private ServiceRequestService $serviceRequestService;

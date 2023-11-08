@@ -65,18 +65,16 @@ class DeviceService
         $order = $request->get('order', 'id');
         $orderBy = $request->get('orderBy', 'ASC');
         $status = $request->get('status', 'all');
-        $maxDevices = $this->deviceRepository->countDevices($status);
+        $customerId = $request->get('customerId', 'all');
+        $maxDevices = $this->deviceRepository->countDevices($status, $customerId);
         $devices = $this->deviceRepository->findDevicesWithPagination(
             (int)$page,
             (int)$itemsPerPage,
             $orderBy,
             $order,
             $status,
+            $customerId
         );
-
-        if (count($devices) == 0) {
-            return null;
-        }
 
         /** @var Device $device */
         foreach ($devices as $device) {
