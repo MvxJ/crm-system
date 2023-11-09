@@ -35,9 +35,9 @@ const CustomerIncoicesTab = ({ customerId }) => {
         return;
       }
 
-      const newData = response.data.results.bills;
+      const newData = response.data.results ? response.data.results.bills : [];
 
-      setMaxResults(response.data.results.maxResults);
+      setMaxResults(response.data.results ? response.data.results.maxResults : 0);
       setData(newData);
     } catch (error) {
       notification.error({
@@ -132,8 +132,8 @@ const CustomerIncoicesTab = ({ customerId }) => {
             dataSource={data}
             renderItem={(item) => (
               <List.Item key={item.id}>
-                <div style={{ width: '100%' }}>
-                  <Row>
+                <div style={{ width: "100%"}}>
+                  <Row style={{display: 'flex', justifyContent: 'center'}}>
                     <Col span={23}>
                       <Row>
                         <Col>

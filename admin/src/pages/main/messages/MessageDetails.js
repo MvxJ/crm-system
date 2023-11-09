@@ -4,6 +4,8 @@ import { useNavigate, useParams } from '../../../../node_modules/react-router-do
 import { Button, Col, Row, notification } from '../../../../node_modules/antd/es/index';
 import instance from 'utils/api';
 import { UserOutlined, IssuesCloseOutlined, MailOutlined, PhoneOutlined, CalendarOutlined } from '@ant-design/icons';
+import FormatUtils from 'utils/format-utils';
+import './Messages.css'
 
 
 const MessageForm = () => {
@@ -99,6 +101,18 @@ const MessageForm = () => {
               </Button>
               : null
             }
+          </Col>
+        </Row>
+        <Row>
+          <Col span={22} offset={1}>
+            <h4>Type:</h4>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={22} offset={1}>
+            <div className='badge' style={{ backgroundColor: FormatUtils.getMessageBadgeObj(message.type).color }}>
+              {FormatUtils.getMessageBadgeObj(message.type).text}
+            </div>
           </Col>
         </Row>
         <Row>

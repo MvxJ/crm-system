@@ -29,9 +29,9 @@ const CustomerPaymentsTab = ({ customerId }) => {
         return;
       }
 
-        const newData = response.data.results.payments;
+        const newData = response.data.results ? response.data.results.payments : [];
 
-        setMaxResults(response.data.results.maxResults);
+        setMaxResults(response.data.results ? response.data.results.maxResults : 0);
         setData(newData);
     } catch (error) {
       notification.error({

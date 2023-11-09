@@ -36,9 +36,9 @@ const CustomerContractsTab = ({ customerId }) => {
                 return;
             }
 
-            const newData = response.data.results.contracts;
+            const newData = response.data.results ? response.data.results.contracts : [];
 
-            setMaxResults(response.data.results.maxResults);
+            setMaxResults(response.data.results ? response.data.results.maxResults : 0);
             setData(newData);
         } catch (error) {
             notification.error({
@@ -95,7 +95,7 @@ const CustomerContractsTab = ({ customerId }) => {
                         renderItem={(item) => (
                             <List.Item key={item.id}>
                                 <div style={{width: '100%'}}>
-                                <Row>
+                                <Row style={{display: 'flex', justifyContent: 'center'}}>
                                     <Col span={23}>
                                         <Row>
                                             <Col>

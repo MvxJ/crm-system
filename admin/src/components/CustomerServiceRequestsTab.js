@@ -30,9 +30,9 @@ const CustomerServiceRequestsTab = ({ customerId }) => {
         return;
       }
 
-      const newData = response.data.results.serviceRequests;
+      const newData = response.data.results ? response.data.results.serviceRequests : [];
 
-      setMaxResults(response.data.results.maxResults);
+      setMaxResults(response.data.results ? response.data.results.maxResults : 0);
       setData(newData);
     } catch (error) {
       notification.error({

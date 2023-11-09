@@ -28,6 +28,30 @@ const formatDateWithTime = (dateString) => {
     return `${formattedDate}`;
 }
 
+const getMessageBadgeObj = (type) => {
+  var obj = {
+    text: '',
+    color: ''
+  }
+
+  switch (type) {
+    case 0:
+      obj.text = 'Notification';
+      obj.color = '#91d5ff';
+      break;
+    case 1:
+      obj.text = 'Reminder';
+      obj.color = '#ffd666';
+      break
+    case 2:
+      obj.text = 'Message';
+      obj.color = '#e6f7ff';
+      break;
+  }
+
+  return obj;
+}
+
 const getContractBadgeDetails = (status) => {
     var obj = {
       text: '',
@@ -96,7 +120,8 @@ const FormatUtils = {
     formatDateWithTime,
     extractFileName,
     getBillBadgeDetails,
-    getContractBadgeDetails
+    getContractBadgeDetails,
+    getMessageBadgeObj
 }
 
 export default FormatUtils;

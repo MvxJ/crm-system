@@ -29,9 +29,9 @@ const CustomerDevicesTab = ({ customerId }) => {
         return;
       }
 
-        const newData = response.data.results.devices;
+        const newData = response.data.results ? response.data.results.devices : [];
 
-        setMaxResults(response.data.results.maxResults);
+        setMaxResults(response.data.results ? response.data.results.maxResults : 0);        
         setData(newData);
     } catch (error) {
       notification.error({
