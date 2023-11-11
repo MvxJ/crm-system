@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-#[Route('/api/public/model', name: 'api_public_model_')]
+#[Route('/api/public/models', name: 'api_public_model_')]
 class ModelController extends AbstractController
 {
     private ModelService $modelService;

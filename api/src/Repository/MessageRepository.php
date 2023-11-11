@@ -81,7 +81,7 @@ class MessageRepository extends ServiceEntityRepository
         }
 
         if ($customerId != 'all' && !is_nan((int)$customerId)) {
-            $queryBuilder->innerJoin(Customer::class, 'c')
+            $queryBuilder->innerJoin('m.customer', 'c')
                 ->andWhere('c.id = :customerId')
                 ->setParameter('customerId', (int)$customerId);
         }

@@ -71,8 +71,8 @@ security:
         - { path: ^/api/settings, roles: ROLE_ACCESS_ADMIN_PANEL }
         - { path: ^/api/users, roles: ROLE_ACCESS_ADMIN_PANEL }
         - { path: ^/api/comment, roles: ROLE_ACCESS_ADMIN_PANEL }
-        - { path: ^/api/model, roles: ROLE_ACCESS_ADMIN_PANEL }
-        - { path: ^/api/public/model, roles: PUBLIC_ACCESS }
+        - { path: ^/api/models, roles: ROLE_ACCESS_ADMIN_PANEL }
+        - { path: ^/api/public/models, roles: PUBLIC_ACCESS }
         - { path: ^/api/devices, roles: ROLE_ACCESS_ADMIN_PANEL }
         - { path: ^/api/document, roles: ROLE_ACCESS_ADMIN_PANEL }
         - { path: ^/api/public/document, roles: [IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER] }

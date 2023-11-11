@@ -16,7 +16,7 @@ import {
   NotificationOutlined,
   SafetyOutlined
 } from '@ant-design/icons';
-import { useParams } from '../../../../node_modules/react-router-dom/dist/index';
+import { useNavigate, useParams } from '../../../../node_modules/react-router-dom/dist/index';
 import { useEffect, useState } from 'react';
 import './Customers.css';
 import instance from 'utils/api';
@@ -26,8 +26,10 @@ import CustomerPaymentsTab from 'components/CustomerPaymentsTab';
 import CustomerMessagesTab from 'components/CustomerMessagesTab';
 import CustomerServiceRequestsTab from 'components/CustomerServiceRequestsTab';
 import CustomerDevicesTab from 'components/CustomerDevicesTab';
+import { setUserAgent } from 'react-device-detect';
 
 const CustomerDetails = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
   const [customer, setCustomer] = useState({
     id: id,
@@ -119,6 +121,35 @@ const CustomerDetails = () => {
     }
   ];
 
+  const handleCustomerDelete = async () => {
+    try {
+      const response = await instance.delete(`/customers/${id}/delete`);
+
+      if (response.status != 200) {
+        notification.error({
+          message: "Can't delete customer",
+          type: 'error',
+          placement: 'bottomRight'
+        })
+      }
+
+      navigate(`/customers`);
+
+      notification.success({
+        message: 'Successfully deleted customer',
+        type: 'success',
+        placement: 'bottomRight'
+      });
+    } catch (e) {
+      notification.error({
+        message: "Can't delete customer",
+        description: e.message,
+        type: 'error',
+        placement: 'bottomRight'
+      });
+    }
+  }
+
   const getCustomerNameAndSurname = () => {
     var string = customer.firstName + ' ';
 
@@ -130,7 +161,11 @@ const CustomerDetails = () => {
   }
 
   const getCustomerInicials = () => {
-    return customer.firstName.slice(0, 1).toUpperCase() + customer.lastName.slice(0, 1).toUpperCase();
+    if (customer.firstName == null || customer.lastName == null) {
+      return '';
+    }
+
+    return customer.firstName?.slice(0, 1).toUpperCase() + customer.lastName?.slice(0, 1).toUpperCase();
   }
 
   const getBadgeDetails = () => {
@@ -205,7 +240,7 @@ const CustomerDetails = () => {
               <EditOutlined /> Edit
             </Button>
             {customer.isActive ?
-              <Button type="primary" danger style={{ marginLeft: '5px' }}>
+              <Button type="primary" danger style={{ marginLeft: '5px' }} onClick={handleCustomerDelete}>
                 <DeleteOutlined /> Delete
               </Button>
               :

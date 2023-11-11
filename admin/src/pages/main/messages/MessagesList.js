@@ -10,8 +10,6 @@ import { Link } from "react-router-dom";
 import { useNavigate } from '../../../../node_modules/react-router-dom/dist/index';
 import './Messages.css';
 
-// ==============================|| SAMPLE PAGE ||============================== //
-
 const MessagesList = () => {
   const navigate = useNavigate();
   const [data, setData] = useState([]);

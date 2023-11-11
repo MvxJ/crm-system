@@ -260,6 +260,11 @@ class ServiceRequestService
             'status' => $serviceRequest->getStatus()
         ];
 
+        $serviceRequestArray['contract'] = [
+            'id' => $serviceRequest->getContract()->getId(),
+            'number' => $serviceRequest->getContract()->getNumber()
+        ];
+        
         if ($serviceRequest->getUser() != null) {
             $serviceRequestArray['user'] = [
                 'id' => $serviceRequest->getUser()->getId(),
@@ -268,10 +273,6 @@ class ServiceRequestService
         }
 
         if ($details) {
-            $serviceRequestArray['contract'] = [
-                'id' => $serviceRequest->getContract()->getId(),
-                'number' => $serviceRequest->getContract()->getNumber()
-            ];
             $serviceRequestArray['localization'] = [
                 'address' => $serviceRequest->getContract()->getAddress(),
                 'city' => $serviceRequest->getContract()->getCity(),

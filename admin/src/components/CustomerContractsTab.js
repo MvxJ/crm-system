@@ -94,50 +94,50 @@ const CustomerContractsTab = ({ customerId }) => {
                         dataSource={data}
                         renderItem={(item) => (
                             <List.Item key={item.id}>
-                                <div style={{width: '100%'}}>
-                                <Row style={{display: 'flex', justifyContent: 'center'}}>
-                                    <Col span={23}>
-                                        <Row>
-                                            <Col>
-                                                <div className='status-badge' style={{ backgroundColor: FormatUtils.getContractBadgeDetails(item.status).color }}>
-                                                    {FormatUtils.getContractBadgeDetails(item.status).text}
-                                                </div>
-                                            </Col>
-                                            <Col>
-                                                <b>Created at:</b> {FormatUtils.formatDateWithTime(item.createdAt.date)} &nbsp;
+                                <div style={{ width: '100%' }}>
+                                    <Row style={{ display: 'flex', justifyContent: 'center' }}>
+                                        <Col span={23}>
+                                            <Row>
+                                                <Col>
+                                                    <div className='status-badge' style={{ backgroundColor: FormatUtils.getContractBadgeDetails(item.status).color }}>
+                                                        {FormatUtils.getContractBadgeDetails(item.status).text}
+                                                    </div>
+                                                </Col>
+                                                <Col>
+                                                    <b>Created at:</b> {FormatUtils.formatDateWithTime(item.createdAt.date)} &nbsp;
 
-                                            </Col>
-                                            <Col>
-                                                <b>Contract number:</b> {item.contractNumber} &nbsp;
-                                            </Col>
-                                            <Col>
-                                                <b>Start service date:</b> {FormatUtils.formatDateWithTime(item.startDate.date)} &nbsp;
-                                            </Col>
-                                        </Row>
-                                    </Col>
-                                    <Col span={1} style={{textAlign: 'right'}}>
-                                        <div className="actionColumn">
-                                            <MoreOutlined onClick={(event) => handleClick(event, item)} />
-                                            <Menu
-                                                anchorEl={anchorEl}
-                                                open={Boolean(anchorEl)}
-                                                onClose={handleClose}
-                                                onClick={handleClose}
-                                                PaperProps={{
-                                                    style: {
-                                                        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-                                                    },
-                                                }}
-                                            >
-                                                <MenuItem onClick={handleNavigateConractDetail}>
-                                                    <Link className="text-decoration-none">
-                                                        <EyeOutlined /> Contract Details
-                                                    </Link>
-                                                </MenuItem>
-                                            </Menu>
-                                        </div>
-                                    </Col>
-                                </Row>
+                                                </Col>
+                                                <Col>
+                                                    <b>Contract number:</b> {item.contractNumber} &nbsp;
+                                                </Col>
+                                                <Col>
+                                                    <b>Start service date:</b> {FormatUtils.formatDateWithTime(item.startDate.date)} &nbsp;
+                                                </Col>
+                                            </Row>
+                                        </Col>
+                                        <Col span={1} style={{ textAlign: 'right' }}>
+                                            <div className="actionColumn">
+                                                <MoreOutlined onClick={(event) => handleClick(event, item)} />
+                                                <Menu
+                                                    anchorEl={anchorEl}
+                                                    open={Boolean(anchorEl)}
+                                                    onClose={handleClose}
+                                                    onClick={handleClose}
+                                                    PaperProps={{
+                                                        style: {
+                                                            boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+                                                        },
+                                                    }}
+                                                >
+                                                    <MenuItem onClick={handleNavigateConractDetail}>
+                                                        <Link className="text-decoration-none">
+                                                            <EyeOutlined /> Contract Details
+                                                        </Link>
+                                                    </MenuItem>
+                                                </Menu>
+                                            </div>
+                                        </Col>
+                                    </Row>
                                 </div>
                             </List.Item>
                         )}

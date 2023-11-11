@@ -3,16 +3,21 @@ import { List, Spin } from 'antd';
 import instance from 'utils/api';
 import { notification } from 'antd';
 import { Col, Row } from '../../node_modules/antd/es/index';
-import { DownloadOutlined, EyeOutlined } from '@ant-design/icons';
+import { Menu, MenuItem } from "@mui/material";
+import { Link } from "react-router-dom";
+import { MoreOutlined, EyeOutlined } from '@ant-design/icons';
 import './TabStyles.css';
+import { useNavigate } from '../../node_modules/react-router-dom/dist/index';
+import FormatUtils from 'utils/format-utils';
 
 const CustomerServiceRequestsTab = ({ customerId }) => {
   const [data, setData] = useState([]);
   const [pageItems, setPageItems] = useState(12);
-  const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [fetchingMore, setFetchingMore] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [currentId, setCurrentId] = useState(null);
   const [maxResults, setMaxResults] = useState(0);
+  const navigate = useNavigate();
 
   const fetchData = async (items) => {
     setLoading(true);
@@ -46,6 +51,21 @@ const CustomerServiceRequestsTab = ({ customerId }) => {
     setLoading(false);
   };
 
+  const handleServiceRequestDetail = () => {
+    navigate(`/service/requests/details/${currentId}`);
+  }
+
+  const handleClick = (event, item) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+    setCurrentId(item.id);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+    setCurrentId(null);
+  };
+
   const handleFetchMore = () => {
     const maxResults = 12 + pageItems;
     setPageItems(maxResults);
@@ -74,9 +94,53 @@ const CustomerServiceRequestsTab = ({ customerId }) => {
             dataSource={data}
             renderItem={(item) => (
               <List.Item key={item.id}>
-                {item.id}
-                <div>
-                  <EyeOutlined />Details
+                <div style={{ width: '100%' }}>
+                  <Row style={{ display: 'flex', justifyContent: 'center' }}>
+                    <Col span={23}>
+                      <Row>
+                        <Col>
+                          <div className='status-badge' style={{ backgroundColor: FormatUtils.getServiceRequestStatusBadge(item.status).color }}>
+                            {FormatUtils.getServiceRequestStatusBadge(item.status).text}
+                          </div>
+                        </Col>
+                        <Col>
+                          <b>Created at:</b> {FormatUtils.formatDateWithTime(item.createdDate.date)} &nbsp;
+
+                        </Col>
+                        <Col>
+                          <b>Contract number:</b> {item.contract.number} &nbsp;
+                        </Col>
+                        {item.user ?
+                          <Col>
+                            <b>Techincian:</b> {item.user.email} &nbsp;
+                          </Col>
+                          : null
+                        }
+                      </Row>
+                    </Col>
+                    <Col span={1} style={{ textAlign: 'right' }}>
+                      <div className="actionColumn">
+                        <MoreOutlined onClick={(event) => handleClick(event, item)} />
+                        <Menu
+                          anchorEl={anchorEl}
+                          open={Boolean(anchorEl)}
+                          onClose={handleClose}
+                          onClick={handleClose}
+                          PaperProps={{
+                            style: {
+                              boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+                            },
+                          }}
+                        >
+                          <MenuItem onClick={handleServiceRequestDetail}>
+                            <Link className="text-decoration-none">
+                              <EyeOutlined /> Details
+                            </Link>
+                          </MenuItem>
+                        </Menu>
+                      </div>
+                    </Col>
+                  </Row>
                 </div>
               </List.Item>
             )}
