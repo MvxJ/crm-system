@@ -108,7 +108,7 @@ const CustomerIncoicesTab = ({ customerId }) => {
   };
 
   const openDetailBillPage = () => {
-    navigate(`/invoices/detail/${currentId}`);
+    navigate(`/office/invoices/detail/${currentId}`);
   }
 
   useEffect(() => {

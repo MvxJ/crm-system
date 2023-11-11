@@ -71,7 +71,7 @@ const CustomerContractsTab = ({ customerId }) => {
     };
 
     const handleNavigateConractDetail = () => {
-        navigate(`/contracts/detail/${currentId}`)
+        navigate(`/office/contracts/detail/${currentId}`)
     }
 
     useEffect(() => {

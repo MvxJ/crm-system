@@ -74,7 +74,7 @@ const CustomerPaymentsTab = ({ customerId }) => {
   }, [customerId]);
 
   const handlePaymentDetails = () => {
-    navigate(`/payments/details/${currentId}`);
+    navigate(`/office/payments/detail/${currentId}`);
   }
 
   return (

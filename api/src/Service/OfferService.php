@@ -101,7 +101,9 @@ class OfferService
             return false;
         }
 
-        $this->entityManager->remove($offer);
+        $offer->setDeleted(true);
+
+        $this->entityManager->persist($offer);
         $this->entityManager->flush();
 
         return true;
@@ -177,7 +179,8 @@ class OfferService
             'discountType' => $offer->getDiscountType(),
             'forNewUsers' => $offer->isForNewUsers(),
             'forStudents' => $offer->isForStudents(),
-            'validDue' => $offer->getValidDue()
+            'validDue' => $offer->getValidDue(),
+            'isDeleted' => $offer->isDeleted()
         ];
 
         if (count($offer->getDevices()) > 0 && $details = true) {

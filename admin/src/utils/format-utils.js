@@ -244,6 +244,57 @@ const getDeviceStatus = (status) => {
   return obj;
 }
 
+const getOfferDuration = (duration) => {
+  var text = '';
+  
+  switch (duration) {
+    case 0:
+      text = '12 Months';
+      break;
+    case 1:
+      text = '24 Months';
+      break;
+    default:
+      text = 'No limit'
+      break;
+  }
+
+  return text;
+}
+
+const getOfferType = (type) => {
+  var text = '';
+
+  switch (type) {
+    case 0:
+      text = 'Internet';
+      break;
+    case 1:
+      text = 'Television';
+      break;
+    case 2:
+      text = 'Internet + Television';
+      break;
+    default:
+      text = 'Unknown';
+      break;
+  }
+
+  return text;
+}
+
+const getOfferDiscount = (discount, discountType, price) => {
+  if (discount == 0 || discount == null || discountType == null) {
+    return '-';
+  }
+
+  if (discountType == 1) {
+    return ((price * discount) / 100).toFixed(2);
+  }
+
+  return discount;
+}
+
 const FormatUtils = {
   formatDateWithTime,
   extractFileName,
@@ -254,7 +305,10 @@ const FormatUtils = {
   getPaidBy,
   getPaymentStatusBadge,
   getServiceRequestStatusBadge,
-  getDeviceStatus
+  getDeviceStatus,
+  getOfferDuration,
+  getOfferType,
+  getOfferDiscount
 }
 
 export default FormatUtils;
