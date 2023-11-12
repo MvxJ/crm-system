@@ -253,7 +253,9 @@ class ServiceRequestService
             'id' => $serviceRequest->getId(),
             'customer' => [
                 'id' => $serviceRequest->getCustomer()->getId(),
-                'email' => $serviceRequest->getCustomer()->getEmail()
+                'email' => $serviceRequest->getCustomer()->getEmail(),
+                'name' => $serviceRequest->getCustomer()->getFirstName(),
+                'surname' => $serviceRequest->getCustomer()->getLastName()
             ],
             'closed' => $serviceRequest->getIsClosed(),
             'createdDate' => $serviceRequest->getCreatedDate(),
@@ -268,8 +270,12 @@ class ServiceRequestService
         if ($serviceRequest->getUser() != null) {
             $serviceRequestArray['user'] = [
                 'id' => $serviceRequest->getUser()->getId(),
-                'email' => $serviceRequest->getUser()->getEmail()
+                'email' => $serviceRequest->getUser()->getEmail(),
+                'name' => $serviceRequest->getUser()->getName(),
+                'surname' => $serviceRequest->getUser()->getSurname()
             ];
+        } else {
+            $serviceRequestArray['user'] = null;
         }
 
         if ($details) {

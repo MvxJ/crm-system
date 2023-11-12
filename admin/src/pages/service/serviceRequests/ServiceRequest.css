@@ -2,3 +2,15 @@
     color: #000;
     text-decoration: none;
 }
+
+.badge {
+    border-radius: 15px;
+    padding: 5px;
+    text-align: center;
+    min-width: 75px;
+    max-width: 100px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

@@ -1,11 +1,11 @@
 import MainCard from 'components/MainCard';
 import './Visit.css';
 
-const VisitsList = () => (
+const VisitForm = () => (
   <>
-    <MainCard title="Service Visits">
+    <MainCard title="Service Visits Form">
     </MainCard>
   </>
 );
 
-export default VisitsList;
+export default VisitForm;

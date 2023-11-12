@@ -52,7 +52,7 @@ const CustomerServiceRequestsTab = ({ customerId }) => {
   };
 
   const handleServiceRequestDetail = () => {
-    navigate(`/service/requests/details/${currentId}`);
+    navigate(`/service/requests/detail/${currentId}`);
   }
 
   const handleClick = (event, item) => {
