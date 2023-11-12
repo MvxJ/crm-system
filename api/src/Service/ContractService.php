@@ -152,7 +152,9 @@ class ContractService
             return false;
         }
 
-        $this->entityManager->remove($contract);
+        $contract->setStatus(Contract::CONTRACT_STATUS_CLOSED);
+        
+        $this->entityManager->persist($contract);
         $this->entityManager->flush();
 
         return true;
@@ -223,7 +225,9 @@ class ContractService
             'contractNumber' => $contract->getNumber(),
             'customer' => [
                 'id' => $contract->getUser()->getId(),
-                'email' => $contract->getUser()->getEmail()
+                'email' => $contract->getUser()->getEmail(),
+                'name' => $contract->getUser()->getFirstName(),
+                'surname' => $contract->getUser()->getLastName()
             ],
             'status' => $contract->getStatus(),
             'startDate' => $contract->getStartDate(),
