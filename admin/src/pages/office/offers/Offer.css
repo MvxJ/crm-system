@@ -2,3 +2,24 @@
     color: #000;
     text-decoration: none;
 }
+
+.badge {
+    border-radius: 15px;
+    padding: 5px;
+    text-align: center;
+    min-width: 75px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.title-container {
+    display: flex;
+    height: 30px;
+    align-items: center;
+}
+
+.title-container .badge {
+    margin-left: 5px;
+}

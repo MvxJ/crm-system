@@ -248,7 +248,9 @@ class BillService
         if ($details) {
             $billArray['customer'] = [
                 'id' => $bill->getCustomer()->getId(),
-                'username' => $bill->getCustomer()->getEmail()
+                'username' => $bill->getCustomer()->getEmail(),
+                'name' => $bill->getCustomer()->getFirstName(),
+                'surname' => $bill->getCustomer()->getLastName()
             ];
 
             if ($bill->getContract()) {

@@ -47,7 +47,6 @@ const MessageForm = () => {
         createdAt: response.data.message.createdAt
       });
 
-      console.log(message.createdAt);
     } catch (e) {
       notification.error({
         type: 'error',
@@ -75,8 +74,8 @@ const MessageForm = () => {
     return `${formattedDate}`;
   }
 
-  const navigateServiceRequest = () => {
-
+  const navigateServiceRequest = (id) => {
+    navigate(`/service/requests/detail/${id}`)
   }
 
   const navigateUserDetail = () => {
@@ -96,7 +95,7 @@ const MessageForm = () => {
               <UserOutlined /> {message.customer?.name} {message.customer?.surname}
             </Button>
             {message.serviceRequest ?
-              <Button type="primary" onClick={navigateServiceRequest} style={{ marginLeft: '5px' }}>
+              <Button type="primary" onClick={navigateServiceRequest(message.serviceRequest?.id)} style={{ marginLeft: '5px' }}>
                 <IssuesCloseOutlined /> Service Request #{message.serviceRequest?.id}
               </Button>
               : null

@@ -13,3 +13,13 @@
     justify-content: center;
     align-items: center;
 }
+
+.title-container {
+    display: flex;
+    height: 30px;
+    align-items: center;
+}
+
+.title-container .badge {
+    margin-left: 5px;
+}

@@ -190,7 +190,8 @@ class OfferService
             foreach ($devices as $device) {
                 $offerArray['devices'][] = [
                     'name' => $device->getName(),
-                    'id' => $device->getId()
+                    'id' => $device->getId(),
+                    'type' => $device->getType(),
                 ];
             }
         }
