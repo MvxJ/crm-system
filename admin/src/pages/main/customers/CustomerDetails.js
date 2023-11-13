@@ -14,7 +14,9 @@ import {
   IdcardOutlined,
   CalendarOutlined,
   NotificationOutlined,
-  SafetyOutlined
+  SafetyOutlined,
+  CaretDownOutlined,
+  CaretUpOutlined
 } from '@ant-design/icons';
 import { useNavigate, useParams } from '../../../../node_modules/react-router-dom/dist/index';
 import { useEffect, useState } from 'react';
@@ -26,11 +28,12 @@ import CustomerPaymentsTab from 'components/CustomerPaymentsTab';
 import CustomerMessagesTab from 'components/CustomerMessagesTab';
 import CustomerServiceRequestsTab from 'components/CustomerServiceRequestsTab';
 import CustomerDevicesTab from 'components/CustomerDevicesTab';
-import { setUserAgent } from 'react-device-detect';
+import AddressInfo from 'components/AddressInfo';
 
 const CustomerDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const [showAddresses, setShowAddresses] = useState(false);
   const [customer, setCustomer] = useState({
     id: id,
     firstName: '',
@@ -50,7 +53,8 @@ const CustomerDetails = () => {
     numberOfMessages: 0,
     twoFactorAuth: false,
     smsNotification: false,
-    emailNotification: false
+    emailNotification: false,
+    addresses: []
   });
   const tabs = [
     {
@@ -214,7 +218,8 @@ const CustomerDetails = () => {
         numberOfMessages: response.data.customer.numberOfMessages,
         twoFactorAuth: response.data.customer.twoFactorAuth,
         smsNotification: response.data.customer.smsNotification,
-        emailNotification: response.data.customer.emailNotification
+        emailNotification: response.data.customer.emailNotification,
+        addresses: response.data.customer.addresses
       });
     } catch (e) {
       notification.error({
@@ -225,6 +230,10 @@ const CustomerDetails = () => {
       });
     }
   }
+
+  const toggleAddresses = () => {
+    setShowAddresses(!showAddresses);
+  };
 
   useEffect(() => {
     fetchCustomerData();
@@ -294,26 +303,28 @@ const CustomerDetails = () => {
           </Col>
         </Row>
         <Row>
-          <Col span={22} offset={1}>
-            <h4>Addresses</h4>
+          <Col span={22} offset={1} onClick={toggleAddresses} style={{cursor: 'pointer'}}>
+            <h4>Addresses { showAddresses == false ? <CaretDownOutlined /> : <CaretUpOutlined /> }</h4>
           </Col>
         </Row>
-        <Row>
-          <Col span={22} offset={1}>
-            <Row>
-              <Col span={12}>
-                <Row>
-                  <span>Contact Address</span>
-                </Row>
-              </Col>
-              <Col span={12}>
-                <Row>
-                  <span>Billing Address</span>
-                </Row>
-              </Col>
-            </Row>
-          </Col>
-        </Row>
+        {showAddresses && (
+          <Row id="addressesRow">
+            <Col span={22} offset={1}>
+              <Row>
+                <Col span={12}>
+                  <Row>
+                    <AddressInfo addresses={customer.addresses} type="contact" />
+                  </Row>
+                </Col>
+                <Col span={12}>
+                  <Row>
+                    <AddressInfo addresses={customer.addresses} type="billing" />
+                  </Row>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+        )}
         <Row>
           <Col span={22} offset={1}>
             <h4>Customer data</h4>

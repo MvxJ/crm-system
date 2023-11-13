@@ -215,6 +215,42 @@ class CustomerService
             $customerArray['numberOfMessages'] = count($customer->getMessages());
         }
 
+         if ($customer->getSettings() != null && $details) {
+            $customerSettings = $customer->getSettings();
+
+                if ($customerSettings->getContactAddress()) {
+                    $contactAddress  = $customer->getSettings()->getContactAddress();
+
+                    $customerArray['addresses']['contact'] = [
+                        "id" => $contactAddress->getId(),
+                        "country" => $contactAddress->getCountry(),
+                        "city" => $contactAddress->getCity(),
+                        "zipCode" => $contactAddress->getZipCode(),
+                        "address" => $contactAddress->getAddress(),
+                        "phoneNumber" => $contactAddress->getPhoneNumber(),
+                        "emailAddress" => $contactAddress->getEmailAddress(),
+                        "companyName" => $contactAddress->getCompanyName(),
+                        "taxId" => $contactAddress->getTaxId()
+                    ];
+                }
+
+                if ($customerSettings->getBillingAddress()) {
+                    $billingAddress  = $customer->getSettings()->getBillingAddress();
+
+                    $customerArray['addresses']['contact'] = [
+                        "id" => $billingAddress->getId(),
+                        "country" => $billingAddress->getCountry(),
+                        "city" => $billingAddress->getCity(),
+                        "zipCode" => $billingAddress->getZipCode(),
+                        "address" => $billingAddress->getAddress(),
+                        "phoneNumber" => $billingAddress->getPhoneNumber(),
+                        "emailAddress" => $billingAddress->getEmailAddress(),
+                        "companyName" => $billingAddress->getCompanyName(),
+                        "taxId" => $billingAddress->getTaxId()
+                    ];
+                }
+         }
+
         return  $customerArray;
     }
 
