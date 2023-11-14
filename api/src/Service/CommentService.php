@@ -88,7 +88,8 @@ class CommentService
     {
         $comment = $this->commentRepository->findOneBy(['id' => $commentId]);
 
-        if (!$comment || $comment->getUser()->getEmail() != $userEmail) {
+        if (!$comment || $comment->getUser()->getUsername() != $userEmail) {
+            dd($comment, $userEmail);
             return false;
         }
 
@@ -174,6 +175,7 @@ class CommentService
             'message' => $comment->getMessage(),
             'isHidden' => $comment->getIsHidden(),
             'author' => [
+                'id' => $comment->getUser()->getId(),
                 'email' => $comment->getUser()->getEmail()
             ],
             'createdAt' => $comment->getCreatedDate(),

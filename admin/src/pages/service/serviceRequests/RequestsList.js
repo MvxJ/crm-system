@@ -108,7 +108,7 @@ const RequestsList = () => {
       width: 100,
       renderCell: (params) => (
         <div className="badge" style={{ color: params.row.closed == true ? '#95de64' : '#ff7875', textAlign: 'center' }}>
-          {params.row.isDeleted == closed ? <CheckOutlined /> : <CloseOutlined />}
+          {params.row.closed == true ? <CheckOutlined /> : <CloseOutlined />}
         </div>
       ),
     },
@@ -156,7 +156,7 @@ const RequestsList = () => {
             {
               currentId !== null && !data.find(row => row.id === currentId).isDeleted ?
                 <MenuItem onClick={() => handleDeleteRequest(currentId)}>
-                  <DeleteOutlined /> Close Issue
+                  <CheckOutlined /> Close Issue
                 </MenuItem>
                 : null
             }
@@ -216,22 +216,22 @@ const RequestsList = () => {
     navigate(`/service/requests/add`);
   }
 
-  const handleEditRequest = (modelId) => {
-    navigate(`/service/requests/edit/${modelId}`);
+  const handleEditRequest = (id) => {
+    navigate(`/service/requests/edit/${id}`);
   }
 
-  const handleDeleteRequest = async (modelId) => {
+  const handleDeleteRequest = async (id) => {
     try {
-      // const response = await instance.delete(`/models/${modelId}/delete`);
+      const response = await instance.delete(`/service-requests/${id}/delete`);
 
       if (response.status != 200) {
-        showNotification('An error occured during deleting service request.', 'error');
+        showNotification('An error occured during closing service request.', 'error');
       }
 
       showNotification('Successfully deleted service request.', 'success');
       fetchData();
     } catch (e) {
-      showNotification('An error occured during deleting service request.', 'error');
+      showNotification('An error occured during closing service request.', 'error');
     }
   }
 

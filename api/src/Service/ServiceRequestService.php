@@ -186,7 +186,11 @@ class ServiceRequestService
             return false;
         }
 
-        $this->entityManager->remove($serviceRequest);
+        $serviceRequest->setIsClosed(true);
+        $serviceRequest->setCloseDate(new \DateTime());
+        $serviceRequest->setStatus(ServiceRequest::STATUS_CLOSED);
+
+        $this->entityManager->persist($serviceRequest);
         $this->entityManager->flush();
 
         return true;
@@ -285,6 +289,8 @@ class ServiceRequestService
                 'zipCode' => $serviceRequest->getContract()->getZipCode()
             ];
             $serviceRequestArray['description'] = $serviceRequest->getDescription();
+            $serviceRequestArray['serviceVisits'] = count($serviceRequest->getServiceVisits());
+            $serviceRequestArray['comments'] = count($serviceRequest->getComments());
         }
 
         return $serviceRequestArray;
