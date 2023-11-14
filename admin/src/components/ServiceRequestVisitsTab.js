@@ -107,14 +107,14 @@ const ServiceRequestVisitsTab = ({ serviceRequestId }) => {
                           <b>Date:</b> {FormatUtils.formatDateWithTime(item.date.date)} &nbsp;
                         </Col>
                         <Col>
-                            <ClockCircleOutlined /> <b>Start Time: </b>{FormatUtils.formatDateWithTime(item.start.date)} &nbsp;
+                            <ClockCircleOutlined /> <b>Start Time: </b>{FormatUtils.formatHourWithMinutes(item.start.date)} &nbsp;
                         </Col>
                         <Col>
-                            <ClockCircleOutlined /> <b>End Time: </b>{FormatUtils.formatDateWithTime(item.end.date)} &nbsp;
+                            <ClockCircleOutlined /> <b>End Time: </b>{FormatUtils.formatHourWithMinutes(item.end.date)} &nbsp;
                         </Col>
                         {item.user ?
                           <Col>
-                            <b>Techincian:</b> {item.user.username} &nbsp;
+                            <b>Techincian:</b> {item.user.name} {item.user.surname} &nbsp;
                           </Col>
                           : null
                         }

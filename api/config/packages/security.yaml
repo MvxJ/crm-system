@@ -98,6 +98,7 @@ security:
         - { path: ^/api/public/offer, roles: PUBLIC_ACCESS }
         - { path: ^/api/file/display/*, roles: PUBLIC_ACCESS }
         - { path: ^/api/file/download/*, roles: [ IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER, ROLE_ACCESS_ADMIN_PANEL ] }
+        - { path: ^/api/doc, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:

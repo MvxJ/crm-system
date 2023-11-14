@@ -8,7 +8,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Tag(name="Contracts")
+ */
 #[Route('/api/public/contracts', name: 'api_public_contract_')]
 class ContractController extends AbstractController
 {
@@ -19,7 +23,7 @@ class ContractController extends AbstractController
         $this->contractService = $contractService;
     }
 
-    #[Route('/list', name: 'list')]
+    #[Route('/list', name: 'list', methods: ['GET'])]
     public function getContracts(Request $request): JsonResponse
     {
         try {
@@ -44,7 +48,7 @@ class ContractController extends AbstractController
         }
     }
 
-    #[Route('/{id}/details', name: 'details')]
+    #[Route('/{id}/details', name: 'details', methods: ['GET'])]
     public function getContractDetails(int $id, Request $request): JsonResponse
     {
         try {

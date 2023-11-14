@@ -250,7 +250,9 @@ class ServiceVisitService
             'end' => $serviceVisit->getEndTime(),
             'user' => [
                 'id' => $serviceVisit->getUser()->getId(),
-                'username' => $serviceVisit->getUser()->getUsername()
+                'username' => $serviceVisit->getUser()->getUsername(),
+                'name' => $serviceVisit->getUser()->getName(),
+                'surname' => $serviceVisit->getUser()->getSurname()
             ],
             'cancelled' => $serviceVisit->isCancelled()
         ];

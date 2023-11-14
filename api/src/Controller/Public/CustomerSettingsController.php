@@ -9,7 +9,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Tag(name="Settings")
+ */
 #[Route("/api/public/customers/settings", name: "api_public_customers_settings_")]
 class CustomerSettingsController extends AbstractController
 {

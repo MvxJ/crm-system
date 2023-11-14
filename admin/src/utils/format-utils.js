@@ -28,6 +28,18 @@ const formatDateWithTime = (dateString) => {
   return `${formattedDate}`;
 }
 
+const formatHourWithMinutes = (dateString) => {
+  const date = new Date(dateString);
+  const options = {
+    hour: '2-digit',
+    minute: '2-digit',
+  };
+
+  const formattedTime = date.toLocaleString('en-US', options);
+
+  return `${formattedTime}`;
+};
+
 const getMessageBadgeObj = (type) => {
   var obj = {
     text: '',
@@ -326,7 +338,8 @@ const FormatUtils = {
   getOfferDuration,
   getOfferType,
   getOfferDiscount,
-  getServiceVisitBadge
+  getServiceVisitBadge,
+  formatHourWithMinutes
 }
 
 export default FormatUtils;

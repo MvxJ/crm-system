@@ -102,8 +102,8 @@ const ServiceRequestDetail = () => {
 
   const getUserInicials = (user) => {
     if (user) {
-      const name = user?.name;
-      const surname = user?.surname;
+      const name = user.name ? user.name : '  ';
+      const surname = user.surname ? user.surname: '  ';
 
       return name.slice(0, 1).toUpperCase() + surname.slice(0, 1).toUpperCase();
     }

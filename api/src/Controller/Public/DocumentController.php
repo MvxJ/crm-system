@@ -10,7 +10,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Tag(name="Documents")
+ */
 #[Route('/api/public/document', name: 'api_public_document_')]
 class DocumentController extends AbstractController
 {
