@@ -45,14 +45,16 @@ class ServiceVisitService
         $orderBy = $request->get('orderBy', 'id');
         $user = $request->get('userId', 'all');
         $customer = $request->get('customerId', 'all');
-        $maxResults = $this->serviceVisitRepository->countServiceVisits($user, $customer);
+        $serviceRequestId = $request->get('serviceRequestId', 'all');
+        $maxResults = $this->serviceVisitRepository->countServiceVisits($user, $customer, $serviceRequestId);
         $serviceVisits = $this->serviceVisitRepository->getServiceVisitsWithPagination(
             (int)$page,
             (int)$itemsPerPage,
             $order,
             $orderBy,
             $user,
-            $customer
+            $customer,
+            $serviceRequestId
         );
 
         if (count($serviceVisits) == 0) {

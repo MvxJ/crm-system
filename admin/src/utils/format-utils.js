@@ -295,6 +295,23 @@ const getOfferDiscount = (discount, discountType, price) => {
   return discount;
 }
 
+const getServiceVisitBadge = (isFinished, cancelled) => {
+  const badge = {text: '', color: ''}
+
+  if (isFinished == true) {
+    badge.text = 'Finished';
+    badge.color = '#95de64';
+  } else if (cancelled == true) {
+    badge.text = 'Cancelled';
+    badge.color = '#ff7875';
+  } else {
+    badge.text = 'Open';
+    badge.color = '#91d5ff';
+  }
+
+  return badge;
+}
+
 const FormatUtils = {
   formatDateWithTime,
   extractFileName,
@@ -308,7 +325,8 @@ const FormatUtils = {
   getDeviceStatus,
   getOfferDuration,
   getOfferType,
-  getOfferDiscount
+  getOfferDiscount,
+  getServiceVisitBadge
 }
 
 export default FormatUtils;

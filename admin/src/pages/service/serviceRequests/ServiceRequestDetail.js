@@ -10,6 +10,7 @@ import {
 } from '@ant-design/icons';
 import './ServiceRequest.css';
 import ServiceRequestCommentsTab from 'components/ServiceRequestCommentsTab';
+import ServiceRequestVisitsTab from 'components/ServiceRequestVisitsTab';
 
 const ServiceRequestDetail = () => {
   const { id } = useParams();  
@@ -36,7 +37,7 @@ const ServiceRequestDetail = () => {
           <Badge count={request.serviceVisits} showZero color="rgb(24, 144, 255)" style={{ marginLeft: '5px' }} />
         </span>
       ),
-      children: 'test',
+      children: (<ServiceRequestVisitsTab serviceRequestId={id}/>),
     },
     {
       key: 'comments',
@@ -163,7 +164,7 @@ const ServiceRequestDetail = () => {
           <Col span={4}>
             <Row style={{ textAlign: 'left' }}>
               <Col span={24}>
-                <b>Technician:</b>
+                <b>Customer:</b>
               </Col>
               <Col span={24}>
                 <Link to={`/customers/detail/${request.customer?.id}`}>
@@ -200,9 +201,10 @@ const ServiceRequestDetail = () => {
         </Row>
         <Row>
           <Col span={24}>
-            <b>Customer:</b>
+            <b>Technician:</b>
           </Col>
           <Col span={24}>
+            { request.user != null ?
             <Link to={`/administration/users/detail/${request.user?.id}`}>
               <div style={{ display: 'flex', alignItems: 'center', marginTop: '5px' }}>
                 <div style={styles.userInicials}>
@@ -213,6 +215,7 @@ const ServiceRequestDetail = () => {
                 </div>
               </div>
             </Link>
+            : 'N/A' }
           </Col>
         </Row>
         <Row>

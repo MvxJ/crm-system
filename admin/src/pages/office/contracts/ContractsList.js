@@ -67,6 +67,11 @@ const ContractsList = () => {
       page += 1;
 
       const response = await instance.get(`/contracts/list?page=${page}&items=${pageSize}&order=DESC&orderBy=createDate`);
+      
+      if (response.data.results == null) {
+        return;
+      }
+      
       setData(response.data.results.contracts);
       setTotalRows(response.data.results.maxResults);
     } catch (error) {
