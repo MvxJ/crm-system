@@ -188,6 +188,10 @@ const DevicesList = () => {
     navigate(`/service/devices/edit/${currentId}`);
   }
 
+  const handleAddDevice = () => {
+    navigate(`/service/devices/add`);
+  }
+
   useEffect(() => {
     fetchData();
   }, [paginationModel]);
@@ -196,7 +200,7 @@ const DevicesList = () => {
   <>
     <MainCard title="Devices">
     <Row>
-          <Col span={4} offset={20} style={styles.addButton} >
+          <Col span={4} offset={20} style={styles.addButton} onClick={handleAddDevice}>
             <Button type="primary" ><AppstoreAddOutlined /> Add Device</Button>
           </Col>
         </Row>

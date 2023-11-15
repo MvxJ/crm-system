@@ -148,7 +148,7 @@ const ModelsList = () => {
       page += 1;
 
       const response = await instance.get(`/models/list?page=${page}&items=${pageSize}`);
-      setData(response.data.results.models);
+      setData(response.data.results.models ? response.data.results.models : []);
       setTotalRows(response.data.results.maxResults);
     } catch (error) {
       showNotification('Error fetching models list', 'error');

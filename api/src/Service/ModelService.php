@@ -31,13 +31,15 @@ class ModelService
         $orderBy = $request->get('orderBy', 'manufacturer');
         $order = $request->get('order', 'ASC');
         $type = $request->get('type', 'all');
-        $maxModels = $this->modelRepository->countModels($type);
+        $searchTerm = $request->get('searchTerm', null);
+        $maxModels = $this->modelRepository->countModels($type, $searchTerm);
         $models = $this->modelRepository->getModelsWithPagination(
             (int)$page,
             (int)$itemsPerPage,
             $orderBy,
             $order,
-            $type
+            $type,
+            $searchTerm
         );
 
         if (count($models) == 0) {

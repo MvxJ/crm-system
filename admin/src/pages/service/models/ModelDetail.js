@@ -112,6 +112,12 @@ const ModelDetail = () => {
         </Row>
         <Row>
           <Col>
+            <h4>Price:</h4>
+            <p>{model.price}</p>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
             <b>
             Available devices:
             </b> {model.availableDevices}
