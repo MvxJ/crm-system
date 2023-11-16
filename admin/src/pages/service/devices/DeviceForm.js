@@ -62,12 +62,26 @@ const DeviceForm = () => {
         setFormData({
           serialNumber: response.data.device.serialNo,
           macAddress: response.data.device.macAddress,
-          boughtDate: response.data.device.boughtDate,
+          boughtDate: response.data.device.boughtDate.date,
           model: response.data.device.model,
           status: response.data.device.status,
           user: response.data.device.user,
           soldDate: response.data.device.soldDate,
         });
+
+        if (response.data.device.model) {
+          setSelectedModelId({
+            label: `#${response.data.device.model.id} ${response.data.device.model.manufacturer} - ${response.data.device.model.name} (${response.data.device.model.price})`,
+            value: response.data.device.model.id,
+          });
+        }
+
+        if (response.data.device.user) {
+          setSelectedUserId({
+            label: `#${response.data.device.user.id} ${response.data.device.user.firstName} ${response.data.device.user.lastName} (${response.data.device.user.socialSecurityNumber ? response.data.device.user.socialSecurityNumber : 'empty'})`,
+            value: response.data.device.user.id,
+          });
+        }
       }
     } catch (error) {
       notification.error({
@@ -81,6 +95,23 @@ const DeviceForm = () => {
 
   const saveDevice = async () => {
     try {
+      const device = {
+        serialNumber: formData.serialNumber,
+        macAddress: formData.macAddress,
+        model: parseInt(selectedModelId.value),
+        status: parseInt(formData.status),
+      }
+
+      if (selectedUserId != null) {
+        device.user = parseInt(selectedUserId.value);
+      }
+
+      if (formData.soldDate != null) {
+        device.soldDate = formData.soldDate;
+      }
+
+      const response = await instance.patch(`/devices/${id}/edit`, device)
+
       navigate(`/service/devices/details/${id}`);
     } catch (error) {
       notification.error({
@@ -232,6 +263,7 @@ const DeviceForm = () => {
               >
                 <DebounceSelect
                     mode="single"
+                    value={selectedModelId}
                     placeholder="Search model..."
                     fetchOptions={searchModels}
                     onChange={(value) => {
@@ -277,6 +309,7 @@ const DeviceForm = () => {
             <Col span={10} offset={1}>
               <Form.Item label="User">
                 <DebounceSelect
+                    value={selectedUserId}
                     mode="single"
                     placeholder="Search customer..."
                     fetchOptions={searchCustomers}

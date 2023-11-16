@@ -66,7 +66,7 @@ class ModelRepository extends ServiceEntityRepository
             )->setParameters([
                 'manufacturer' => '%' . $searchTerm . '%',
                 'name' => '%' . $searchTerm . '%',
-            ]);
+            ])->andWhere('m.isDeleted = false');
         }
 
          return $queryBuilder->getQuery()->getResult();
@@ -91,7 +91,7 @@ class ModelRepository extends ServiceEntityRepository
             )->setParameters([
                 'manufacturer' => '%' . $searchTerm . '%',
                 'name' => '%' . $searchTerm . '%',
-            ]);
+            ])->andWhere('m.isDeleted = false');
         }
 
         $result = $queryBuilder->getQuery()->getSingleScalarResult();
