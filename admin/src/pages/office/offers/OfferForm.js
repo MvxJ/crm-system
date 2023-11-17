@@ -5,12 +5,15 @@ import { useEffect, useState } from 'react';
 import { Button, Col, DatePicker, Form, Input, Row, Select, Switch, notification } from '../../../../node_modules/antd/es/index';
 import instance from 'utils/api';
 import DebounceSelect from 'utils/DebounceSelect';
+import FormatUtils from 'utils/format-utils';
+import moment from"moment";
+import { isString } from 'lodash';
 
 const OfferForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { TextArea } = Input;
-  const [selectedModels, setSelectedModels] = useState(null);
+  const [selectedModels, setSelectedModels] = useState([]);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -56,7 +59,7 @@ const OfferForm = () => {
           description: response.data.offer.description,
           downloadSpeed: response.data.offer.downloadSpeed,
           uploadSpeed: response.data.offer.uploadSpeed,
-          newUsers: response.data.offer.newUsers,
+          newUsers: response.data.offer.forNewUsers,
           price: response.data.offer.price,
           discount: response.data.offer.discount,
           type: response.data.offer.type,
@@ -68,6 +71,21 @@ const OfferForm = () => {
           validDue: response.data.offer.validDue,
           deleted: response.data.offer.deleted,
         });
+
+        if (response.data.offer.devices) {
+          const deviceArray = [];
+
+          response.data.offer.devices.forEach(device => {
+            const deviceObj = {
+              label: `#${device.id} ${device.manufacturer} - ${device.name} (${FormatUtils.getDeviceType(device.type)})`,
+              value: device.id,
+            }
+
+            deviceArray.push(deviceObj);
+          });
+
+          setSelectedModels(deviceArray);
+        }
       }
     } catch (error) {
       notification.error({
@@ -78,6 +96,105 @@ const OfferForm = () => {
       });
     }
   };
+
+  const createRequestObj = () => {
+    const offer = {
+      title: formData.title,
+      description: formData.description,
+      downloadSpeed: parseFloat(formData.downloadSpeed),
+      uploadSpeed: parseFloat(formData.uploadSpeed),
+      newUsers: formData.newUsers,
+      price: parseFloat(formData.price),
+      discount: parseFloat(formData.discount),
+      type: parseInt(formData.type),
+      duration: parseInt(formData.duration),
+      numberOfCanals: parseInt(formData.numberOfCanals),
+      forStudents: formData.forStudents,
+      discountType: parseInt(formData.discountType),
+    };
+
+    // if (formData.validDue != null) {
+    //   offer.validDue = formData.validDue.format("YYYY-MM-DD");
+    // }
+
+    if (selectedModels.length > 0) {
+      const devicesIds = [];
+
+      selectedModels.forEach(element => {
+        devicesIds.push(element.value)
+      });
+
+      offer.devices = devicesIds;
+    }
+
+    return offer;
+  }
+
+  const saveOffer = async () => {
+    try {
+      const payload = createRequestObj();
+      console.log(payload);
+      const response = await instance.patch(`/offer/${id}/edit`, payload);
+
+      if (response.status != 200) {
+        notification.error({
+          message: "Can 't update offer.",
+          type: 'error',
+          placement: 'bottomRight'
+        });
+
+        return;
+      }
+
+      notification.success({
+        message: "Successfully updated offer.",
+        type: 'success',
+        placement: 'bottomRight'
+      });
+
+      navigate(`/office/offers/detail/${id}`);
+    } catch (error) {
+      notification.error({
+        message: "Can 't update offer.",
+        description: error.message,
+        type: 'error',
+        placement: 'bottomRight'
+      });
+    }
+  }
+
+  const addOffer = async () => {
+    try {
+      const payload = createRequestObj();
+      console.log(payload);
+      const response = await instance.post(`/offer/add`, payload);
+
+      if (response.status != 200) {
+        notification.error({
+          message: "Can 't add offer.",
+          type: 'error',
+          placement: 'bottomRight'
+        });
+
+        return;
+      }
+
+      notification.success({
+        message: "Successfully created offer.",
+        type: 'success',
+        placement: 'bottomRight'
+      });
+
+      navigate(`/office/offers/detail/${response.data.offer.id}`);
+    } catch (error) {
+      notification.error({
+        message: "Can 't add offer.",
+        description: error.message,
+        type: 'error',
+        placement: 'bottomRight'
+      });
+    }
+  }
 
   useEffect(() => {
     fetchData();
@@ -94,11 +211,11 @@ const OfferForm = () => {
         <Row>
           <Col span={22} offset={1} style={{ textAlign: "right" }}>
             {id ? (
-              <Button type="primary">
+              <Button type="primary" onClick={saveOffer}>
                 Save Offer
               </Button>
             ) : (
-              <Button type="primary">
+              <Button type="primary" onClick={addOffer}>
                 Add Offer
               </Button>
             )}
@@ -135,7 +252,7 @@ const OfferForm = () => {
                 <DatePicker
                   style={{ width: '100%' }}
                   name="validDue"
-                  value={formData.validDue}
+                  value={formData.validDue ? moment(formData.validDue.date) : null}                  
                   onChange={(value) => handleInputChange({ target: { name: "validDue", value } })}
                 />
               </Form.Item>
@@ -154,7 +271,7 @@ const OfferForm = () => {
                   },
                 ]}
               >
-                <Input type="number" name="price" value={formData.price} />
+                <Input type="number" name="price" value={formData.price} onChange={handleInputChange} />
               </Form.Item>
             </Col>
             <Col span={10} offset={2}>
@@ -189,7 +306,7 @@ const OfferForm = () => {
                     },
                   ]}
                 >
-                  <Input type="number" name="discount" value={formData.discount} />
+                  <Input type="number" name="discount" value={formData.discount} onChange={handleInputChange}/>
                 </Form.Item>
               </Col>
             </Row>
@@ -278,6 +395,7 @@ const OfferForm = () => {
                 >
                   <Input
                     type="number"
+                    name="downloadSpeed" 
                     value={formData.downloadSpeed}
                     onChange={handleInputChange}
                   />
@@ -297,6 +415,7 @@ const OfferForm = () => {
                 >
                   <Input
                     type="number"
+                    name="uploadSpeed" 
                     value={formData.uploadSpeed}
                     onChange={handleInputChange}
                   />
@@ -320,6 +439,7 @@ const OfferForm = () => {
                 >
                   <Input
                     type="number"
+                    name="numberOfCanals"
                     value={formData.numberOfCanals}
                     onChange={handleInputChange}
                   />

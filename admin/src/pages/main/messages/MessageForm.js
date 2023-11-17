@@ -15,7 +15,7 @@ const MessageForm = () => {
   const [formData, setFormData] = useState({
     subject: '',
     message: '',
-    type: '',
+    type: 0,
     serviceRequest: '',
     phoneNumber: '',
     email: ''
@@ -60,7 +60,7 @@ const MessageForm = () => {
         phoneNumber: formData.phoneNumber
       };
 
-      if (formData.serviceRequest != null) {
+      if (formData.serviceRequest != null && formData.serviceRequest != '') {
         request.serviceRequest = formData.serviceRequest
       }
 

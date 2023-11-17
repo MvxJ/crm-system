@@ -154,6 +154,8 @@ class OfferService
                     foreach ($models as $model) {
                         $offer->addDevice($model);
                     }
+                } elseif ($fieldName == 'validDue') {
+                    $offer->setValidDue(new \DateTime($fieldValue));
                 } elseif (method_exists($offer, $setterMethod)) {
                     $offer->$setterMethod($fieldValue);
                 }
@@ -189,6 +191,7 @@ class OfferService
             /** @var Model $device */
             foreach ($devices as $device) {
                 $offerArray['devices'][] = [
+                    'manufacturer' => $device->getManufacturer(),
                     'name' => $device->getName(),
                     'id' => $device->getId(),
                     'type' => $device->getType(),

@@ -4,6 +4,7 @@ import { useNavigate, useParams } from '../../../../node_modules/react-router-do
 import { useEffect, useState } from 'react';
 import instance from 'utils/api';
 import DebounceSelect from 'utils/DebounceSelect';
+import moment from"moment";
 
 const DeviceForm = () => {
   const { id } = useParams();
@@ -327,7 +328,7 @@ const DeviceForm = () => {
                 <DatePicker 
                   style={{width: '100%'}}
                   name="soldDate" 
-                  value={formData.soldDate}
+                  value={formData.soldDate ? moment(formData.soldDate.date) : null}
                   onChange={(value) => handleInputChange({ target: { name: "soldDate", value } })} 
                 />
               </Form.Item>
