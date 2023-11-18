@@ -4,7 +4,8 @@ import { useNavigate, useParams } from '../../../../node_modules/react-router-do
 import { useEffect, useState } from 'react';
 import instance from 'utils/api';
 import DebounceSelect from 'utils/DebounceSelect';
-import moment from"moment";
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc'
 
 const DeviceForm = () => {
   const { id } = useParams();
@@ -24,7 +25,7 @@ const DeviceForm = () => {
   async function searchCustomers(inputValue) {
     try {
       const response = await instance.get(`/customers/list?searchTerm=${inputValue}`);
-      
+
       if (response.data.results.customers) {
         return response.data.results.customers.map((customer) => ({
           label: `#${customer.id} ${customer.firstName} ${customer.lastName} (${customer.socialSecurityNumber ? customer.socialSecurityNumber : 'empty'})`,
@@ -41,7 +42,7 @@ const DeviceForm = () => {
   async function searchModels(inputValue) {
     try {
       const response = await instance.get(`/models/list?searchTerm=${inputValue}`);
-      
+
       if (response.data.results.models) {
         return response.data.results.models.map((model) => ({
           label: `#${model.id} ${model.manufacturer} - ${model.name} (${model.price})`,
@@ -59,15 +60,16 @@ const DeviceForm = () => {
     try {
       if (id) {
         const response = await instance.get(`/devices/${id}`);
+        dayjs.extend(utc);
 
         setFormData({
           serialNumber: response.data.device.serialNo,
           macAddress: response.data.device.macAddress,
-          boughtDate: response.data.device.boughtDate.date,
+          boughtDate: response.data.device.boughtDate?.date,
           model: response.data.device.model,
           status: response.data.device.status,
           user: response.data.device.user,
-          soldDate: response.data.device.soldDate,
+          soldDate: response.data.device.soldDate ? dayjs.utc(response.data.device.soldDate.date).local() : null,
         });
 
         if (response.data.device.model) {
@@ -165,9 +167,9 @@ const DeviceForm = () => {
   };
 
   return (
-  <>
-    <MainCard title={ id ? `Edit Device #${id}` : 'Add Device' }>
-    <Row>
+    <>
+      <MainCard title={id ? `Edit Device #${id}` : 'Add Device'}>
+        <Row>
           <Col span={22} offset={1} style={{ textAlign: "right" }}>
             {id ? (
               <Button type="primary" onClick={saveDevice}>
@@ -226,24 +228,24 @@ const DeviceForm = () => {
               </Form.Item>
             </Col>
           </Row>
-          { id ? null :
+          {id ? null :
             <Row>
-              <Col span={10} offset={1} > 
-                <Form.Item 
-                label="Bought Date"
-                required
-                tooltip="This is a required field"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please enter the mac Bought date!",
-                  },
-                ]}>
-                  <DatePicker 
-                    style={{width: '100%'}} 
+              <Col span={10} offset={1} >
+                <Form.Item
+                  label="Bought Date"
+                  required
+                  tooltip="This is a required field"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please enter the mac Bought date!",
+                    },
+                  ]}>
+                  <DatePicker
+                    style={{ width: '100%' }}
                     name="boughtDate"
                     value={formData.boughtDate}
-                    onChange={(value) => handleInputChange({ target: { name: "boughtDate", value } })} 
+                    onChange={(value) => handleInputChange({ target: { name: "boughtDate", value } })}
                   />
                 </Form.Item>
               </Col>
@@ -263,16 +265,16 @@ const DeviceForm = () => {
                 ]}
               >
                 <DebounceSelect
-                    mode="single"
-                    value={selectedModelId}
-                    placeholder="Search model..."
-                    fetchOptions={searchModels}
-                    onChange={(value) => {
-                      setSelectedModelId(value);
-                    }}
-                    style={{
-                      width: '100%',
-                    }}
+                  mode="single"
+                  value={selectedModelId}
+                  placeholder="Search model..."
+                  fetchOptions={searchModels}
+                  onChange={(value) => {
+                    setSelectedModelId(value);
+                  }}
+                  style={{
+                    width: '100%',
+                  }}
                 />
               </Form.Item>
             </Col>
@@ -305,11 +307,11 @@ const DeviceForm = () => {
               </Form.Item>
             </Col>
           </Row>
-          { id ?
-          <Row>
-            <Col span={10} offset={1}>
-              <Form.Item label="User">
-                <DebounceSelect
+          {id ?
+            <Row>
+              <Col span={10} offset={1}>
+                <Form.Item label="User">
+                  <DebounceSelect
                     value={selectedUserId}
                     mode="single"
                     placeholder="Search customer..."
@@ -320,23 +322,24 @@ const DeviceForm = () => {
                     style={{
                       width: '100%',
                     }}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={10} offset={2}>
-              <Form.Item label="Sold Date">
-                <DatePicker 
-                  style={{width: '100%'}}
-                  name="soldDate" 
-                  value={formData.soldDate ? moment(formData.soldDate.date) : null}
-                  onChange={(value) => handleInputChange({ target: { name: "soldDate", value } })} 
-                />
-              </Form.Item>
-            </Col>
-          </Row> : null }
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={10} offset={2}>
+                <Form.Item label="Sold Date">
+                  <DatePicker
+                    style={{ width: '100%' }}
+                    name="soldDate"
+                    value={formData.soldDate}
+                    onChange={(value) => handleInputChange({ target: { name: "soldDate", value: value} })}
+                  />
+                </Form.Item>
+              </Col>
+            </Row> : null}
         </Form>
-    </MainCard>
-  </>
-)};
+      </MainCard>
+    </>
+  )
+};
 
 export default DeviceForm;

@@ -7,9 +7,11 @@ import instance from 'utils/api';
 import DebounceSelect from 'utils/DebounceSelect';
 import FormatUtils from 'utils/format-utils';
 import moment from"moment";
-import { isString } from 'lodash';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc'
 
 const OfferForm = () => {
+  
   const { id } = useParams();
   const navigate = useNavigate();
   const { TextArea } = Input;
@@ -50,8 +52,10 @@ const OfferForm = () => {
   }
 
   const fetchData = async () => {
-    try {
+    try {      
       if (id) {
+        dayjs.extend(utc);
+
         const response = await instance.get(`/offer/${id}/detail`);
 
         setFormData({
@@ -68,7 +72,7 @@ const OfferForm = () => {
           numberOfCanals: response.data.offer.numberOfCanals,
           forStudents: response.data.offer.forStudents,
           discountType: response.data.offer.discountType,
-          validDue: response.data.offer.validDue,
+          validDue: response.data.offer.validDue ? dayjs.utc(response.data.offer.validDue.date).local() : null,
           deleted: response.data.offer.deleted,
         });
 
@@ -101,21 +105,30 @@ const OfferForm = () => {
     const offer = {
       title: formData.title,
       description: formData.description,
-      downloadSpeed: parseFloat(formData.downloadSpeed),
-      uploadSpeed: parseFloat(formData.uploadSpeed),
       newUsers: formData.newUsers,
       price: parseFloat(formData.price),
-      discount: parseFloat(formData.discount),
       type: parseInt(formData.type),
       duration: parseInt(formData.duration),
-      numberOfCanals: parseInt(formData.numberOfCanals),
       forStudents: formData.forStudents,
-      discountType: parseInt(formData.discountType),
     };
 
-    // if (formData.validDue != null) {
-    //   offer.validDue = formData.validDue.format("YYYY-MM-DD");
-    // }
+    if (formData.discountType != null) {
+      offer.discountType = parseInt(formData.discountType);
+      offer.discount = parseFloat(formData.discount);
+    }
+
+    if (formData.type == 2 || formData.type == 1) {
+      offer.numberOfCanals = parseInt(formData.numberOfCanals);
+    }
+
+    if (formData.type == 0 || formData.type == 2) {
+      offer.downloadSpeed = parseFloat(formData.downloadSpeed);
+      offer.uploadSpeed = parseFloat(formData.uploadSpeed);
+    }
+
+    if (formData.validDue != null) {
+      offer.validDue = formData.validDue;
+    }
 
     if (selectedModels.length > 0) {
       const devicesIds = [];
@@ -133,7 +146,6 @@ const OfferForm = () => {
   const saveOffer = async () => {
     try {
       const payload = createRequestObj();
-      console.log(payload);
       const response = await instance.patch(`/offer/${id}/edit`, payload);
 
       if (response.status != 200) {
@@ -252,7 +264,7 @@ const OfferForm = () => {
                 <DatePicker
                   style={{ width: '100%' }}
                   name="validDue"
-                  value={formData.validDue ? moment(formData.validDue.date) : null}                  
+                  value={formData.validDue}                  
                   onChange={(value) => handleInputChange({ target: { name: "validDue", value } })}
                 />
               </Form.Item>
