@@ -26,7 +26,8 @@ const ContractDetail = () => {
     price: 0,
     discount: null,
     discountType: null,
-    offer: null
+    offer: null,
+    description: ""
   });
 
   const styles = {
@@ -71,7 +72,8 @@ const ContractDetail = () => {
         price: response.data.contract.price,
         discount: response.data.contract.discount,
         discountType: response.data.contract.discountType,
-        offer: response.data.contract.offer
+        offer: response.data.contract.offer,
+        description: response.data.contract.description
       });
     } catch (e) {
       notification.error({
@@ -95,7 +97,7 @@ const ContractDetail = () => {
   }
 
   const handleEditClick = () => {
-    navigate(`/office/contract/edit/${id}`);
+    navigate(`/office/contracts/edit/${id}`);
   }
 
   const handleDeleteContract = async () => {
@@ -241,6 +243,12 @@ const ContractDetail = () => {
             </Row>
           </Col>
         </Row>
+        <Row>
+              <Col span={24}>
+                <h4>Description:</h4>
+                <p>{contract.description}</p>
+              </Col>
+            </Row>
       </MainCard>
     </>
   )

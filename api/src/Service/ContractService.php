@@ -242,6 +242,7 @@ class ContractService
         if ($details) {
             $contractArray['price'] = $contract->getPrice();
             $contractArray['discount'] = $contract->getDiscount();
+            $contractArray['description'] = $contract->getDescription();
             $contractArray['discountType'] = $contract->getDiscountType();
             $contractArray['offer'] = [
                 'id' => $contract->getOffer()->getId(),

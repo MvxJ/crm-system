@@ -209,7 +209,7 @@ const ModelForm = () => {
                 ]}
               >
                 <Select
-                  defaultValue={formData.type}
+                  value={formData.type}
                   onChange={(value) =>
                     handleInputChange({ target: { name: "type", value } })
                   }

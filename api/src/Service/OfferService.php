@@ -72,13 +72,15 @@ class OfferService
         $order = $request->get('order', 'asc');
         $orderBy = $request->get('orderBy', 'id');
         $type = $request->get('type', 'all');
-        $totalItems = $this->offerRepository->countOffers($type);
+        $searchTerm = $request->get('searchTerm', null);
+        $totalItems = $this->offerRepository->countOffers($type, $searchTerm);
         $results = $this->offerRepository->getOffersWithPagination(
             (int)$itemsPerPage,
             (int)$page,
             $order,
             $orderBy,
-            $type
+            $type,
+            $searchTerm
         );
         $offers = [];
 

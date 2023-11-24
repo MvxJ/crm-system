@@ -44,7 +44,8 @@ class OfferRepository extends ServiceEntityRepository
         int $page = 1,
         string $order,
         string $orderBy,
-        string $type
+        string $type,
+        ?string $searchTerm
     ) {
         $currentDate = new \DateTime();
 
@@ -60,10 +61,14 @@ class OfferRepository extends ServiceEntityRepository
             $queryBuilder->andWhere('o.type = :type')->setParameter('type', (int)$type);
         }
 
+        if ($searchTerm) {
+            $queryBuilder->andWhere($queryBuilder->expr()->like('o.title', ':term'))->setParameter('term', '%' . $searchTerm . '%');
+        }
+
         return $queryBuilder->getQuery()->getResult();
     }
 
-    public function countOffers(string $type): int
+    public function countOffers(string $type, ?string $searchTerm): int
     {
         $currentDate = new \DateTime();
 
@@ -75,6 +80,10 @@ class OfferRepository extends ServiceEntityRepository
 
         if ($type != 'all' && !is_nan((int)$type)) {
             $queryBuilder->andWhere('o.type = :type')->setParameter('type', (int)$type);
+        }
+
+        if ($searchTerm) {
+            $queryBuilder->andWhere($queryBuilder->expr()->like('o.title', ':term'))->setParameter('term', '%' . $searchTerm . '%');
         }
 
         $result = $queryBuilder->getQuery()->getSingleScalarResult();

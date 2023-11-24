@@ -291,7 +291,7 @@ const DeviceForm = () => {
                 ]}
               >
                 <Select
-                  defaultValue={formData.status}
+                  value={formData.status}
                   onChange={(value) =>
                     handleInputChange({ target: { name: "status", value } })
                   }

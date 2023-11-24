@@ -6,7 +6,6 @@ import { Button, Col, DatePicker, Form, Input, Row, Select, Switch, notification
 import instance from 'utils/api';
 import DebounceSelect from 'utils/DebounceSelect';
 import FormatUtils from 'utils/format-utils';
-import moment from"moment";
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc'
 
@@ -178,7 +177,6 @@ const OfferForm = () => {
   const addOffer = async () => {
     try {
       const payload = createRequestObj();
-      console.log(payload);
       const response = await instance.post(`/offer/add`, payload);
 
       if (response.status != 200) {
@@ -291,7 +289,7 @@ const OfferForm = () => {
                 label="Discount Type"
               >
                 <Select
-                  defaultValue={formData.discountType}
+                  value={formData.discountType}
                   onChange={(value) =>
                     handleInputChange({ target: { name: "discountType", value } })
                   }
@@ -354,7 +352,7 @@ const OfferForm = () => {
                 ]}
               >
                 <Select
-                  defaultValue={formData.type}
+                  value={formData.type}
                   onChange={(value) =>
                     handleInputChange({ target: { name: "type", value } })
                   }
@@ -379,7 +377,7 @@ const OfferForm = () => {
                 ]}
               >
                 <Select
-                  defaultValue={formData.duration}
+                  value={formData.duration}
                   onChange={(value) =>
                     handleInputChange({ target: { name: "duration", value } })
                   }

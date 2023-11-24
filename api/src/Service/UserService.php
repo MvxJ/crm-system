@@ -35,8 +35,9 @@ class UserService
     {
         $page = $request->get('page', 1);
         $itemsPerPage = $request->get('items', 25);
+        $searchTerm = $request->get('searchTerm', null);
         $totalItems = count($this->userRepository->findAll());
-        $results = $this->userRepository->getUsersWithPagination((int)$itemsPerPage, (int)$page);
+        $results = $this->userRepository->getUsersWithPagination((int)$itemsPerPage, (int)$page, $searchTerm);
         $users = [];
 
         /** @var User $user */
