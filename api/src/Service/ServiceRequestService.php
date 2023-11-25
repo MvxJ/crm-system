@@ -276,7 +276,8 @@ class ServiceRequestService
                 'id' => $serviceRequest->getUser()->getId(),
                 'email' => $serviceRequest->getUser()->getEmail(),
                 'name' => $serviceRequest->getUser()->getName(),
-                'surname' => $serviceRequest->getUser()->getSurname()
+                'surname' => $serviceRequest->getUser()->getSurname(),
+                'username' => $serviceRequest->getUser()->getUsername()
             ];
         } else {
             $serviceRequestArray['user'] = null;

@@ -10,6 +10,7 @@ const PaymentForm = () => {
   const navigate = useNavigate();
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [invoices, setInvoices] = useState([]);
+  const [isIdExist, setIsIdExist] = useState(false);
   const [formData, setFormData] = useState({
     customerId: null,
     billId: null,
@@ -23,10 +24,26 @@ const PaymentForm = () => {
   const fetchData = async () => {
     try {
       if (id) {
-        const response = await instance.get(``);
+        const response = await instance.get(`/payments/${id}/detail`);
+
+        if (response.status != 200) {
+          notification.error({
+            type: "error",
+            message: "Can't fetch payment detail",
+            placement: "bottomRight"
+          })
+        }
 
         setFormData({
+          customerId: response.data.payment.customer.id,
+          billId: response.data.payment.bill.id,
+          paidBy: response.data.payment.paidBy,
+          amount: response.data.payment.amount,
+          note: response.data.payment.note,
+          status: response.data.payment.status
         });
+
+        setIsIdExist(true);
       }
     } catch (error) {
       notification.error({
@@ -38,9 +55,26 @@ const PaymentForm = () => {
     }
   };
 
+  const createRequestObj = () => {
+    const obj = {
+      note: formData.note,
+      status: parseInt(formData.status)
+    };
+
+    if (!id) {
+      obj.customer = selectedCustomer.value;
+      obj.bill = parseInt(formData.billId);
+      obj.paidBy = parseInt(formData.paidBy);
+      obj.amount = parseFloat(formData.amount);
+    }
+
+    return obj;
+  }
+
   const savePayment = async () => {
     try {
-      const response = await instance.patch(``, {});
+      const request = createRequestObj();
+      const response = await instance.patch(`/payments/${id}/edit`, request);
 
       if (response.status != 200) {
         notification.error({
@@ -53,7 +87,7 @@ const PaymentForm = () => {
       }
 
       notification.success({
-        message: "Successfully updated contract.",
+        message: "Successfully updated payment.",
         type: 'success',
         placement: 'bottomRight'
       });
@@ -71,7 +105,8 @@ const PaymentForm = () => {
 
   const addPayment = async () => {
     try {
-      const response = await instance.post(``, {});
+      const request = createRequestObj();
+      const response = await instance.post(`/payments/add`, request);
 
       if (response.status != 200) {
         notification.error({
@@ -162,41 +197,47 @@ const PaymentForm = () => {
           </Col>
         </Row>
         <Form layout="vertical" style={{ width: 100 + "%" }}>
-          <Row>
-            <Col span={10} offset={1}>
-              <Form.Item
-                label="Customer"
-                required
-                tooltip="This is a required field"
-              >
-                <DebounceSelect
-                  mode="single"
-                  placeholder="Search customer..."
-                  fetchOptions={searchCustomers}
-                  onChange={(value) => {
-                    setSelectedCustomer(value);
-                  }}
-                  style={{
-                    width: '100%',
-                  }}
-                />
-              </Form.Item>
-            </Col>
-            { !id && selectedCustomer ?
-            <Col span={10} offset={2}>
-              <Form.Item
-                label="Invoice"
-              >
-                <Select>
-                    {invoices.map((invoice) => (
+          {!id ?
+            <Row>
+              <Col span={10} offset={1}>
+                <Form.Item
+                  label="Customer"
+                  required
+                  tooltip="This is a required field"
+                >
+                  <DebounceSelect
+                    mode="single"
+                    placeholder="Search customer..."
+                    fetchOptions={searchCustomers}
+                    onChange={(value) => {
+                      setSelectedCustomer(value);
+                    }}
+                    style={{
+                      width: '100%',
+                    }}
+                  />
+                </Form.Item>
+              </Col>
+              {selectedCustomer ?
+                <Col span={10} offset={2}>
+                  <Form.Item
+                    label="Invoice"
+                  >
+                    <Select
+                      onChange={(value) =>
+                        handleInputChange({ target: { name: "billId", value } })
+                      }
+                      value={formData.billId}
+                    >
+                      {invoices.map((invoice) => (
                         <Select.Option key={invoice.id} value={invoice.id}>
-                          Invoice #{invoice.id}
+                          Invoice #{invoice.number}
                         </Select.Option>
                       ))}
-                  </Select>
-              </Form.Item>
-            </Col> : null }
-          </Row>
+                    </Select>
+                  </Form.Item>
+                </Col> : null}
+            </Row> : null}
           <Row>
             <Col span={10} offset={1}>
               <Form.Item
@@ -211,6 +252,7 @@ const PaymentForm = () => {
                 ]}
               >
                 <Select
+                  disabled={isIdExist}
                   value={formData.paidBy}
                   onChange={(value) =>
                     handleInputChange({ target: { name: "paidBy", value } })
@@ -219,7 +261,7 @@ const PaymentForm = () => {
                     { value: 0, label: "Card" },
                     { value: 1, label: "BLIK" },
                     { value: 2, label: "Online Payments" },
-                    { value: 2, label: "Cash" },
+                    { value: 3, label: "Cash" },
                   ]}
                 />
               </Form.Item>
@@ -236,7 +278,7 @@ const PaymentForm = () => {
                   },
                 ]}
               >
-                <Input type="number" name="amount" value={formData.amount} onChange={handleInputChange} />
+                <Input type="number" name="amount" value={formData.amount} onChange={handleInputChange} disabled={isIdExist} />
               </Form.Item>
             </Col>
           </Row>

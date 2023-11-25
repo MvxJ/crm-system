@@ -165,9 +165,10 @@ const PaymentsList = () => {
                 <EyeOutlined /> View Details
               </Link>
             </MenuItem>
+            { params.row.status == 0 ?
             <MenuItem onClick={handleEditPayment}>
               <EditOutlined /> Edit Payment
-            </MenuItem>
+            </MenuItem> : null }
           </Menu>
         </div>
       ),

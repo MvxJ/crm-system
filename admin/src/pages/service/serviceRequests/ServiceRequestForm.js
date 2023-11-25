@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react';
 import { Button, Col, Form, Input, Row, Select, notification } from '../../../../node_modules/antd/es/index';
 import instance from 'utils/api';
 import DebounceSelect from 'utils/DebounceSelect';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc'
+import FormatUtils from 'utils/format-utils';
 
 const ServiceRequestForm = () => {
   const { id } = useParams();
@@ -84,15 +87,123 @@ const ServiceRequestForm = () => {
     }
   }
 
+  const createRequestObj = () => {
+    const obj = {
+      description: formData.description,
+    };
+
+    if (formData.status) {
+      obj.status = formData.status;
+    }
+
+    if (selectedUser) {
+      obj.user = selectedUser.value;
+    }
+
+    if (!id) {
+      obj.customer = selectedCustomer.value;
+      obj.contract = selectedContract;
+    }
+
+    return obj;
+  }
+
+  const saveReuqest = async () => {
+    try {
+      const request = createRequestObj();
+      const response = await instance.patch(`/service-requests/${id}/edit`, request);
+
+      if (response.status != 200) {
+        notification.error({
+          message: "Can't update service request.",
+          type: "error",
+          placement: "bottomRight"
+        });
+
+        return;
+      }
+
+      notification.success({
+        message: "Updated service request.",
+        type: "success",
+        placement: "bottomRight"
+      });
+      navigate(`/service/requests/detail/${id}`);
+    } catch (e) {
+      notification.error({
+        message: "Can't update service request.",
+        description: e.message,
+        type: "error",
+        placement: "bottomRight"
+      })
+    }
+  }
+
+  const addRequest = async () => {
+    try {
+      const request = createRequestObj();
+      const response = await instance.post(`/service-requests/add`, request);
+
+      if (response.status != 200) {
+        notification.error({
+          message: "Can't add service request.",
+          type: "error",
+          placement: "bottomRight"
+        });
+
+        return;
+      }
+
+      notification.success({
+        message: "Addedd service request.",
+        type: "success",
+        placement: "bottomRight"
+      });
+      navigate(`/service/requests/detail/${response.data.serviceRequest.id}`);
+    } catch (e) {
+      notification.error({
+        message: "Can't add service request.",
+        description: e.message,
+        type: "error",
+        placement: "bottomRight"
+      })
+    }
+  }
+
   const fetchData = async () => {
     try {
       if (id) {
         dayjs.extend(utc);
 
-        const response = await instance.get(``);
+        const response = await instance.get(`/service-requests/${id}/detail`);
+
+        if (response.status != 200) {
+          notification.error({
+            type: "error",
+            message: "Can't fetch service request edtail.",
+            placement: "bottomRight"
+          });
+          return;
+        }
 
         setFormData({
+          id: id,
+          customerId: response.data.serviceRequest.customer.id,
+          userId: response.data.serviceRequest.user.id,
+          createdDate: response.data.serviceRequest.createdDate,
+          closeDate: response.data.serviceRequest.closeDate,
+          isClosed: response.data.serviceRequest.isClosed,
+          description: response.data.serviceRequest.description,
+          contractId: response.data.serviceRequest.contract.id,
+          status: response.data.serviceRequest.status
         });
+
+        if (response.data.serviceRequest.user) {
+          setSelectedUser({
+            label: `#${response.data.serviceRequest.user.id} ${response.data.serviceRequest.user.name} ${response.data.serviceRequest.user.surname} (${response.data.serviceRequest.user.username})`,
+            value: response.data.serviceRequest.user.id,
+          });
+        }
       }
     } catch (error) {
       notification.error({
@@ -125,10 +236,10 @@ const ServiceRequestForm = () => {
         <Row style={{ textAlign: 'right' }}>
           <Col span={22} offset={1}>
             {id ?
-              <Button type="primary">
+              <Button type="primary" onClick={saveReuqest}>
                 Save Service Request
               </Button> :
-              <Button type="primary">
+              <Button type="primary" onClick={addRequest}>
                 Add Service Request
               </Button>
             }
@@ -142,6 +253,7 @@ const ServiceRequestForm = () => {
               >
                 <DebounceSelect
                   mode="single"
+                  value={selectedUser}
                   placeholder="Search user..."
                   onChange={(value) => {
                     setSelectedUser(value);
@@ -193,8 +305,8 @@ const ServiceRequestForm = () => {
                     { value: null },
                     { value: 0, label: "OPENED" },
                     { value: 1, label: "REALIZATION" },
-                    { value: 1, label: "CLOSED" },
-                    { value: 1, label: "CANCELLED" },
+                    { value: 2, label: "CLOSED" },
+                    { value: 3, label: "CANCELLED" },
                   ]}
                 />
               </Form.Item>
@@ -224,7 +336,7 @@ const ServiceRequestForm = () => {
                 >
                   {contracts.map((contract) => (
                     <Select.Option key={contract.id} value={contract.id}>
-                      Contract #{contract.id}
+                      #{contract.contractNumber} - {contract.city} ({contract.zipCode}), {contract.address} [{FormatUtils.getContractBadgeDetails(contract.status).text}]
                     </Select.Option>
                   ))}
                 </Select>

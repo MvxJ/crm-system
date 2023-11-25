@@ -54,12 +54,13 @@ class ContractRepository extends ServiceEntityRepository
             ->orderBy('c.' . $orderBy, $order);
 
         if ($status != 'all' && !is_nan((int)$status)) {
-            $queryBuilder->where('c.status = :status')
+            $queryBuilder->andWhere('c.status = :status')
                 ->setParameter('status', (int)$status);
         }
 
         if ($customerId != 'all' && !is_nan((int)$customerId)) {
-            $queryBuilder->innerJoin('c.user', 'customer')->where('customer.id = :customerId')
+            $queryBuilder->innerJoin('c.user', 'customer')
+                ->andWhere('customer.id = :customerId')
                 ->setParameter('customerId', (int)$customerId);
         }
 
