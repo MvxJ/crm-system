@@ -56,7 +56,7 @@ class MailerService
                 'customer' => $customer,
                 'signedUrl' => $this->generateFeUrl($signatureComponents->getSignedUrl()),
                 'expiresAtMessageKey' => $signatureComponents->getExpirationMessageKey(),
-                'expiresAtMessageData' => $signatureComponents->getExpirationMessageData()
+                'expiresAtMessageData' => $signatureComponents->getExpirationMessageData(),
             ],
             'emails/registration-confirmation-email.html.twig',
             $customer->getEmail()
@@ -70,7 +70,7 @@ class MailerService
         $email = $this->createEmailMessage(
             'Two-Factor Authentication',
             [
-                'authCode' => $user->getEmailAuthCode()
+                'authCode' => $user->getEmailAuthCode(),
             ],
             'emails/authentication-code-email.html.twig',
             $user->getEmailAuthRecipient()
@@ -94,6 +94,8 @@ class MailerService
             ->subject($subject)
             ->htmlTemplate($template);
 
+        $context['crmSettings'] = $settings;
+
         if ($settings->getLogoUrl()) {
             $logoPath = $this->uploadDir . '/' . $settings->getLogoUrl();
             $email->addPart((new DataPart(fopen($logoPath, 'r'), 'logo', 'image/png'))->asInline());
@@ -104,7 +106,6 @@ class MailerService
                 ],
                 UrlGeneratorInterface::ABSOLUTE_URL
             );
-
         } else {
             $context['logoUrl'] = '';
         }

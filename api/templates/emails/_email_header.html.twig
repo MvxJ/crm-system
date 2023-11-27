@@ -1,0 +1,69 @@
+{% block styles %}
+    <style>
+        * {
+            font-family: 'Your Desired Font', sans-serif;
+            font-size: 12px;
+        }
+        .body-container {
+            font-size: 16px;
+            color: #333;
+            width: 100vw; 
+            display:flex; 
+            justify-content:center;
+        }
+
+        .email-header {
+            display: flex;
+        }
+
+        .company-name {
+            width:80%;
+            display:flex; 
+            align-items:center;
+        }
+
+        .logo {
+            width:20%;
+        }
+
+        .email-footer {
+            width:100vw; 
+            height: auto;
+        }
+
+        .bar {
+            display: flex; 
+            flex-direction: row; 
+            background-color: #94a3b8;
+        }
+
+        .content {
+            text-align:center; 
+            width: 80vw;
+        }
+
+        .status-container {
+            border-radius: 15px;
+        }
+
+        .terms-conditions {
+            width: 100vw; 
+            display: flex; 
+            justify-content:center; 
+            align-items: center;
+        }
+    </style>
+{% endblock %}
+
+{% block header %}
+    <div class='email-header'>
+        <div class='logo'>
+            {% if logo != "" %}
+                <img src="{{ logo }}" alt="Logo" style="width:100%;">
+            {% endif %}
+        </div>
+        <div class='company-name'>
+            <h3>{{ settings.companyName }}</h3>
+        </div>
+    </div>
+{% endblock %}

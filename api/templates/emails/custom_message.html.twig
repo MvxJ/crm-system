@@ -2,13 +2,14 @@
 {% block body %}
 <div class="body-container">
     <div class="content">
-        <h1>Hi! Please confirm your email!</h1>
+        <div class="status-container"> {{ type }} </div>
+        <div>
+            <h2>{{ subject }}</h2>
+        </div>
         <p>
-            Please confirm your email address by clicking the following link: <br><br>
-            <a href="{{ signedUrl }}">Confirm my Email</a>.
-            This link will expire in {{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}.
+            {{ message }}
         </p>
     </div>
-</div>
+    </div>
 {% endblock %}
 {% include '/emails/_email_footer.html.twig' with { 'logo': logoUrl, 'settings': crmSettings} %}
