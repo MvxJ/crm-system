@@ -3,7 +3,7 @@ import  { MoreOutlined, DeleteOutlined, EyeOutlined, UserAddOutlined, EditOutlin
 import MainCard from 'components/MainCard';
 import { useEffect, useState } from 'react';
 import instance from 'utils/api';
-import { Button, Col, Row, notification } from '../../../../node_modules/antd/es/index';
+import { Button, Col, Row, Spin, notification } from '../../../../node_modules/antd/es/index';
 import { DataGrid } from '@mui/x-data-grid';
 import { Menu, MenuItem } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -15,6 +15,7 @@ const UsersList = () => {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [totalRows, setTotalRows] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [currentId, setCurrentId] = useState(null);
   const [currentStateRowParams, setCurrentStateRowParams] = useState(null);
   const [paginationModel, setPaginationModel] = useState({
@@ -79,6 +80,7 @@ const UsersList = () => {
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       var { page, pageSize } = paginationModel;
 
       page += 1;
@@ -86,8 +88,12 @@ const UsersList = () => {
       const response = await instance.get(`/users/list?page=${page}&items=${pageSize}`);
       setData(response.data.results.users);
       setTotalRows(response.data.results.maxResults);
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       showNotification('Error fetching users list', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -167,7 +173,8 @@ const UsersList = () => {
 
   return (
     <>
-      <MainCard title="Users">
+    <Spin spinning={loading}>
+    <MainCard title="Users">
       <Row>
         <Col span={4} offset={20} style={styles.addUserButton}>
           <Button type="primary" onClick={handleAddUserClick}><UserAddOutlined /> Add User</Button>
@@ -184,6 +191,8 @@ const UsersList = () => {
           pageSizeOptions={[10, 25, 50]}
         />
       </MainCard>
+    </Spin>
+      
     </>
   );
 };
