@@ -7,9 +7,11 @@ import MainCard from 'components/MainCard';
 import FormatUtils from 'utils/format-utils';
 import { Link } from '../../../../node_modules/react-router-dom/dist/index';
 import './Device.css';
+import { Spin } from '../../../../node_modules/antd/es/index';
 
 const DeviceDetail = () => {
   const { id } = useParams();
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [device, setDevice] = useState({
     id: id,
@@ -24,6 +26,7 @@ const DeviceDetail = () => {
 
   const handleDelete = async () => {
     try {
+      setLoading(true);
       const response = await instance.delete(`/devices/${id}/delete`);
 
       if (response.status != 200) {
@@ -37,19 +40,22 @@ const DeviceDetail = () => {
       }
 
       navigate(`/service/devices`);
-
+      setLoading(false);
       notification.success({
         message: "Successfully deleted device.",
         type: "success",
         placement: "bottomRight"
       });
     } catch (e) {
+      setLoading(false);
       notification.error({
         message: "An error occured during deleting customer.",
         description: e.message,
         type: 'error',
         placement: 'bottomRight'
       })
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -64,6 +70,7 @@ const DeviceDetail = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const response = await instance.get(`/devices/${id}`);
 
         setDevice({
@@ -76,13 +83,17 @@ const DeviceDetail = () => {
           soldDate: response.data.device.soldDate,
           customer: response.data.device.user,
         });
+        setLoading(false);
       } catch (error) {
+        setLoading(false);
         notification.error({
           message: "Can't fetch device detail.",
           description: error.message,
           type: 'error',
           placement: 'bottomRight'
         });
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -91,6 +102,7 @@ const DeviceDetail = () => {
 
   return (
     <>
+    <Spin spinning={loading}>
       <MainCard title={        <div className='title-container'>
           <span>{'Device Detail #' + id}</span>
           <div className='badge' style={{backgroundColor: FormatUtils.getDeviceStatus(device.status).color}}>
@@ -135,6 +147,7 @@ const DeviceDetail = () => {
           </Col>
         </Row>
       </MainCard>
+      </Spin>
     </>
   );
 };

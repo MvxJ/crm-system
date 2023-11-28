@@ -1,5 +1,5 @@
 import MainCard from 'components/MainCard';
-import { Button, Col, DatePicker, Form, Input, Row, Select, notification } from '../../../../node_modules/antd/es/index';
+import { Button, Col, DatePicker, Form, Input, Row, Select, Spin, notification } from '../../../../node_modules/antd/es/index';
 import { useNavigate, useParams } from '../../../../node_modules/react-router-dom/dist/index';
 import { useEffect, useState } from 'react';
 import instance from 'utils/api';
@@ -12,6 +12,7 @@ const DeviceForm = () => {
   const navigate = useNavigate();
   const [selectedModelId, setSelectedModelId] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     serialNumber: '',
     macAddress: '',
@@ -59,6 +60,7 @@ const DeviceForm = () => {
   const fetchData = async () => {
     try {
       if (id) {
+        setLoading(true);
         const response = await instance.get(`/devices/${id}`);
         dayjs.extend(utc);
 
@@ -84,20 +86,25 @@ const DeviceForm = () => {
             label: `#${response.data.device.user.id} ${response.data.device.user.firstName} ${response.data.device.user.lastName} (${response.data.device.user.socialSecurityNumber ? response.data.device.user.socialSecurityNumber : 'empty'})`,
             value: response.data.device.user.id,
           });
+          setLoading(false);
         }
       }
     } catch (error) {
+      setLoading(false);
       notification.error({
         message: "Can't fetch device data.",
         description: error.message,
         type: "error",
         placement: "bottomRight",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
   const saveDevice = async () => {
     try {
+      setLoading(true);
       const device = {
         serialNumber: formData.serialNumber,
         macAddress: formData.macAddress,
@@ -115,19 +122,39 @@ const DeviceForm = () => {
 
       const response = await instance.patch(`/devices/${id}/edit`, device)
 
+      if (response.status != 200) {
+        setLoading(false);
+        notification.error({
+          message: "Can't save device.",
+          type: "error",
+          placement: "bottomRight"
+        })
+        return;
+      }
+
+      setLoading(false);
+      notification.success({
+        type: "success",
+        placement: "bottomRight",
+        message: "Successfully updated device."
+      });
       navigate(`/service/devices/details/${id}`);
     } catch (error) {
+      setLoading(false);
       notification.error({
         message: "Can't save device.",
         description: error.message,
         type: "error",
         placement: "bottomRight"
       })
+    } finally {
+      setLoading(false);
     }
   }
 
   const createDevice = async () => {
     try {
+      setLoading(true);
       const response = await instance.post(`/devices/add`, {
         serialNumber: formData.serialNumber,
         macAddress: formData.macAddress,
@@ -137,6 +164,7 @@ const DeviceForm = () => {
       });
 
       if (response.status != 200) {
+        setLoading(false);
         notification.error({
           message: "Can't add device.",
           type: "error",
@@ -148,12 +176,15 @@ const DeviceForm = () => {
 
       navigate(`/service/devices/details/${response.data.device.id}`);
     } catch (error) {
+      setLoading(false);
       notification.error({
         message: "Can't add device.",
         description: error.message,
         type: "error",
         placement: "bottomRight"
       })
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -168,6 +199,7 @@ const DeviceForm = () => {
 
   return (
     <>
+    <Spin spinning={loading}>
       <MainCard title={id ? `Edit Device #${id}` : 'Add Device'}>
         <Row>
           <Col span={22} offset={1} style={{ textAlign: "right" }}>
@@ -338,6 +370,7 @@ const DeviceForm = () => {
             </Row> : null}
         </Form>
       </MainCard>
+      </Spin>
     </>
   )
 };

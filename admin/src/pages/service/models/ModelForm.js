@@ -12,6 +12,7 @@ import {
   Input,
   Row,
   Select,
+  Spin,
   Switch,
   notification,
 } from "../../../../node_modules/antd/es/index";
@@ -20,6 +21,7 @@ const ModelForm = () => {
   const { id } = useParams();
   const { TextArea } = Input;
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     manufacturer: "",
     name: "",
@@ -33,6 +35,7 @@ const ModelForm = () => {
   const fetchData = async () => {
     try {
       if (id) {
+        setLoading(true);
         const response = await instance.get(`/models/${id}`);
 
         setFormData({
@@ -44,14 +47,18 @@ const ModelForm = () => {
           price: response.data.model.price,
           isDeleted: response.data.model.isDeleted,
         });
+        setLoading(false);
       }
     } catch (error) {
+      setLoading(false);
       notification.error({
         message: "Can't fetch user data.",
         description: error.message,
         type: "error",
         placement: "bottomRight",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,6 +73,7 @@ const ModelForm = () => {
 
   const createModel = async () => {
     try {
+      setLoading(true);
       const response = await instance.post(`/models/add`, {
         manufacturer: formData.manufacturer,
         name: formData.name,
@@ -82,9 +90,11 @@ const ModelForm = () => {
           placement: "bottomRight",
         });
 
+        setLoading(false);
         return;
       }
 
+      setLoading(false);
       notification.success({
         message: "Successfully created model.",
         type: "success",
@@ -93,17 +103,21 @@ const ModelForm = () => {
 
       navigate(`/service/models/detail/${response.data.model.id}`);
     } catch (e) {
+      setLoading(false);
       notification.error({
         message: "An error ocured during creating model.",
         description: e.message,
         type: "error",
         placement: "bottomRight",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
   const saveModel = async () => {
     try {
+      setLoading(true);
       const response = await instance.patch(`/models/${id}/edit`, formData);
 
       if (response.status != 200) {
@@ -113,9 +127,11 @@ const ModelForm = () => {
           placement: "bottomRight",
         });
 
+        setLoading(false);
         return;
       }
 
+      setLoading(false);
       notification.success({
         message: "Successfully updated model.",
         type: "success",
@@ -124,6 +140,7 @@ const ModelForm = () => {
 
       navigate(`/service/models/detail/${id}`);
     } catch (e) {
+      setLoading(false);
       notification.error({
         message: "An error ocured during updating model.",
         description: e.message,
@@ -135,6 +152,7 @@ const ModelForm = () => {
 
   return (
     <>
+    <Spin spinning={loading}>
       <MainCard title={id ? `Edit Model #${id}` : "Create Model"}>
         <Row>
           <Col span={22} offset={1} style={{ textAlign: "right" }}>
@@ -286,6 +304,7 @@ const ModelForm = () => {
           </Row>
         </Form>
       </MainCard>
+      </Spin>
     </>
   );
 };

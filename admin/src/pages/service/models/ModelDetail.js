@@ -1,7 +1,7 @@
 import MainCard from 'components/MainCard';
 import { useNavigate, useParams } from '../../../../node_modules/react-router-dom/dist/index';
 import { useEffect, useState } from 'react';
-import { Button, Col, Row, notification } from '../../../../node_modules/antd/es/index';
+import { Button, Col, Row, Spin, notification } from '../../../../node_modules/antd/es/index';
 import instance from 'utils/api';
 import './Model.css';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
@@ -9,6 +9,7 @@ import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 const ModelDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [model, setModel] = useState({
     id: id,
     isDeleted: false,
@@ -24,6 +25,7 @@ const ModelDetail = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const response = await instance.get(`/models/${id}`);
 
         setModel({
@@ -37,13 +39,17 @@ const ModelDetail = () => {
           params: response.data.model.params,
           availableDevices: response.data.model.availableDevices
         });
+        setLoading(false);
       } catch (error) {
+        setLoading(false);
         notification.error({
           message: "Can't fetch device detail.",
           description: error.message,
           type: 'error',
           placement: 'bottomRight'
         });
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -85,6 +91,7 @@ const ModelDetail = () => {
 
   return (
     <>
+      <Spin spinning={loading}>
       <MainCard title={
         <div className='title-container'>
           <span>{"Model Detail #" + id}</span>
@@ -136,6 +143,7 @@ const ModelDetail = () => {
           </Col>
         </Row>
       </MainCard>
+      </Spin>
     </>
   )
 };
