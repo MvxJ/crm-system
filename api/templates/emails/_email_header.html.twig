@@ -3,7 +3,9 @@
         * {
             font-family: 'Your Desired Font', sans-serif;
             font-size: 12px;
+            overflow-x: hidden;
         }
+
         .body-container {
             font-size: 16px;
             color: #333;
@@ -14,43 +16,72 @@
 
         .email-header {
             display: flex;
+            background-color: #f4f4f4;
         }
 
         .company-name {
             width:80%;
-            display:flex; 
-            align-items:center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .logo {
             width:20%;
         }
 
+        .logo img {
+            max-height: 75px;
+            width: auto;
+        }
+
         .email-footer {
-            width:100vw; 
+            width: 100vw; 
             height: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
         }
 
         .bar {
             display: flex; 
             flex-direction: row; 
-            background-color: #94a3b8;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            background-color: #f4f4f4;
         }
 
-        .content {
-            text-align:center; 
-            width: 80vw;
+        .address,
+        .contact,
+        .privacy {
+            width: 33%;
+            padding: 0 20px;
+            text-align: center;
         }
 
-        .status-container {
-            border-radius: 15px;
+        .address h5,
+        .contact h5,
+        .privacy h5 {
+            margin-bottom: 10px;
+        }
+
+        .privacy p {
+            margin-top: 0;
         }
 
         .terms-conditions {
-            width: 100vw; 
-            display: flex; 
-            justify-content:center; 
-            align-items: center;
+            width: 90vw;
+            margin-bottom: 15px;
+            font-style: italic;
+            font-size: 12px;
+            text-align: center;
+            color: #333;
+        }
+
+        .body-container {
+            margin-top: 15px;
         }
     </style>
 {% endblock %}

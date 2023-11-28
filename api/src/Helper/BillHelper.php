@@ -4,7 +4,7 @@ namespace App\Helper;
 
 use App\Entity\Bill;
 use App\Entity\Message;
-use App\Service\BillService;
+use App\Repository\SettingsRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -17,16 +17,20 @@ class BillHelper
     private Environment $twig;
     private KernelInterface $kernel;
     private EntityManagerInterface $entityManager;
+    private SettingsRepository $settingsRepository;
+
     public function __construct (
         MessageHelper $messageHelper,
         Environment $twig,
         KernelInterface $kernel,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        SettingsRepository $settingsRepository,
     ) {
         $this->messageHelper = $messageHelper;
         $this->twig = $twig;
         $this->kernel = $kernel;
         $this->entityManager = $entityManager;
+        $this->settingsRepository = $settingsRepository;
     }
 
     public function generateBillPdf(Bill $bill): void
@@ -36,13 +40,15 @@ class BillHelper
         $pdfOptions->set('isPhpEnabled', true);
 
         $dompdf = new Dompdf($pdfOptions);
+        $settings = $this->settingsRepository->findOneBy(['id' => 1]);
 
         $html = $this->twig->render('bill/pdf/template.html.twig', [
             'positions' => $bill->getBillPositions(),
             'bill' => $bill,
             'customer' => $bill->getCustomer(),
             'contactAddress' => $bill->getCustomer()->getSettings()?->getContactAddress(),
-            'billingAddress' => $bill->getCustomer()->getSettings()?->getBillingAddress()
+            'billingAddress' => $bill->getCustomer()->getSettings()?->getBillingAddress(),
+            'settings' => $settings
         ]);
 
         $dompdf->loadHtml($html);
@@ -61,13 +67,13 @@ class BillHelper
 
         file_put_contents($pdfPath, $pdfOutput);
 
-        $customerPhoneNumber = $bill->getCustomer()->getSettings()->getBillingAddress() ?
-            $bill->getCustomer()->getSettings()->getBillingAddress()->getPhoneNumber() :
-            $bill->getCustomer()->getSettings()->getContactAddress()->getPhoneNumber();
+        $customerPhoneNumber = $bill->getCustomer()->getSettings()?->getBillingAddress() ?
+            $bill->getCustomer()->getSettings()?->getBillingAddress()->getPhoneNumber() :
+            $bill->getCustomer()->getSettings()?->getContactAddress()->getPhoneNumber();
 
-        $customerEmail = $bill->getCustomer()->getSettings()->getBillingAddress() ?
-            $bill->getCustomer()->getSettings()->getBillingAddress()->getEmailAddress() :
-            $bill->getCustomer()->getSettings()->getContactAddress()->getEmailAddress();
+        $customerEmail = $bill->getCustomer()->getSettings()?->getBillingAddress() ?
+            $bill->getCustomer()->getSettings()?->getBillingAddress()->getEmailAddress() :
+            $bill->getCustomer()->getSettings()?->getContactAddress()->getEmailAddress();
 
         $message = new Message();
         $message->setCustomer($bill->getCustomer());

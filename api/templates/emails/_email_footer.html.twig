@@ -1,26 +1,14 @@
 {% block footer %}
     <div class="email-footer">
         <div class="terms-conditions">
-            <div style="margin-bottom: 15px; background-color: #d4d4d8; border-radius: 15px !important; width: 90vw;">
-                <p style="padding: 5px;"> {{ settings.termsAndConditions }} </p>
-            </div>
+            {{ settings.termsAndConditions }}
         </div>
         <div class="bar">
-            <div class="banner">
-                <div>
-                    {% if logo != "" %}
-                        <img src="{{ logo }}" alt="Logo">
-                    {% endif %}
-                </div>
-                <div>
-                    {{ settings.companyName }}
-                </div>
-            </div>
             <div class="address">
                 <h5>Address:</h5>
                 <p>{{ settings.companyAddress }}</p>
             </div>
-            <div class="contanct">
+            <div class="contact">
                 <h5>Contact:</h5>
                 <ul>
                     <li>Office: {{ settings.companyPhoneNumber }}</li>
