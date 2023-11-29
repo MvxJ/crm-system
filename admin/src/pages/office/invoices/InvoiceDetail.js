@@ -12,13 +12,14 @@ import {
 } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import instance from 'utils/api';
-import { Button, Col, Row, Table, Tag, notification } from '../../../../node_modules/antd/es/index';
+import { Button, Col, Row, Spin, Table, Tag, notification } from '../../../../node_modules/antd/es/index';
 import PdfUtils from 'utils/pdf-utils';
 import FormatUtils from 'utils/format-utils';
 
 const InvoiceDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [invoice, setInvoice] = useState({
     id: id,
     number: '',
@@ -108,14 +109,18 @@ const InvoiceDetail = () => {
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       const response = await instance.get(`/bill/${id}/detail`);
 
       if (response.status != 200) {
+        setLoading(false);
         notification.error({
           type: 'error',
           messsage: "Can't fetch invoice detail.",
           placement: 'bottomRight'
         });
+
+        return;
       }
 
       setInvoice({
@@ -132,13 +137,18 @@ const InvoiceDetail = () => {
         contract: response.data.bill.contract,
         positions: response.data.bill.positions
       });
+
+      setLoading(false);
     } catch (e) {
+      setLoading(false);
       notification.error({
         type: 'error',
         messsage: "Can't fetch invoice detail.",
         description: e.message,
         placement: 'bottomRight'
       });
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -159,16 +169,21 @@ const InvoiceDetail = () => {
 
   const handleGeneratePdf = async () => {
     try {
+      setLoading(true);
       const response = await instance.post(`/bill/${id}/generatePdfFile`);
 
       if (response.status != 200) {
+        setLoading(false);
         notification.error({
           message: "An error occured durgin generating PDF file.",
           type: "error",
           placement: "bottomRight"
-        })
+        });
+
+        return;
       }
 
+      setLoading(false);
       notification.success({
         message: "Successfully generated PDF file.",
         type: "success",
@@ -177,14 +192,17 @@ const InvoiceDetail = () => {
 
       setTimeout(() => {
         window.location.reload();
-      }, 2000);
+      }, 1000);
     } catch (e) {
+      setLoading(false);
       notification.error({
         message: "An error occured durgin generating PDF file.",
         description: e.message,
         type: "error",
         placement: "bottomRight"
-      })
+      });
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -194,6 +212,7 @@ const InvoiceDetail = () => {
 
   return (
     <>
+      <Spin spinning={loading}>
       <MainCard title={
         <div className='title-container'>
           <span>{'Invoice Detail #' + id}</span>
@@ -297,6 +316,7 @@ const InvoiceDetail = () => {
           </Col>
         </Row>
       </MainCard>
+      </Spin>
     </>
   )
 };

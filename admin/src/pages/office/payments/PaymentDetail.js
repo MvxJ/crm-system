@@ -1,7 +1,7 @@
 import MainCard from 'components/MainCard';
 import { Link, useNavigate, useParams } from '../../../../node_modules/react-router-dom/dist/index';
 import { useEffect, useState } from 'react';
-import { Row, Col, notification, Button } from '../../../../node_modules/antd/es/index';
+import { Row, Col, notification, Button, Spin } from '../../../../node_modules/antd/es/index';
 import FormatUtils from 'utils/format-utils';
 import instance from 'utils/api';
 import { EditOutlined } from '@ant-design/icons';
@@ -10,6 +10,7 @@ import './Payment.css';
 const PaymentDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [payment, setPayment] = useState({
     id: id,
 		status: null,
@@ -38,14 +39,18 @@ const PaymentDetail = () => {
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       const response = await instance.get(`/payments/${id}/detail`);
 
       if (response.status != 200) {
+        setLoading(false);
         notification.error({
           type: 'error',
           messsage: "Can't fetch payment detail.",
           placement: 'bottomRight'
         });
+
+        return;
       }
 
       setPayment({
@@ -58,13 +63,17 @@ const PaymentDetail = () => {
         customer: response.data.payment.customer,
         bill: response.data.payment.bill
       });
+      setLoading(false);
     } catch (e) {
+      setLoading(false);
       notification.error({
         type: 'error',
         messsage: "Can't fetch payment detail.",
         description: e.message,
         placement: 'bottomRight'
       });
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -89,6 +98,7 @@ const PaymentDetail = () => {
 
   return (
   <>
+    <Spin spinning={loading}>
     <MainCard title={
       <div className='title-container'>
       <span>{'Payment Detail #' + id}</span>
@@ -157,6 +167,7 @@ const PaymentDetail = () => {
         </Col>
       </Row>
     </MainCard>
+    </Spin>
   </>
 )};
 

@@ -1,7 +1,7 @@
 import MainCard from 'components/MainCard';
 import { useNavigate, useParams } from '../../../../node_modules/react-router-dom/dist/index';
 import { useEffect, useState } from 'react';
-import { Button, Col, Form, Input, Row, Select, notification } from '../../../../node_modules/antd/es/index';
+import { Button, Col, Form, Input, Row, Select, Spin, notification } from '../../../../node_modules/antd/es/index';
 import instance from 'utils/api';
 import DebounceSelect from 'utils/DebounceSelect';
 import dayjs from 'dayjs';
@@ -13,6 +13,7 @@ const ServiceRequestForm = () => {
   const navigate = useNavigate();
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [contracts, setContracts] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedContract, setSelectedContract] = useState(null);
   const [formData, setFormData] = useState({
@@ -110,10 +111,12 @@ const ServiceRequestForm = () => {
 
   const saveReuqest = async () => {
     try {
+      setLoading(true);
       const request = createRequestObj();
       const response = await instance.patch(`/service-requests/${id}/edit`, request);
 
       if (response.status != 200) {
+        setLoading(false);
         notification.error({
           message: "Can't update service request.",
           type: "error",
@@ -123,6 +126,7 @@ const ServiceRequestForm = () => {
         return;
       }
 
+      setLoading(false);
       notification.success({
         message: "Updated service request.",
         type: "success",
@@ -130,21 +134,26 @@ const ServiceRequestForm = () => {
       });
       navigate(`/service/requests/detail/${id}`);
     } catch (e) {
+      setLoading(false);
       notification.error({
         message: "Can't update service request.",
         description: e.message,
         type: "error",
         placement: "bottomRight"
       })
+    } finally {
+      setLoading(false);
     }
   }
 
   const addRequest = async () => {
     try {
+      setLoading(true);
       const request = createRequestObj();
       const response = await instance.post(`/service-requests/add`, request);
 
       if (response.status != 200) {
+        setLoading(false);
         notification.error({
           message: "Can't add service request.",
           type: "error",
@@ -154,6 +163,7 @@ const ServiceRequestForm = () => {
         return;
       }
 
+      setLoading(false);
       notification.success({
         message: "Addedd service request.",
         type: "success",
@@ -161,23 +171,28 @@ const ServiceRequestForm = () => {
       });
       navigate(`/service/requests/detail/${response.data.serviceRequest.id}`);
     } catch (e) {
+      setLoading(false);
       notification.error({
         message: "Can't add service request.",
         description: e.message,
         type: "error",
         placement: "bottomRight"
       })
+    } finally {
+      setLoading(false);
     }
   }
 
   const fetchData = async () => {
     try {
       if (id) {
+        setLoading(true);
         dayjs.extend(utc);
 
         const response = await instance.get(`/service-requests/${id}/detail`);
 
         if (response.status != 200) {
+          setLoading(false);
           notification.error({
             type: "error",
             message: "Can't fetch service request edtail.",
@@ -188,8 +203,8 @@ const ServiceRequestForm = () => {
 
         setFormData({
           id: id,
-          customerId: response.data.serviceRequest.customer.id,
-          userId: response.data.serviceRequest.user.id,
+          customerId: response.data.serviceRequest?.customer?.id,
+          userId: response.data.serviceRequest?.user?.id,
           createdDate: response.data.serviceRequest.createdDate,
           closeDate: response.data.serviceRequest.closeDate,
           isClosed: response.data.serviceRequest.isClosed,
@@ -204,14 +219,19 @@ const ServiceRequestForm = () => {
             value: response.data.serviceRequest.user.id,
           });
         }
+        setLoading(false);
       }
     } catch (error) {
+      console.log(error);
+      setLoading(false);
       notification.error({
         message: "Can't fetch service request data.",
         description: error.message,
         type: "error",
         placement: "bottomRight",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -232,6 +252,7 @@ const ServiceRequestForm = () => {
 
   return (
     <>
+      <Spin spinning={loading}>
       <MainCard title="Service Request Form">
         <Row style={{ textAlign: 'right' }}>
           <Col span={22} offset={1}>
@@ -363,6 +384,7 @@ const ServiceRequestForm = () => {
           </Row>
         </Form>
       </MainCard>
+      </Spin>
     </>
   )
 };

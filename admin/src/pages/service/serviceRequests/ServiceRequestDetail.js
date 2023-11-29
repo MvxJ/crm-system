@@ -1,5 +1,5 @@
 import MainCard from 'components/MainCard';
-import { Badge, Col, Row, notification, Tabs, Button } from '../../../../node_modules/antd/es/index';
+import { Badge, Col, Row, notification, Tabs, Button, Spin } from '../../../../node_modules/antd/es/index';
 import { Link, useNavigate, useParams } from '../../../../node_modules/react-router-dom/dist/index';
 import { useEffect, useState } from 'react';
 import FormatUtils from 'utils/format-utils';
@@ -15,6 +15,7 @@ import ServiceRequestVisitsTab from 'components/ServiceRequestVisitsTab';
 const ServiceRequestDetail = () => {
   const { id } = useParams();  
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [request, setRequest] = useState({
     id: id,
     customer: null,
@@ -66,14 +67,18 @@ const ServiceRequestDetail = () => {
   }
   const fetchData = async () => {
     try {
+      setLoading(true);
       const response = await instance.get(`/service-requests/${id}/detail`);
 
       if (response.status != 200) {
+        setLoading(false);
         notification.error({
           type: 'error',
           messsage: "Can't fetch request detail.",
           placement: 'bottomRight'
         });
+
+        return;
       }
 
       setRequest({
@@ -90,13 +95,17 @@ const ServiceRequestDetail = () => {
         comments: response.data.serviceRequest.comments
       });
 
+      setLoading(false);
     } catch (e) {
+      setLoading(false);
       notification.error({
         type: 'error',
         messsage: "Can't fetch request detail.",
         description: e.message,
         placement: 'bottomRight'
       });
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -117,9 +126,11 @@ const ServiceRequestDetail = () => {
 
   const handleCloseRequest = async () => {
     try {
+      setLoading(true);
       const response = await instance.delete(`/service-requests/${id}/delete`);
 
       if (response.status != 200) {
+        setLoading(false);
         notification.error({
           message: "Can't closed contract.",
           type: "error",
@@ -129,6 +140,7 @@ const ServiceRequestDetail = () => {
         return;
       }
 
+      setLoading(false);
       notification.success({
         message: "Successfully closed contract.",
         type: "success",
@@ -137,12 +149,16 @@ const ServiceRequestDetail = () => {
 
       fetchData();
     } catch (e) {
+      setLoading(false);
+
       notification.error({
         message: "Can't close contract.",
         description: e.message,
         type: "error",
         placement: "bottomRight"
       })
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -152,6 +168,7 @@ const ServiceRequestDetail = () => {
 
   return (
     <>
+      <Spin spinning={loading}>
       <MainCard title={
         <div className='title-container'>
           <span>{'Service request #' + id}</span>
@@ -256,6 +273,7 @@ const ServiceRequestDetail = () => {
           </Col>
         </Row>
       </MainCard>
+      </Spin>
     </>
   )
 };

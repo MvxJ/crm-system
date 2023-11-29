@@ -9,13 +9,14 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import FormatUtils from 'utils/format-utils';
 import './Offer.css';
-import { notification } from '../../../../node_modules/antd/es/index';
+import { Spin, notification } from '../../../../node_modules/antd/es/index';
 
 const OffersList = () => {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [totalRows, setTotalRows] = useState(0);
   const [currentId, setCurrentId] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [currentStateRowParams, setCurrentStateRowParams] = useState(null);
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 25,
@@ -66,6 +67,7 @@ const OffersList = () => {
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       var { page, pageSize } = paginationModel;
 
       page += 1;
@@ -73,8 +75,12 @@ const OffersList = () => {
       const response = await instance.get(`/offer/list?page=${page}&items=${pageSize}`);
       setData(response.data.results.offers);
       setTotalRows(response.data.results.maxResults);
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       showNotification('Error fetching offers list', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -88,16 +94,21 @@ const OffersList = () => {
 
   const handleDeleteOffer = async () => {
     try {
+      setLoading(true);
       const response = await instance.delete(`/offer/${currentId}/delete`);
 
       if (response.status !== 200) {
+        setLoading(false);
         notification.error({
           type: 'error',
           message: "An error occurred. Can't delete offer.",
           placement: 'bottomRight',
         });
+
+        return;
       }
 
+      setLoading(false);
       notification.success({
         message: 'Successfully deleted Offer',
         type: 'success',
@@ -106,12 +117,15 @@ const OffersList = () => {
 
       fetchData();
     } catch (e) {
+      setLoading(false);
       notification.error({
         type: 'error',
         message: "An error occurred. Can't delete offer.",
         description: e.message,
         placement: 'bottomRight',
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -235,6 +249,7 @@ const OffersList = () => {
 
   return (
     <>
+      <Spin spinning={loading}>
       <MainCard title="Offers">
         <Row>
           <Col span={4} offset={20} style={styles.addUserButton}>
@@ -254,6 +269,7 @@ const OffersList = () => {
           pageSizeOptions={[10, 25, 50]}
         />
       </MainCard>
+      </Spin>
     </>
   );
 };

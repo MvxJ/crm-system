@@ -1,6 +1,6 @@
 import MainCard from 'components/MainCard';
 import './Offer.css'
-import { Button, Col, Row, Table, Tag, notification } from '../../../../node_modules/antd/es/index';
+import { Button, Col, Row, Spin, Table, Tag, notification } from '../../../../node_modules/antd/es/index';
 import instance from 'utils/api';
 import { useNavigate, useParams } from '../../../../node_modules/react-router-dom/dist/index';
 import { useEffect, useState } from 'react';
@@ -19,6 +19,7 @@ const OfferDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [offer, setOffer] = useState({
     id: id,
     title: "",
@@ -102,14 +103,18 @@ const OfferDetail = () => {
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       const response = await instance.get(`/offer/${id}/detail`);
 
       if (response.status != 200) {
+        setLoading(false);
         notification.error({
           type: 'error',
           messsage: "Can't fetch offer detail.",
           placement: 'bottomRight'
         });
+
+        return;
       }
 
       setOffer({
@@ -130,13 +135,19 @@ const OfferDetail = () => {
         isDeleted: response.data.offer.isDeleted,
         devices: response.data.offer.devices
       });
+
+      setLoading(false);
     } catch (e) {
+      setLoading(false);
+
       notification.error({
         type: 'error',
         messsage: "Can't fetch offer detail.",
         description: e.message,
         placement: 'bottomRight'
       });
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -146,16 +157,22 @@ const OfferDetail = () => {
 
   const handleDeleteClick = async () => {
     try {
+      setLoading(true);
       const response = await instance.delete(`/offer/${id}/delete`);
 
       if (response.status != 200) {
+        setLoading(false);
+
         notification.error({
           type: 'error',
           message: "An error occured. Can't deleted offer.",
           placement: 'bottomRight'
         });
+
+        return;
       }
 
+      setLoading(false);
       notification.success({
         message: "Successfully deleted Offer",
         type: "success",
@@ -164,12 +181,15 @@ const OfferDetail = () => {
 
       navigate(`/office/offers`);
     } catch (e) {
+      setLoading(false);
       notification.error({
         type: 'error',
         message: "An error occured. Can't deleted offer.",
         description: e.message,
         placement: 'bottomRight'
       });
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -179,6 +199,7 @@ const OfferDetail = () => {
 
   return (
     <>
+    <Spin spinning={loading}>
       <MainCard title={
         <div className='title-container'>
           <span>{'Offer Detail #' + id}</span>
@@ -421,6 +442,7 @@ const OfferDetail = () => {
           </div>
           : null}
       </MainCard>
+      </Spin>  
     </>
   )
 };

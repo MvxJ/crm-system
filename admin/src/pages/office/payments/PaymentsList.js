@@ -2,7 +2,7 @@ import { MoreOutlined, EyeOutlined, FileAddOutlined, EditOutlined } from '@ant-d
 import MainCard from 'components/MainCard';
 import { useEffect, useState } from 'react';
 import instance from 'utils/api';
-import { Button, Col, Row, notification } from '../../../../node_modules/antd/es/index';
+import { Button, Col, Row, Spin, notification } from '../../../../node_modules/antd/es/index';
 import { DataGrid } from '@mui/x-data-grid';
 import { Menu, MenuItem } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -14,6 +14,7 @@ const PaymentsList = () => {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [totalRows, setTotalRows] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [currentId, setCurrentId] = useState(null);
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 25,
@@ -61,6 +62,7 @@ const PaymentsList = () => {
   };
 
   const fetchData = async () => {
+    setLoading(true);
     try {
       var { page, pageSize } = paginationModel;
 
@@ -68,9 +70,12 @@ const PaymentsList = () => {
 
       const response = await instance.get(`/payments/list?page=${page}&items=${pageSize}&order=DESC&orderBy=createdAt`);
       setData(response.data.results.payments);
-      setTotalRows(response.data.results.maxResults);
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       showNotification('Error fetching payments list', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -177,6 +182,7 @@ const PaymentsList = () => {
 
   return (
     <>
+      <Spin spinning={loading}>
       <MainCard title="Payments">
         <Row>
           <Col span={4} offset={20} style={styles.addUserButton}>
@@ -194,6 +200,7 @@ const PaymentsList = () => {
           pageSizeOptions={[10, 25, 50]}
         />
       </MainCard>
+      </Spin>
     </>
   )
 };

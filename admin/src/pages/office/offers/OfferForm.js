@@ -2,7 +2,7 @@ import MainCard from 'components/MainCard';
 import './Offer.css'
 import { useNavigate, useParams } from '../../../../node_modules/react-router-dom/dist/index';
 import { useEffect, useState } from 'react';
-import { Button, Col, DatePicker, Form, Input, Row, Select, Switch, notification } from '../../../../node_modules/antd/es/index';
+import { Button, Col, DatePicker, Form, Input, Row, Select, Spin, Switch, notification } from '../../../../node_modules/antd/es/index';
 import instance from 'utils/api';
 import DebounceSelect from 'utils/DebounceSelect';
 import FormatUtils from 'utils/format-utils';
@@ -15,6 +15,7 @@ const OfferForm = () => {
   const navigate = useNavigate();
   const { TextArea } = Input;
   const [selectedModels, setSelectedModels] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -53,6 +54,7 @@ const OfferForm = () => {
   const fetchData = async () => {
     try {      
       if (id) {
+        setLoading(true);
         dayjs.extend(utc);
 
         const response = await instance.get(`/offer/${id}/detail`);
@@ -89,14 +91,19 @@ const OfferForm = () => {
 
           setSelectedModels(deviceArray);
         }
+
+        setLoading(false);
       }
     } catch (error) {
+      setLoading(false);
       notification.error({
         message: "Can't fetch device data.",
         description: error.message,
         type: "error",
         placement: "bottomRight",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -144,10 +151,12 @@ const OfferForm = () => {
 
   const saveOffer = async () => {
     try {
+      setLoading(true);
       const payload = createRequestObj();
       const response = await instance.patch(`/offer/${id}/edit`, payload);
 
       if (response.status != 200) {
+        setLoading(false);
         notification.error({
           message: "Can 't update offer.",
           type: 'error',
@@ -157,6 +166,7 @@ const OfferForm = () => {
         return;
       }
 
+      setLoading(false);
       notification.success({
         message: "Successfully updated offer.",
         type: 'success',
@@ -165,21 +175,26 @@ const OfferForm = () => {
 
       navigate(`/office/offers/detail/${id}`);
     } catch (error) {
+      setLoading(false);
       notification.error({
         message: "Can 't update offer.",
         description: error.message,
         type: 'error',
         placement: 'bottomRight'
       });
+    } finally {
+      setLoading(false);
     }
   }
 
   const addOffer = async () => {
     try {
+      setLoading(true);
       const payload = createRequestObj();
       const response = await instance.post(`/offer/add`, payload);
 
       if (response.status != 200) {
+        setLoading(false);
         notification.error({
           message: "Can 't add offer.",
           type: 'error',
@@ -189,6 +204,7 @@ const OfferForm = () => {
         return;
       }
 
+      setLoading(false);
       notification.success({
         message: "Successfully created offer.",
         type: 'success',
@@ -197,12 +213,15 @@ const OfferForm = () => {
 
       navigate(`/office/offers/detail/${response.data.offer.id}`);
     } catch (error) {
+      setLoading(false);
       notification.error({
         message: "Can 't add offer.",
         description: error.message,
         type: 'error',
         placement: 'bottomRight'
       });
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -217,6 +236,7 @@ const OfferForm = () => {
 
   return (
     <>
+      <Spin spinning={loading}>
       <MainCard title={id ? `Edit Offer #${id}` : 'Add Offer'}>
         <Row>
           <Col span={22} offset={1} style={{ textAlign: "right" }}>
@@ -503,6 +523,7 @@ const OfferForm = () => {
           </Row>
         </Form>
       </MainCard>
+      </Spin>
     </>
   )
 };

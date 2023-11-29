@@ -2,7 +2,7 @@ import MainCard from 'components/MainCard';
 import './Contract.css'
 import { useNavigate, useParams } from '../../../../node_modules/react-router-dom/dist/index';
 import { useEffect, useState } from 'react';
-import { Button, Col, DatePicker, Form, Input, Row, Select, notification } from '../../../../node_modules/antd/es/index';
+import { Button, Col, DatePicker, Form, Input, Row, Select, Spin, notification } from '../../../../node_modules/antd/es/index';
 import DebounceSelect from 'utils/DebounceSelect';
 import instance from 'utils/api';
 import dayjs from 'dayjs';
@@ -12,6 +12,7 @@ const ContractForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [selectedOffer, setSelectedOffer] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [formData, setFormData] = useState({
     userId: null,
@@ -30,16 +31,21 @@ const ContractForm = () => {
   const fetchData = async () => {
     try {
       if (id) {
+        setLoading(true);
         dayjs.extend(utc);
         const response = await instance.get(`/contracts/${id}/details`);
 
         if (response.status != 200) {
+          setLoading(false);
           notification.error({
             type: 'error',
             messsage: "Can't fetch contract detail.",
             placement: 'bottomRight'
           });
+
+          return;
         }
+
         setFormData({
           userId: response.data.contract.id,
           offerId: response.data.contract.offer.id,
@@ -52,23 +58,30 @@ const ContractForm = () => {
           zipCode: response.data.contract.zipCode,
           address: response.data.contract.address
         });
+      
+        setLoading(false);
       }
     } catch (error) {
+      setLoading(false);
       notification.error({
         message: "Can't fetch contract data.",
         description: error.message,
         type: "error",
         placement: "bottomRight",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
   const saveContract = async () => {
     try {
+      setLoading(true);
       const request = createRequestObj();
       const response = await instance.patch(`/contracts/${id}/edit`, request);
 
       if (response.status != 200) {
+        setLoading(false);
         notification.error({
           message: "Can't update contract.",
           type: 'error',
@@ -78,6 +91,7 @@ const ContractForm = () => {
         return;
       }
 
+      setLoading(false);
       notification.success({
         message: "Successfully updated contract.",
         type: 'success',
@@ -86,12 +100,15 @@ const ContractForm = () => {
 
       navigate(`/office/contracts/detail/${id}`);
     } catch (error) {
+      setLoading(false);
       notification.error({
         message: "Can't update contract.",
         description: error.message,
         type: 'error',
         placement: 'bottomRight'
       });
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -130,8 +147,6 @@ const ContractForm = () => {
       obj.offer = parseInt(selectedOffer.value);
     }
 
-    console.log(formData.discountType);
-
     if (formData.discountType != null) {
       obj.discount = parseFloat(formData.discount);
       obj.discountType = parseInt(formData.discountType);
@@ -159,10 +174,12 @@ const ContractForm = () => {
 
   const addContract = async () => {
     try {
+      setLoading(true);
       const request = createRequestObj();
       const response = await instance.post(`/contracts/add`, request);
 
       if (response.status != 200) {
+        setLoading(false);
         notification.error({
           message: "Can 't add contract.",
           type: 'error',
@@ -172,6 +189,7 @@ const ContractForm = () => {
         return;
       }
 
+      setLoading(false);
       notification.success({
         message: "Successfully created contract.",
         type: 'success',
@@ -180,12 +198,15 @@ const ContractForm = () => {
 
       navigate(`/office/contracts/detail/${response.data.contract.id}`);
     } catch (error) {
+      setLoading(false);
       notification.error({
         message: "Can't add contract.",
         description: error.message,
         type: 'error',
         placement: 'bottomRight'
       });
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -200,6 +221,7 @@ const ContractForm = () => {
 
   return (
     <>
+      <Spin spinning={loading}>
       <MainCard title={id ? `Edit Contract #${id}` : 'Add Contract'}>
         <Row style={{ textAlign: 'right' }}>
           <Col span={22} offset={1}>
@@ -447,6 +469,7 @@ const ContractForm = () => {
           </Row>
         </Form>
       </MainCard>
+      </Spin>
     </>
   )
 };

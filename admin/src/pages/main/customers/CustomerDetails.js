@@ -1,5 +1,5 @@
 import MainCard from 'components/MainCard';
-import { Badge, Button, Col, Row, Tabs, notification } from '../../../../node_modules/antd/es/index';
+import { Badge, Button, Col, Row, Spin, Tabs, notification } from '../../../../node_modules/antd/es/index';
 import {
   MessageOutlined,
   WalletOutlined,
@@ -32,6 +32,7 @@ import AddressInfo from 'components/AddressInfo';
 
 const CustomerDetails = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const { id } = useParams();
   const [showAddresses, setShowAddresses] = useState(false);
   const [customer, setCustomer] = useState({
@@ -127,30 +128,38 @@ const CustomerDetails = () => {
 
   const handleCustomerDelete = async () => {
     try {
+      setLoading(true);
       const response = await instance.delete(`/customers/${id}/delete`);
 
       if (response.status != 200) {
+        setLoading(false);
         notification.error({
           message: "Can't delete customer",
           type: 'error',
           placement: 'bottomRight'
-        })
+        });
+
+        return;
       }
 
       navigate(`/customers`);
 
+      setLoading(false);
       notification.success({
         message: 'Successfully deleted customer',
         type: 'success',
         placement: 'bottomRight'
       });
     } catch (e) {
+      setLoading(false);
       notification.error({
         message: "Can't delete customer",
         description: e.message,
         type: 'error',
         placement: 'bottomRight'
       });
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -190,14 +199,19 @@ const CustomerDetails = () => {
 
   const fetchCustomerData = async () => {
     try {
+      setLoading(true);
       const response = await instance.get(`/customers/${id}/detail`);
 
       if (response.status != 200) {
+        setLoading(false);
+
         notification.error({
           message: "Can't fetch customer details.",
           type: 'error',
           placement: 'bottomRight'
         });
+
+        return;
       }
 
       setCustomer({
@@ -221,13 +235,17 @@ const CustomerDetails = () => {
         emailNotification: response.data.customer.emailNotification,
         addresses: response.data.customer.addresses
       });
+      setLoading(false);
     } catch (e) {
+      setLoading(false);
       notification.error({
         message: "Can't fetch customer details.",
         description: e.message,
         type: 'error',
         placement: 'bottomRight'
       });
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -242,6 +260,7 @@ const CustomerDetails = () => {
 
   return (
     <>
+    <Spin spinning={loading}>
       <MainCard title={`Customer Details #${id}`}>
         <Row>
           <Col span={22} offset={1} style={{ textAlign: 'right' }}>
@@ -336,6 +355,7 @@ const CustomerDetails = () => {
           </Col>
         </Row>
       </MainCard>
+      </Spin>
     </>
   )
 };

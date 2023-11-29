@@ -2,7 +2,7 @@ import  { MoreOutlined, EyeOutlined, MailOutlined } from '@ant-design/icons';
 import MainCard from 'components/MainCard';
 import { useEffect, useState } from 'react';
 import instance from 'utils/api';
-import { Button, Col, Row, notification } from '../../../../node_modules/antd/es/index';
+import { Button, Col, Row, Spin, notification } from '../../../../node_modules/antd/es/index';
 import { DataGrid } from '@mui/x-data-grid';
 import { Menu, MenuItem } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -13,6 +13,7 @@ const MessagesList = () => {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [totalRows, setTotalRows] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [currentId, setCurrentId] = useState(null);
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 25,
@@ -61,6 +62,7 @@ const MessagesList = () => {
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       var { page, pageSize } = paginationModel;
 
       page += 1;
@@ -68,8 +70,12 @@ const MessagesList = () => {
       const response = await instance.get(`/messages/list?page=${page}&items=${pageSize}&order=DESC&orderBy=createdDate`);
       setData(response.data.results.messages);
       setTotalRows(response.data.results.maxResults);
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       showNotification('Error fetching messages list', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -190,23 +196,25 @@ const MessagesList = () => {
 
   return (
     <>
-      <MainCard title="Users">
-        <Row>
-          <Col span={4} offset={20} style={styles.addUserButton}>
-            <Button type="primary" onClick={handleAddUserClick}><MailOutlined /> Create message</Button>
-          </Col>
-        </Row>
-        <DataGrid
-          rows={data}
-          columns={columns}
-          pagination
-          paginationMode="server"
-          rowCount={totalRows}
-          paginationModel={paginationModel}
-          onPaginationModelChange={handlePageChange}
-          pageSizeOptions={[10, 25, 50]}
-        />
-      </MainCard>
+      <Spin spinning={loading}>
+        <MainCard title="Users">
+          <Row>
+            <Col span={4} offset={20} style={styles.addUserButton}>
+              <Button type="primary" onClick={handleAddUserClick}><MailOutlined /> Create message</Button>
+            </Col>
+          </Row>
+          <DataGrid
+            rows={data}
+            columns={columns}
+            pagination
+            paginationMode="server"
+            rowCount={totalRows}
+            paginationModel={paginationModel}
+            onPaginationModelChange={handlePageChange}
+            pageSizeOptions={[10, 25, 50]}
+          />
+        </MainCard>
+      </Spin>
     </>
   );
 }

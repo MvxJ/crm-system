@@ -1,5 +1,5 @@
 import MainCard from 'components/MainCard';
-import { Button, Col, Form, Input, Row, Switch, notification } from '../../../node_modules/antd/es/index';
+import { Button, Col, Form, Input, Row, Spin, Switch, notification } from '../../../node_modules/antd/es/index';
 import AuthService from 'utils/auth';
 import { useNavigate } from '../../../node_modules/react-router-dom/dist/index';
 import { useState } from 'react';
@@ -7,6 +7,7 @@ import instance from 'utils/api';
 
 const ProfileSettings = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState(
     {
       oldPassword: "",
@@ -22,7 +23,9 @@ const ProfileSettings = () => {
 
   const changeUserPassword = async () => {
     try {
+      setLoading(true);
       if (formData.oldPassword.length == 0 || formData.newPassword.length == 0 || formData.repeatedPassword.length == 0) {
+        setLoading(false);
         notification.error({
           message: "Can't submit this form.",
           description: 'Please fill up entire form.',
@@ -34,6 +37,8 @@ const ProfileSettings = () => {
       }
 
       if (formData.newPassword.length != formData.repeatedPassword.length) {
+        setLoading(false);
+
         notification.error({
           message: "Can't submit this form.",
           description: "New password doesn't match repeated password.",
@@ -51,6 +56,7 @@ const ProfileSettings = () => {
       });
 
       if (response.status != 200) {
+        setLoading(false);
         notification.error({
           message: "Error ocured during changing user password..",
           description: response.data.message ?? 'There was an error.',
@@ -61,6 +67,7 @@ const ProfileSettings = () => {
         return;
       }
 
+      setLoading(false);
       notification.success({
         message: "Successfully changed user password.",
         type: 'success',
@@ -70,17 +77,21 @@ const ProfileSettings = () => {
       AuthService.logout();
       navigate('/login');
     } catch (exception) {
+      setLoading(false);
       notification.error({
         message: "Can't change user password",
         description: exception.message,
         type: 'error',
         placement: 'bottomRight'
       });
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <>
+      <Spin spinning={loading}>
       <MainCard title="Profile Settings">
         <Form
           layout="vertical"
@@ -156,6 +167,7 @@ const ProfileSettings = () => {
           </Row>
         </Form>
       </MainCard>
+      </Spin>
     </>
   )
 };

@@ -1,5 +1,5 @@
 import MainCard from 'components/MainCard';
-import { Button, Col, Form, Input, Row, Select, notification } from '../../../../node_modules/antd/es/index';
+import { Button, Col, Form, Input, Row, Select, Spin, notification } from '../../../../node_modules/antd/es/index';
 import instance from 'utils/api';
 import DebounceSelect from 'utils/DebounceSelect';
 import  { SendOutlined } from '@ant-design/icons';
@@ -11,6 +11,7 @@ const MessageForm = () => {
   const { TextArea } = Input;
   const [selectedCustomerId, setSelectedCustomerId] = useState(null);
   const [serviceRequests, setServiceRequests] = useState([]);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     subject: '',
@@ -51,6 +52,7 @@ const MessageForm = () => {
 
   const sendMessage = async () => {
     try {
+      setLoading(true);
       const request = {
         customer: parseInt(selectedCustomerId.value),
         message: formData.message,
@@ -69,13 +71,17 @@ const MessageForm = () => {
       )
 
       if (response.status != 200) {
+        setLoading(false);
         notification.error({
           message: 'An error ocured during sending message.',
           type: 'error',
           placement: 'bottomRight'
         });
+
+        return;
       }
 
+      setLoading(false);
       notification.success({
         message: 'Successfully send notification.',
         type: 'success',
@@ -84,12 +90,15 @@ const MessageForm = () => {
 
       navigate(`/messages/detail/${response.data.results.id}`)
     } catch (e) {
+      setLoading(false);
       notification.error({
         message: 'An error ocured during sending message.',
         description: e.message,
         type: 'error',
         placement: 'bottomRight'
       });
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -106,6 +115,7 @@ const MessageForm = () => {
 
   return (
   <>
+    <Spin spinning={loading}>
     <MainCard title="Create Message">
       <Form layout="vertical" style={{ width: 100 + '%' }}>
         <Row>
@@ -200,6 +210,7 @@ const MessageForm = () => {
         </Row>
       </Form>
     </MainCard>
+    </Spin>
   </>
 )};
 

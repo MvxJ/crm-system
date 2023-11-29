@@ -1,7 +1,7 @@
 import MainCard from 'components/MainCard';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from '../../../../node_modules/react-router-dom/dist/index';
-import { Button, Col, Row, notification } from '../../../../node_modules/antd/es/index';
+import { Button, Col, Row, Spin, notification } from '../../../../node_modules/antd/es/index';
 import instance from 'utils/api';
 import { UserOutlined, IssuesCloseOutlined, MailOutlined, PhoneOutlined, CalendarOutlined } from '@ant-design/icons';
 import FormatUtils from 'utils/format-utils';
@@ -11,6 +11,7 @@ import './Messages.css'
 const MessageForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({
     id: null,
     customer: null,
@@ -25,14 +26,18 @@ const MessageForm = () => {
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       const response = await instance.get(`/messages/detail/${id}`);
 
       if (response.status != 200) {
+        setLoading(false);
         notification.error({
           type: 'error',
           messsage: "Can't fetch message detail.",
           placement: 'bottomRight'
         });
+        
+        return;
       }
 
       setMessage({
@@ -47,13 +52,17 @@ const MessageForm = () => {
         createdAt: response.data.message.createdAt
       });
 
+      setLoading(false);
     } catch (e) {
+      setLoading(false);
       notification.error({
         type: 'error',
         messsage: "Can't fetch message detail.",
         description: e.message,
         placement: 'bottomRight'
       });
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -88,6 +97,7 @@ const MessageForm = () => {
 
   return (
     <>
+    <Spin spinning={loading}>
       <MainCard title="Message Details">
         <Row>
           <Col span={22} offset={1} style={{ textAlign: 'right' }}>
@@ -160,6 +170,7 @@ const MessageForm = () => {
           </Col>
         </Row>
       </MainCard>
+      </Spin>
     </>
   )
 };

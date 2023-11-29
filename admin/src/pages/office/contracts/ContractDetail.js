@@ -2,7 +2,7 @@ import MainCard from 'components/MainCard';
 import './Contract.css'
 import { Link, useNavigate, useParams } from '../../../../node_modules/react-router-dom/dist/index';
 import { useEffect, useState } from 'react';
-import { Button, Col, Row, notification } from '../../../../node_modules/antd/es/index';
+import { Button, Col, Row, Spin, notification } from '../../../../node_modules/antd/es/index';
 import instance from 'utils/api';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import FormatUtils from 'utils/format-utils';
@@ -11,6 +11,7 @@ import './Contract.css'
 const ContractDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [contract, setContract] = useState({
     id: id,
     contractNumber: "",
@@ -47,14 +48,18 @@ const ContractDetail = () => {
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       const response = await instance.get(`/contracts/${id}/details`);
 
       if (response.status != 200) {
+        setLoading(false);
         notification.error({
           type: 'error',
           messsage: "Can't fetch contract detail.",
           placement: 'bottomRight'
         });
+
+        return;
       }
 
       setContract({
@@ -75,13 +80,17 @@ const ContractDetail = () => {
         offer: response.data.contract.offer,
         description: response.data.contract.description
       });
+      setLoading(false);
     } catch (e) {
+      setLoading(false);
       notification.error({
         type: 'error',
         messsage: "Can't fetch contract detail.",
         description: e.message,
         placement: 'bottomRight'
       });
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -102,12 +111,15 @@ const ContractDetail = () => {
 
   const handleDeleteContract = async () => {
     try {
+      setLoading(true);
       const response = await instance.delete(`/contracts/${id}/delete`);
 
       if (response.status != 200) {
+        setLoading(false);
         return;
       }
 
+      setLoading(false);
       notification.success({
         message: "Successfully closed contract.",
         type: "success",
@@ -118,12 +130,15 @@ const ContractDetail = () => {
         window.location.reload();
       }, 1000);
     } catch (e) {
+      setLoading(false);
       notification.error({
         message: "Can't close contract.",
         description: e.message,
         type: "error",
         placement: "bottomRight"
       })
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -133,6 +148,7 @@ const ContractDetail = () => {
 
   return (
     <>
+      <Spin spinning={loading}>
       <MainCard title={
         <div className='title-container'>
           <span>{'Contract Detail #' + id}</span>
@@ -250,6 +266,7 @@ const ContractDetail = () => {
               </Col>
             </Row>
       </MainCard>
+      </Spin>
     </>
   )
 };

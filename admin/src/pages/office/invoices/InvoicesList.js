@@ -2,7 +2,7 @@ import { MoreOutlined, EyeOutlined, FileAddOutlined, EditOutlined, DownloadOutli
 import MainCard from 'components/MainCard';
 import { useEffect, useState } from 'react';
 import instance from 'utils/api';
-import { Button, Col, Row, notification } from '../../../../node_modules/antd/es/index';
+import { Button, Col, Row, Spin, notification } from '../../../../node_modules/antd/es/index';
 import { DataGrid } from '@mui/x-data-grid';
 import { Menu, MenuItem } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -16,6 +16,7 @@ const InvoicesList = () => {
   const [data, setData] = useState([]);
   const [totalRows, setTotalRows] = useState(0);
   const [currentId, setCurrentId] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 25,
     page: 0,
@@ -63,6 +64,7 @@ const InvoicesList = () => {
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       var { page, pageSize } = paginationModel;
 
       page += 1;
@@ -70,8 +72,12 @@ const InvoicesList = () => {
       const response = await instance.get(`/bill/list?page=${page}&items=${pageSize}&order=DESC&orderBy=dateOfIssue`);
       setData(response.data.results.bills);
       setTotalRows(response.data.results.maxResults);
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       showNotification('Error fetching invoices list', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -181,6 +187,7 @@ const InvoicesList = () => {
 
   return (
     <>
+      <Spin spinning={loading}>
       <MainCard title="Invoices">
         <Row>
           <Col span={4} offset={20} style={styles.addUserButton}>
@@ -198,6 +205,7 @@ const InvoicesList = () => {
           pageSizeOptions={[10, 25, 50]}
         />
       </MainCard>
+      </Spin>
     </>
   )
 };

@@ -1,5 +1,5 @@
 import MainCard from 'components/MainCard';
-import { Button, Col, Form, Input, Row, Switch, notification } from '../../../node_modules/antd/es/index';
+import { Button, Col, Form, Input, Row, Spin, Switch, notification } from '../../../node_modules/antd/es/index';
 import { useEffect, useState } from 'react';
 import instance from 'utils/api';
 
@@ -13,9 +13,11 @@ const EditProfile = () => {
       twoFactorAuth: "",
     }
   );
+  const [loading, setLoading] = useState(false);
 
   const saveForm = async () => {
     try {
+      setLoading(true);
       const user = JSON.parse(localStorage.getItem("user"));
       const response = await instance.patch(`/users/${user.id}/edit`, {
         phoneNumber: formData.phoneNumber,
@@ -26,6 +28,7 @@ const EditProfile = () => {
       })
 
       if (response.status != 200) {
+        setLoading(false);
         notification.error({
           message: "Error while saving.",
           description: response.data.message,
@@ -35,23 +38,28 @@ const EditProfile = () => {
         return;
       }
 
+      setLoading(false);
       notification.success({
         message: "Successfully saved!",
         type: 'success',
         placement: 'bottomRight'
       });
     } catch (e) {
+      setLoading(false);
       notification.error({
         message: "Error while saving.",
         description: e.message,
         type: 'error',
         placement: 'bottomRight'
       });
+    } finally {
+      setLoading(false);
     }
   }
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       const user = JSON.parse(localStorage.getItem("user"));
       const response = await instance.get(`/users/${user.id}/detail`);
 
@@ -62,12 +70,16 @@ const EditProfile = () => {
         email: response.data.user.email,
         twoFactorAuth: response.data.user.twoFactorAuth,
     });
+    setLoading(false);
     } catch (error) {
+      setLoading(false);
       notification.error({
         message: "Can't fetch user data.",
         type: 'error',
         placement: 'bottomRight'
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -83,6 +95,7 @@ const EditProfile = () => {
 
   return (
     <>
+    <Spin spinning={loading}>
       <MainCard title="Edit Profile">
         <Form
           layout="vertical"
@@ -132,6 +145,7 @@ const EditProfile = () => {
           </Row>
         </Form>
       </MainCard>
+      </Spin>
     </>
   )
 };

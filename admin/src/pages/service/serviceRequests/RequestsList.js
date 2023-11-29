@@ -2,7 +2,7 @@ import MainCard from 'components/MainCard';
 import { MoreOutlined, EyeOutlined, DeleteOutlined, CheckOutlined, CloseOutlined, EditOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import instance from 'utils/api';
-import { Button, Col, Row, notification } from '../../../../node_modules/antd/es/index';
+import { Button, Col, Row, Spin, notification } from '../../../../node_modules/antd/es/index';
 import { DataGrid } from '@mui/x-data-grid';
 import { Menu, MenuItem } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -15,6 +15,7 @@ const RequestsList = () => {
   const [data, setData] = useState([]);
   const [totalRows, setTotalRows] = useState(0);
   const [currentId, setCurrentId] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 25,
     page: 0,
@@ -200,6 +201,7 @@ const RequestsList = () => {
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       var { page, pageSize } = paginationModel;
 
       page += 1;
@@ -207,8 +209,12 @@ const RequestsList = () => {
       const response = await instance.get(`/service-requests/list?page=${page}&items=${pageSize}`);
       setData(response.data.results.serviceRequests);
       setTotalRows(response.data.results.maxResults);
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       showNotification('Error fetching service requests list', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -241,6 +247,7 @@ const RequestsList = () => {
 
   return (
     <>
+    <Spin spinning={loading}>
       <MainCard title="Service Requests">
         <Row>
           <Col span={4} offset={20} style={styles.addButton} onClick={handleAddRequest}>
@@ -258,6 +265,7 @@ const RequestsList = () => {
           pageSizeOptions={[10, 25, 50]}
         />
       </MainCard>
+      </Spin>
     </>
   )
 };

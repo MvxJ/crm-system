@@ -1,6 +1,6 @@
 import MainCard from 'components/MainCard';
 import { useNavigate, useParams } from '../../../../node_modules/react-router-dom/dist/index';
-import { Button, Col, Form, Input, Row, Select, notification } from '../../../../node_modules/antd/es/index';
+import { Button, Col, Form, Input, Row, Select, Spin, notification } from '../../../../node_modules/antd/es/index';
 import { useEffect, useState } from 'react';
 import DebounceSelect from 'utils/DebounceSelect';
 import instance from 'utils/api';
@@ -9,6 +9,7 @@ const PaymentForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [invoices, setInvoices] = useState([]);
   const [isIdExist, setIsIdExist] = useState(false);
   const [formData, setFormData] = useState({
@@ -24,14 +25,18 @@ const PaymentForm = () => {
   const fetchData = async () => {
     try {
       if (id) {
+        setLoading(true);
         const response = await instance.get(`/payments/${id}/detail`);
 
         if (response.status != 200) {
+          setLoading(false);
           notification.error({
             type: "error",
             message: "Can't fetch payment detail",
             placement: "bottomRight"
-          })
+          });
+
+          return;
         }
 
         setFormData({
@@ -44,14 +49,18 @@ const PaymentForm = () => {
         });
 
         setIsIdExist(true);
+        setLoading(false);
       }
     } catch (error) {
+      setLoading(false);
       notification.error({
         message: "Can't fetch payment data.",
         description: error.message,
         type: "error",
         placement: "bottomRight",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,10 +82,12 @@ const PaymentForm = () => {
 
   const savePayment = async () => {
     try {
+      setLoading(true);
       const request = createRequestObj();
       const response = await instance.patch(`/payments/${id}/edit`, request);
 
       if (response.status != 200) {
+        setLoading(false);
         notification.error({
           message: "Can't update payment.",
           type: 'error',
@@ -92,23 +103,29 @@ const PaymentForm = () => {
         placement: 'bottomRight'
       });
 
+      setLoading(false);
       navigate(`/office/payments/detail/${id}`);
     } catch (error) {
+      setLoading(false);
       notification.error({
         message: "Can't update payment.",
         description: error.message,
         type: 'error',
         placement: 'bottomRight'
       });
+    } finally {
+      setLoading(false);
     }
   }
 
   const addPayment = async () => {
     try {
+      setLoading(true);
       const request = createRequestObj();
       const response = await instance.post(`/payments/add`, request);
 
       if (response.status != 200) {
+        setLoading(false);
         notification.error({
           message: "Can 't add payment.",
           type: 'error',
@@ -124,14 +141,18 @@ const PaymentForm = () => {
         placement: 'bottomRight'
       });
 
+      setLoading(false);
       navigate(`/office/payments/detail/${response.data.payment.id}`);
     } catch (error) {
+      setLoading(false);
       notification.error({
         message: "Can't add payment.",
         description: error.message,
         type: 'error',
         placement: 'bottomRight'
       });
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -184,6 +205,7 @@ const PaymentForm = () => {
 
   return (
     <>
+      <Spin spinning={loading}>
       <MainCard title="Payment Form">
         <Row style={{ textAlign: 'right' }}>
           <Col span={22} offset={1}>
@@ -327,6 +349,7 @@ const PaymentForm = () => {
           </Row>
         </Form>
       </MainCard>
+      </Spin>
     </>
   )
 };
