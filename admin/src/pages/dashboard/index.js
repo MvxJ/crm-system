@@ -10,6 +10,7 @@ import {
 // assets
 import { GiftOutlined, MessageOutlined, SettingOutlined } from '@ant-design/icons';
 import MainCard from 'components/MainCard';
+import AdminDashboard from 'components/dashboards/AdminDashboard';
 
 // avatar style
 const avatarSX = {
@@ -52,8 +53,7 @@ const DashboardDefault = () => {
 
   return (
     <>
-      <MainCard title="Dashboard">
-      </MainCard>
+      <AdminDashboard />
     </>
   );
 };
