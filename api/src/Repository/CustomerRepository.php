@@ -58,4 +58,13 @@ class CustomerRepository extends ServiceEntityRepository
 
         return $queryBuilder->getQuery()->getResult();
     }
+
+    public function countActiveCustomers(): int
+    {
+        $queryBuilder = $this->createQueryBuilder('c')
+            ->select('COUNT(c.id')
+            ->where('c.isDisabled', false);
+
+        return (int)$queryBuilder->getQuery()->getSingleScalarResult();
+    }
 }

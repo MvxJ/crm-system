@@ -90,4 +90,13 @@ class OfferRepository extends ServiceEntityRepository
 
         return (int)$result;
     }
+
+    public function countActiveOffers(): int
+    {
+        $queryBuilder = $this->createQueryBuilder('o')
+            ->select('COUNT(o.id)')
+            ->where('o.deleted', false);
+
+        return (int)$queryBuilder->getQuery()->getSingleScalarResult();
+    }
 }

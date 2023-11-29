@@ -96,4 +96,13 @@ class ContractRepository extends ServiceEntityRepository
 
         return $queryBuilder->getQuery()->getResult();
     }
+
+    public function countActiveContracts(): int
+    {
+        $queryBuilder = $this->createQueryBuilder('c')
+            ->select('COUNT(c.id)')
+            ->where('c.status', Contract::CONTRACT_STATUS_ACTIVE);
+
+        return (int)$queryBuilder->getQuery()->getSingleScalarResult();
+    }
 }

@@ -125,4 +125,15 @@ class ServiceRequestRepository extends ServiceEntityRepository
 
         return (int)$result;
     }
+
+    public function countNotFinishedServiceRequests(): int
+    {
+        $queryBuilder = $this->createQueryBuilder('s')
+            ->select('COUNT(s.id)')
+            ->where('s.status = :statusOpened OR s.status = :statusRealization')
+            ->setParameter('statusOpened', ServiceRequest::STATUS_OPENED)
+            ->setParameter('statusRealization', ServiceRequest::STATUS_REALIZATION);
+
+        return (int)$queryBuilder->getQuery()->getSingleScalarResult();
+    }
 }

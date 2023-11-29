@@ -111,4 +111,15 @@ class PaymentRepository extends ServiceEntityRepository
 
         return $queryBuilder->getQuery()->getResult();
     }
+
+    public function countDayIncome(): float
+    {
+        $queryBuilder = $this->createQueryBuilder('p')
+            ->select('SUM(p.amount)')
+            ->where('p.createdAt >= :startOfDay AND p.createdAt < :endOfDay')
+            ->setParameter('startOfDay', new \DateTime('today midnight'))
+            ->setParameter('endOfDay', new \DateTime('tomorrow midnight'));
+
+        return (float)$queryBuilder->getQuery()->getSingleScalarResult();
+    }
 }

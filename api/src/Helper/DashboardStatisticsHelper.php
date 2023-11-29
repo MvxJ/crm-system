@@ -10,6 +10,7 @@ use App\Repository\CustomerRepository;
 use App\Repository\CustomerSettingsRepository;
 use App\Repository\DeviceRepository;
 use App\Repository\MessageRepository;
+use App\Repository\OfferRepository;
 use App\Repository\PaymentRepository;
 use App\Repository\ServiceRequestRepository;
 use App\Repository\UserRepository;
@@ -25,6 +26,7 @@ class DashboardStatisticsHelper
     private DeviceRepository $deviceRepository;
     private BillRepository $billRepository;
     private PaymentRepository $paymentRepository;
+    private OfferRepository $offerRepository;
 
     public function __construct(
         UserRepository $userRepository,
@@ -35,7 +37,8 @@ class DashboardStatisticsHelper
         CustomerSettingsRepository $customerSettingsRepository,
         DeviceRepository $deviceRepository,
         BillRepository $billRepository,
-        PaymentRepository $paymentRepository
+        PaymentRepository $paymentRepository,
+        OfferRepository $offerRepository
     ) {
         $this->userRepository = $userRepository;
         $this->customerRepository = $customerRepository;
@@ -46,15 +49,16 @@ class DashboardStatisticsHelper
         $this->deviceRepository = $deviceRepository;
         $this->billRepository = $billRepository;
         $this->paymentRepository = $paymentRepository;
+        $this->offerRepository = $offerRepository;
     }
 
     public function getAdminStatistics(): array
     {
         return [
-            'usersCount' => 0,
-            'customersCount' => 0,
-            'activeContractsCount' => 0,
-            'serviceRequestCount' => 0,
+            'usersCount' => $this->userRepository->countActiveUsers(),
+            'customersCount' => $this->customerRepository->countActiveCustomers(),
+            'activeContractsCount' => $this->contractRepository->countActiveContracts(),
+            'serviceRequestCount' => $this->serviceRequestRepository->countNotFinishedServiceRequests(),
             'messagesStatistics' => [],
             'customer2faStatistics' => [],
             'customerNotificationStatistics' => [],
@@ -66,7 +70,7 @@ class DashboardStatisticsHelper
     public function getTechnicianStatistics(): array
     {
         return [
-            'serviceRequestCount' => 0,
+            'serviceRequestCount' => $this->serviceRequestRepository->countNotFinishedServiceRequests(),
             'userVisits' => [],
             'serviceRequestByContractType' => [],
             'serviceTypesCount' => [],
@@ -79,9 +83,9 @@ class DashboardStatisticsHelper
     public function getStuffStatistics(): array
     {
         return [
-            'activeContractsCount' => 0,
-            'dayIncome' => 0,
-            'offersCount' => 0,
+            'activeContractsCount' => $this->contractRepository->countActiveContracts(),
+            'dayIncome' => $this->paymentRepository->countDayIncome(),
+            'offersCount' => $this->offerRepository->countActiveOffers(),
             'serviceTypesCount' => [],
             'billsStatistics' => [],
             'paymentsIncomeByDays' => [],
@@ -93,9 +97,9 @@ class DashboardStatisticsHelper
     public function getPublicStatistics(): array
     {
         return [
-            'activeContractsCount' => 0,
-            'customersCount' => 0,
-            'offersCount' => 0,
+            'activeContractsCount' => $this->contractRepository->countActiveContracts(),
+            'customersCount' => $this->customerRepository->countActiveCustomers(),
+            'offersCount' => $this->offerRepository->countActiveOffers(),
         ];
     }
 }
