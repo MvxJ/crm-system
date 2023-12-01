@@ -1,16 +1,15 @@
 import React, { useEffect } from 'react';
 import * as echarts from 'echarts';
 
-const AuthCustomersChart = () => {
+const AuthCustomersChart = ({stats}) => {
   const data = [
-    { value: 80, name: 'Authenticated' },
-    { value: 20, name: 'Unauthenticated' },
+    { value: stats.authenticated, name: 'Authenticated' },
+    { value: stats.notAuthenticated, name: 'Unauthenticated' },
   ];
 
   const option = {
     title: {
       text: 'Authenticated/Unauthenticated Customers',
-      subtext: 'Pie Chart',
       left: 'center',
     },
     series: [

@@ -62,7 +62,7 @@ class DashboardStatisticsHelper
             'messagesStatistics' => $this->messageRepository->countMessagesByDateAndType(),
             'customer2faStatistics' => $this->customerRepository->getCustomer2faCount(),
             'customerNotificationStatistics' => $this->customerSettingsRepository->countCustomerNotificationsSettingsVariations(),
-            'customerConfirmedAccountStatistics' => $this->customerRepository->countActiveCustomers(),
+            'customerConfirmedAccountStatistics' => $this->customerRepository->getCustomerAccountsConfirmedStatistics(),
             'contractsStatistics' => $this->contractRepository->getContractsCountByStatus()
         ];
     }

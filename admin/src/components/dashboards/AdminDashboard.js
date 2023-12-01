@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Col, Row } from '../../../node_modules/antd/es/index';
+import AuthCustomersChart from './charts/AuthCustomersChart';
+import TwofaUsersChart from './charts/TwofaUsersChart';
+import CustomersNotificationChart from './charts/CustomersNotificationCharts';
 
 const AdminDashboard = ({ data }) => {
     console.log(data);
@@ -9,12 +12,12 @@ const AdminDashboard = ({ data }) => {
         <Row gutter={[16, 16]}>
             <Col span={12} >
                 <Card>
-
+                    <AuthCustomersChart stats={data.customerConfirmedAccountStatistics} />
                 </Card>
             </Col>
             <Col span={12} >
                 <Card>
-
+                    <TwofaUsersChart stats={data.customer2faStatistics} />
                 </Card>
             </Col>
         </Row>
@@ -43,7 +46,7 @@ const AdminDashboard = ({ data }) => {
         <Row gutter={[16, 16]} style={{marginTop: '15px'}}>
             <Col span={8} >
                 <Card>
-
+                    <CustomersNotificationChart stats={data.customerNotificationStatistics[0]} />
                 </Card>
             </Col>
             <Col span={8} >

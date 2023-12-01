@@ -78,4 +78,15 @@ class CustomerRepository extends ServiceEntityRepository
 
         return $queryBuilder->getQuery()->getSingleResult();
     }
+
+    public function getCustomerAccountsConfirmedStatistics()
+    {
+        $queryBuilder = $this->createQueryBuilder('c')
+            ->select('COUNT(c.id) as totalCustomers')
+            ->addSelect('SUM(CASE WHEN c.authenticated = true THEN 1 ELSE 0 END) as authenticated')
+            ->addSelect('SUM(CASE WHEN c.authenticated = false THEN 1 ELSE 0 END) as notAuthenticated')
+            ->where('c.isDisabled = false');
+
+        return $queryBuilder->getQuery()->getSingleResult();
+    }
 }
