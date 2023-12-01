@@ -136,4 +136,15 @@ class ServiceRequestRepository extends ServiceEntityRepository
 
         return (int)$queryBuilder->getQuery()->getSingleScalarResult();
     }
+
+    public function countServiceRequestsByOfferType(): array
+    {
+        $queryBuilder = $this->createQueryBuilder('sr')
+            ->select('COUNT(sr.id) as requestCount, o.type as offerType')
+            ->leftJoin('sr.contract', 'c')
+            ->leftJoin('c.offer', 'o')
+            ->groupBy('o.type');
+
+        return $queryBuilder->getQuery()->getResult();
+    }
 }

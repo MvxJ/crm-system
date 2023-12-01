@@ -84,7 +84,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     {
         $queryBuilder = $this->createQueryBuilder('u')
             ->select('COUNT(u.id)')
-            ->where('u.isDeleted', false);
+            ->where('u.isDeleted = false');
 
         return (int)$queryBuilder->getQuery()->getSingleScalarResult();
     }

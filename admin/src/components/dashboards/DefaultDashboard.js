@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Col, Row } from '../../../node_modules/antd/es/index';
 
-const AdminDashboard = ({ data }) => {
-    console.log(data);
-
+const DefaultDashboard = ({ data }) => {
   return (
     <>
         <Row gutter={[16, 16]}>
@@ -21,22 +19,22 @@ const AdminDashboard = ({ data }) => {
         <Row gutter={[16, 16]} style={{marginTop: '15px'}}>
             <Col span={6} >
                 <Card>
-                    {data.usersCount}
+
                 </Card>
             </Col>
             <Col span={6} >
                 <Card>
-                    {data.customersCount}
+
                 </Card>
             </Col>
             <Col span={6} >
                 <Card>
-                    {data.activeContractsCount}
+
                 </Card>
             </Col>
             <Col span={6} >
                 <Card>
-                    {data.serviceRequestCount}
+
                 </Card>
             </Col>
         </Row>
@@ -61,4 +59,4 @@ const AdminDashboard = ({ data }) => {
   );
 };
 
-export default AdminDashboard;
+export default DefaultDashboard;

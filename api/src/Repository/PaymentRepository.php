@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Customer;
 use App\Entity\Payment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -121,5 +122,53 @@ class PaymentRepository extends ServiceEntityRepository
             ->setParameter('endOfDay', new \DateTime('tomorrow midnight'));
 
         return (float)$queryBuilder->getQuery()->getSingleScalarResult();
+    }
+
+    public function countPaymentsByMethod()
+    {
+        $queryBuilder = $this->createQueryBuilder('p')
+            ->select('COUNT(p.id) as paymentsCount, p.paidBy')
+            ->groupBy('p.paidBy');
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function countPaymentsByStatus()
+    {
+        $queryBuilder = $this->createQueryBuilder('p')
+            ->select('COUNT(p.id) as paymentsCount, p.status')
+            ->groupBy('p.status');
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function getMonthIncome(): array
+    {
+        $now = new \DateTime();
+        $firstDayOfMonth = new \DateTime($now->format('Y-m-01'));
+        $lastDayOfMonth = new \DateTime($now->format('Y-m-t'));
+
+        $sql = "
+            SELECT SUM(p.amount) as totalAmount, DATE(p.created_at) as dateWithoutTime
+            FROM payment p
+            WHERE p.status = 1
+            AND p.created_at >= :firstDayOfMonth
+            AND p.created_at <= :lastDayOfMonth
+            GROUP BY dateWithoutTime
+        ";
+
+        $entityManager = $this->getEntityManager();
+
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('totalAmount', 'totalAmount');
+        $rsm->addScalarResult('dateWithoutTime', 'dateWithoutTime');
+
+        $nativeQuery = $entityManager->createNativeQuery($sql, $rsm);
+        $nativeQuery->setParameters([
+            'firstDayOfMonth' => $firstDayOfMonth->format('Y-m-d'),
+            'lastDayOfMonth' => $lastDayOfMonth->format('Y-m-d'),
+        ]);
+
+        return $nativeQuery->getResult();
     }
 }

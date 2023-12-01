@@ -111,4 +111,17 @@ class BillRepository extends ServiceEntityRepository
 
         return $queryBuilder->getQuery()->getResult();
     }
+
+    public function countBillsByStatus(): array
+    {
+        $now = new \DateTime();
+        $queryBuilder = $this->createQueryBuilder('b')
+            ->select('COUNT(b.id) as billsCount, b.status')
+            ->where('MONTH(b.dateOfIssue) = :currentMonth AND YEAR(b.dateOfIssue) = :currentYear')
+            ->groupBy('b.status')
+            ->setParameter('currentMonth', $now->format('n'))
+            ->setParameter('currentYear', $now->format('Y'));
+
+        return $queryBuilder->getQuery()->getResult();
+    }
 }

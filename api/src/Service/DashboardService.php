@@ -35,7 +35,10 @@ class DashboardService
                 break;
         }
 
-        return $statistics;
+        return [
+            'assignedStatisticForRole' => $masterRole,
+            'analytic' => $statistics
+        ];
     }
 
     private function voteMasterRole(UserInterface $user): string

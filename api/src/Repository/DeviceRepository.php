@@ -84,4 +84,13 @@ class DeviceRepository extends ServiceEntityRepository
 
         return (int)$result;
     }
+
+    public function countDevicesByStatus(): array
+    {
+        $queryBuilder = $this->createQueryBuilder('d')
+            ->select('COUNT(d.id) as devicesCount, d.status')
+            ->groupBy('d.status');
+
+        return $queryBuilder->getQuery()->getResult();
+    }
 }

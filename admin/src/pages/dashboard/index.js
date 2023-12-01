@@ -1,59 +1,64 @@
-import { useState } from 'react';
-
-// material-ui
-import {
-  Grid
-} from '@mui/material';
-
-// project import
-
-// assets
+import { useEffect, useState } from 'react';
 import { GiftOutlined, MessageOutlined, SettingOutlined } from '@ant-design/icons';
 import MainCard from 'components/MainCard';
 import AdminDashboard from 'components/dashboards/AdminDashboard';
-
-// avatar style
-const avatarSX = {
-  width: 36,
-  height: 36,
-  fontSize: '1rem'
-};
-
-// action style
-const actionSX = {
-  mt: 0.75,
-  ml: 1,
-  top: 'auto',
-  right: 'auto',
-  alignSelf: 'flex-start',
-  transform: 'none'
-};
-
-// sales report status
-const status = [
-  {
-    value: 'today',
-    label: 'Today'
-  },
-  {
-    value: 'month',
-    label: 'This Month'
-  },
-  {
-    value: 'year',
-    label: 'This Year'
-  }
-];
-
-// ==============================|| DASHBOARD - DEFAULT ||============================== //
+import { Spin, notification } from '../../../node_modules/antd/es/index';
+import instance from 'utils/api';
+import OfficeDashboard from 'components/dashboards/OfficeDashboard';
+import ServiceDashboard from 'components/dashboards/ServiceDashboard';
+import DefaultDashboard from 'components/dashboards/DefaultDashboard';
+import ErrorDashboard from 'components/dashboards/ErrorDashboard';
 
 const DashboardDefault = () => {
-  const [value, setValue] = useState('today');
-  const [slot, setSlot] = useState('week');
+  const [analyticData, setAnalyticData] = useState([]);
+  const [dashboardType, setDashboardType] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const fetchData = async () => {
+    try {
+        const response = await instance.get('/statistics');
+
+        if (response.status != 200) {
+          setLoading(false);
+
+          notification.error({
+            message: "Can't fetch analytic data.",
+            type: "error",
+            placement: "bottomRight"
+          });
+
+          return;
+        }
+
+        setDashboardType(response.data.results.assignedStatisticForRole)
+        setAnalyticData(response.data.results.analytic)
+        setLoading(false);
+    } catch (e) {
+      setLoading(false);
+      notification.error({
+        message: "Can't fetch analytic data.",
+        type: "error",
+        descrption: e.message,
+        placement: "bottomRight"
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <>
-      <AdminDashboard />
+      <Spin style={{minHeight: '80vh'}} spinning={loading}>
+        { dashboardType == 'ROLE_ADMIN' ? <AdminDashboard data={analyticData} /> : null }
+        { dashboardType == 'ROLE_ACCOUNTMENT' ? <OfficeDashboard data={analyticData} /> : null }
+        { dashboardType == 'ROLE_SERVICE' ? <ServiceDashboard data={analyticData} /> : null }
+        { dashboardType == 'ROLE_ACCESS_ADMIN_PANEL' ? <DefaultDashboard data={analyticData} /> : null}
+        { dashboardType == '' ? <ErrorDashboard /> : null }
+      </Spin>
     </>
   );
 };

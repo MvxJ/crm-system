@@ -62,9 +62,20 @@ class CustomerRepository extends ServiceEntityRepository
     public function countActiveCustomers(): int
     {
         $queryBuilder = $this->createQueryBuilder('c')
-            ->select('COUNT(c.id')
-            ->where('c.isDisabled', false);
+            ->select('COUNT(c.id)')
+            ->where('c.isDisabled = false');
 
         return (int)$queryBuilder->getQuery()->getSingleScalarResult();
+    }
+
+    public function getCustomer2faCount(): array
+    {
+        $queryBuilder = $this->createQueryBuilder('c')
+            ->select('COUNT(c.id) as totalCustomers')
+            ->addSelect('SUM(CASE WHEN c.emailAuthEnabled = true THEN 1 ELSE 0 END) as enabled2FA')
+            ->addSelect('SUM(CASE WHEN c.emailAuthEnabled = false THEN 1 ELSE 0 END) as disabled2FA')
+            ->where('c.isDisabled = false');
+
+        return $queryBuilder->getQuery()->getSingleResult();
     }
 }

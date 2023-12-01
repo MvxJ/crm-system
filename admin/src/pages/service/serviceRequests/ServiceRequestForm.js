@@ -222,7 +222,6 @@ const ServiceRequestForm = () => {
         setLoading(false);
       }
     } catch (error) {
-      console.log(error);
       setLoading(false);
       notification.error({
         message: "Can't fetch service request data.",

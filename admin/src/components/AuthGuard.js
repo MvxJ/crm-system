@@ -8,7 +8,6 @@ const AuthGuard = ({ children }) => {
 
   if (!isAuthenticated) {
     navigate('/login');
-    console.log("a");
 
     return;
   }

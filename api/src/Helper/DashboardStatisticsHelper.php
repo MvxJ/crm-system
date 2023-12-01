@@ -59,11 +59,11 @@ class DashboardStatisticsHelper
             'customersCount' => $this->customerRepository->countActiveCustomers(),
             'activeContractsCount' => $this->contractRepository->countActiveContracts(),
             'serviceRequestCount' => $this->serviceRequestRepository->countNotFinishedServiceRequests(),
-            'messagesStatistics' => [],
-            'customer2faStatistics' => [],
-            'customerNotificationStatistics' => [],
-            'customerConfirmedAccountStatistics' => [],
-            'contractsStatistics' => []
+            'messagesStatistics' => $this->messageRepository->countMessagesByDateAndType(),
+            'customer2faStatistics' => $this->customerRepository->getCustomer2faCount(),
+            'customerNotificationStatistics' => $this->customerSettingsRepository->countCustomerNotificationsSettingsVariations(),
+            'customerConfirmedAccountStatistics' => $this->customerRepository->countActiveCustomers(),
+            'contractsStatistics' => $this->contractRepository->getContractsCountByStatus()
         ];
     }
 
@@ -71,12 +71,11 @@ class DashboardStatisticsHelper
     {
         return [
             'serviceRequestCount' => $this->serviceRequestRepository->countNotFinishedServiceRequests(),
-            'userVisits' => [],
-            'serviceRequestByContractType' => [],
-            'serviceTypesCount' => [],
-            'devicesStatusStatistics' => [],
-            'internetSpeedStatistics' => [],
-            'televisionStatistics' => []
+            'serviceRequestByContractType' => $this->serviceRequestRepository->countServiceRequestsByOfferType(),
+            'serviceTypesCount' => $this->contractRepository->getContractsCountByType(),
+            'devicesStatusStatistics' => $this->deviceRepository->countDevicesByStatus(),
+            'internetSpeedStatistics' => $this->contractRepository->getAvgInternetSpeed(),
+            'televisionStatistics' => $this->contractRepository->getAvgNumberOfCanals()
         ];
     }
 
@@ -86,11 +85,14 @@ class DashboardStatisticsHelper
             'activeContractsCount' => $this->contractRepository->countActiveContracts(),
             'dayIncome' => $this->paymentRepository->countDayIncome(),
             'offersCount' => $this->offerRepository->countActiveOffers(),
-            'serviceTypesCount' => [],
-            'billsStatistics' => [],
-            'paymentsIncomeByDays' => [],
-            'paymentsStatistics' => [],
-            'contractsStatistics' => []
+            'serviceTypesCount' => $this->contractRepository->getContractsCountByType(),
+            'billsStatistics' => $this->billRepository->countBillsByStatus(),
+            'paymentsIncomeByDays' => $this->paymentRepository->getMonthIncome(),
+            'paymentsStatistics' => [
+                'paymentsStatus' => $this->paymentRepository->countPaymentsByStatus(),
+                'paymentsMethod' => $this->paymentRepository->countPaymentsByMethod()
+            ],
+            'contractsStatistics' => $this->contractRepository->getContractsCountByStatus()
         ];
     }
 

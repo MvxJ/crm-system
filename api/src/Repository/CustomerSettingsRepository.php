@@ -39,28 +39,15 @@ class CustomerSettingsRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return CustomerSettings[] Returns an array of CustomerSettings objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function countCustomerNotificationsSettingsVariations(): array
+    {
+        $queryBuilder = $this->createQueryBuilder('c')
+            ->select('COUNT(c.id) as total')
+            ->addSelect('SUM(CASE WHEN c.emailNotifications = true AND c.smsNotifications = true THEN 1 ELSE 0 END) as bothNotifications')
+            ->addSelect('SUM(CASE WHEN c.emailNotifications = true AND c.smsNotifications = false THEN 1 ELSE 0 END) as emailOnly')
+            ->addSelect('SUM(CASE WHEN c.emailNotifications = false AND c.smsNotifications = true THEN 1 ELSE 0 END) as smsONly')
+            ->addSelect('SUM(CASE WHEN c.emailNotifications = false AND c.smsNotifications = false THEN 1 ELSE 0 END) as noneNotifications');
 
-//    public function findOneBySomeField($value): ?CustomerSettings
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        return $queryBuilder->getQuery()->getResult();
+    }
 }
