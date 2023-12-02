@@ -3,6 +3,10 @@ import * as echarts from 'echarts';
 
 const CustomersNotificationChart = ({stats}) => {
   const option = {
+    title: {
+      text: 'Customers notifications statistics',
+      left: 'center',
+    },
     xAxis: {
       type: 'category',
       data: ['Email & Sms', 'Only Sms', 'Only Email', 'None']

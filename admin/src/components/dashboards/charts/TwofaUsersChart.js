@@ -9,7 +9,7 @@ const TwofaUsersChart = ({stats}) => {
 
   const option = {
     title: {
-      text: 'Custoemrs 2fa usage chart',
+      text: 'Customers 2fa usage chart',
       left: 'center',
     },
     series: [

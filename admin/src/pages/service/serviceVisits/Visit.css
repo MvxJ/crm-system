@@ -1,0 +1,10 @@
+.fc-button-primary {
+    color: #1890ff !important;
+    background-color: #fff !important;
+    border: 1px solid #1890ff !important;
+}
+
+.fc-button-active {
+    background-color: #1890ff !important;
+    color: #fff !important;
+}
