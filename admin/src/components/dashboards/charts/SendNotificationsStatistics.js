@@ -1,68 +1,62 @@
 import React, { useEffect } from 'react';
 import * as echarts from 'echarts';
+import FormatUtils from 'utils/format-utils';
 
-const SendNotificationsStatistics = ({stats}) => {
-  const data = [
-    { value: stats.authenticated, name: 'Authenticated' },
-    { value: stats.notAuthenticated, name: 'Unauthenticated' },
-  ];
+const SendNotificationsStatistics = ({ messagesStatistics }) => {
+  if (!Array.isArray(messagesStatistics)) {
+    return <div>Error: Invalid data format</div>;
+  }
+
+  const types = [...new Set(messagesStatistics.map(stat => stat.type))];
+
+  const dataByType = types.map(type => ({
+    name: FormatUtils.getMessageBadgeObj(type).text,
+    type: 'line',
+    stack: 'Total',
+    data: messagesStatistics
+      .filter(stat => stat.type === type)
+      .map(stat => stat.messageCount),
+  }));
+
+  const xAxisData = messagesStatistics.map(stat => stat.formattedDate);
 
   const option = {
     title: {
       text: 'Messages statistics',
-      left: 'center'
+      left: 'center',
     },
     tooltip: {
-      trigger: 'axis'
+      trigger: 'axis',
     },
     legend: {
-      data: ['Notifications', 'Reminders', 'Messages']
+      data: dataByType.map(data => data.name),
     },
     grid: {
       left: '3%',
       right: '4%',
       bottom: '3%',
-      containLabel: true
+      containLabel: true,
     },
     toolbox: {
       feature: {
-        saveAsImage: {}
-      }
+        saveAsImage: {},
+      },
     },
     xAxis: {
       type: 'category',
       boundaryGap: false,
-      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+      data: xAxisData,
     },
     yAxis: {
-      type: 'value'
+      type: 'value',
     },
-    series: [
-      {
-        name: 'Email',
-        type: 'line',
-        stack: 'Total',
-        data: [120, 132, 101, 134, 90, 230, 210]
-      },
-      {
-        name: 'Union Ads',
-        type: 'line',
-        stack: 'Total',
-        data: [220, 182, 191, 234, 290, 330, 310]
-      },
-      {
-        name: 'Video Ads',
-        type: 'line',
-        stack: 'Total',
-        data: [150, 232, 201, 154, 190, 330, 410]
-      }
-    ]
-    }
+    series: dataByType,
+  };
 
   useEffect(() => {
     const chart = echarts.init(document.getElementById('sendNotificationsStatistics'));
     chart.setOption(option);
-  }, []);
+  }, [option]);
 
   return <div id="sendNotificationsStatistics" style={{ height: 400 }} />;
 };

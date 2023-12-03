@@ -18,6 +18,7 @@ const TwofaUsersChart = ({stats}) => {
         type: 'pie',
         radius: '55%',
         data: data,
+        color: ['#95de64', '#f5222d']
       },
     ],
   };

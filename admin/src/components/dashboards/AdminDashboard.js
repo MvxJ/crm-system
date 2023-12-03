@@ -9,7 +9,6 @@ import ContractsPieChart from './charts/ContractsPieChart';
 import SendNotificationsStatistics from './charts/SendNotificationsStatistics';
 
 const AdminDashboard = ({ data }) => {
-    console.log(data);
 
   return (
     <>
@@ -21,7 +20,7 @@ const AdminDashboard = ({ data }) => {
             </Col>
             <Col span={12} >
                 <Card>
-                    <SendNotificationsStatistics stats={data.messagesStatistics} />
+                    <SendNotificationsStatistics messagesStatistics={data.messagesStatistics} />
                 </Card>
             </Col>
         </Row>

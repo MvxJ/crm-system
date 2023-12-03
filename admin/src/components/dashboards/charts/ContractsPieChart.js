@@ -1,28 +1,31 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as echarts from 'echarts';
+import FormatUtils from 'utils/format-utils';
 
 const ContractsPieChart = ({stats}) => {
-  const data = [
-    { value: stats.authenticated, name: 'Authenticated' },
-    { value: stats.notAuthenticated, name: 'Unauthenticated' },
-  ];
-
-  const option = {
-    title: {
-      text: 'Contracts statistics',
-      left: 'center',
-    },
-    series: [
-      {
-        name: 'Contracts',
-        type: 'pie',
-        radius: '55%',
-        data: data,
-      },
-    ],
-  };
-
   useEffect(() => {
+    const dataNew = [];
+
+    stats.forEach(element => {
+      dataNew.push({ value: element.contractCount, name: FormatUtils.getContractBadgeDetails(element.status).text })
+    });
+
+    const option = {
+      title: {
+        text: 'Contracts statistics',
+        left: 'center',
+      },
+      series: [
+        {
+          name: 'Contracts',
+          type: 'pie',
+          radius: '55%',
+          data: dataNew,
+          color: ['#95de64', '#f5222d']
+        },
+      ],
+    };
+
     const chart = echarts.init(document.getElementById('contractsPieChart'));
     chart.setOption(option);
   }, []);
