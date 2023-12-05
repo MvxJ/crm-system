@@ -5,7 +5,7 @@ import AuthService from 'utils/auth';
 const AuthGuard = ({ requairedRoles, children }) => {
   const navigate = useNavigate();
   const isAuthenticated = AuthService.isAuthenticated();
-  const userRoles = AuthService.getCurrentUser().roles;
+  const userRoles = AuthService.getCurrentUser() ? AuthService.getCurrentUser().roles : [];
 
   useEffect(() => {
     //TODO:: Check conditions

@@ -1,12 +1,28 @@
 import React, { useState } from 'react';
 import { Button, message, Steps, theme } from 'antd';
 import MainCard from 'components/MainCard';
+import CustomerProfileForm from 'components/CustomerProfileForm';
+import { Navigate, useNavigate } from '../../../../node_modules/react-router-dom/dist/index';
+import CustomerSettingsForm from 'components/CustomerSettingsForm';
 
 const CustomerForm = () => {
+    const navigate = useNavigate();
+    const [current, setCurrent] = useState(2);
+    const [customerId, setCustomerId] = useState(45);
+
+    const handleSuccessFirstStep = (customer) => {
+        setCustomerId(customer.id);
+        setCurrent(current + 1);
+    }
+
+    const handleSuccessLastStep = () => {
+        navigate(`/customers/detail/${customerId}`);
+    }
+
     const steps = [
         {
             title: 'Requaired Informations',
-            content: 'Requaired informations',
+            content: (<CustomerProfileForm onSuccessSaveFunction={handleSuccessFirstStep}/>),
         },
         {
             title: 'Address',
@@ -14,11 +30,10 @@ const CustomerForm = () => {
         },
         {
             title: 'Settings & Consents',
-            content: 'Last-content',
+            content: (<CustomerSettingsForm customerId={customerId} onSuccessSaveFunction={handleSuccessLastStep} />),
         },
     ];
 
-    const [current, setCurrent] = useState(0);
     const next = () => {
         setCurrent(current + 1);
     };
@@ -39,32 +54,6 @@ const CustomerForm = () => {
             <MainCard title="Add Customer">
                 <Steps current={current} items={items} />
                 <div style={contentStyle}>{steps[current].content}</div>
-                <div
-                    style={{
-                        marginTop: 24,
-                    }}
-                >
-                    {current < steps.length - 1 && (
-                        <Button type="primary" onClick={() => next()}>
-                            Next
-                        </Button>
-                    )}
-                    {current === steps.length - 1 && (
-                        <Button type="primary" onClick={() => message.success('Processing complete!')}>
-                            Done
-                        </Button>
-                    )}
-                    {current > 0 && (
-                        <Button
-                            style={{
-                                margin: '0 8px',
-                            }}
-                            onClick={() => prev()}
-                        >
-                            Previous
-                        </Button>
-                    )}
-                </div>
             </MainCard>
         </>
     )

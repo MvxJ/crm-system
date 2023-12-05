@@ -11,7 +11,7 @@ import HelperRoutes from './HelperRoutes';
 import AuthService from 'utils/auth';
 
 // ==============================|| ROUTING RENDER ||============================== //
-const userRoles = AuthService.getCurrentUser().roles;
+const userRoles = AuthService.getCurrentUser() ? AuthService.getCurrentUser().roles : [];
 var routes = [MainRoutes, ServiceRoutes, OfficeRoutes, ProfileRoutes, LoginRoutes, HelperRoutes]
 
 if (userRoles.includes('Administrator')) {

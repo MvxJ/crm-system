@@ -18,7 +18,7 @@ const InvoicesList = Loadable(lazy(() => import('pages/office/invoices/InvoicesL
 const InvoiceDetail = Loadable(lazy(() => import('pages/office/invoices/InvoiceDetail')));
 const InvoiceForm = Loadable(lazy(() => import('pages/office/invoices/InvoiceForm')));
 
-const userRoles = AuthService.getCurrentUser().roles;
+const userRoles = AuthService.getCurrentUser() ? AuthService.getCurrentUser().roles : [];
 var routes = [
 {
   path: '/office/contracts',
