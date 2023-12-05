@@ -81,6 +81,7 @@ class BillHelper
         $message->setType(Message::TYPE_NOTIFICATION);
         $message->setPhoneNumber($customerPhoneNumber);
         $message->setEmail($customerEmail);
+        $message->setSubject('New invoice issued');
         $message->setMessage(
             'We have issued a new invoice to your account for the amount - ' . $bill->getTotalAmount()
         );
