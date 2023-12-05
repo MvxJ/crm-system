@@ -33,7 +33,7 @@ const isAuthenticated = () => {
     const expirationDate = new Date(expiration + 7200);
     const currentTime = new Date();
   
-    const timeDifferenceInSeconds = Math.floor((expirationDate - currentTime) / 1000);
+    const timeDifferenceInSeconds = Math.floor((expirationDate - currentTime));
   
     return timeDifferenceInSeconds > 0;
 }

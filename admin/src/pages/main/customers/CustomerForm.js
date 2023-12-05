@@ -5,15 +5,15 @@ import MainCard from 'components/MainCard';
 const CustomerForm = () => {
     const steps = [
         {
-            title: 'First',
-            content: 'First-content',
+            title: 'Requaired Informations',
+            content: 'Requaired informations',
         },
         {
-            title: 'Second',
+            title: 'Address',
             content: 'Second-content',
         },
         {
-            title: 'Last',
+            title: 'Settings & Consents',
             content: 'Last-content',
         },
     ];

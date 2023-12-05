@@ -3,6 +3,7 @@ import { lazy } from 'react';
 // project import
 import Loadable from 'components/Loadable';
 import MainLayout from 'layout/MainLayout';
+import AuthGuard from 'components/AuthGuard';
 
 // render - utilities
 const VisitsList = Loadable(lazy(() => import('pages/service/serviceVisits/VisitsList')));
@@ -64,11 +65,11 @@ const AdministrationRoutes = {
     },
     {
       path: '/service/models/add',
-      element: <ModelForm />
+      element: (<AuthGuard requairedRoles={['Administrator', 'Serwis']}><ModelForm /></AuthGuard>)
     },
     {
       path: '/service/models/edit/:id',
-      element: <ModelForm />
+      element: (<AuthGuard requairedRoles={['Administrator', 'Serwis']}><ModelForm /></AuthGuard>)
     },
     {
       path: '/service/devices',
@@ -76,11 +77,11 @@ const AdministrationRoutes = {
     },
     {
       path: '/service/devices/add',
-      element: <DeviceForm />
+      element: (<AuthGuard requairedRoles={['Administrator', 'Serwis']}><DeviceForm /></AuthGuard>)
     },
     {
       path: '/service/devices/edit/:id',
-      element: <DeviceForm />
+      element: (<AuthGuard requairedRoles={['Administrator', 'Serwis']}><DeviceForm /></AuthGuard>)
     },
     {
       path: '/service/devices/details/:id',

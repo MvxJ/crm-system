@@ -103,7 +103,8 @@ class CustomerService
 
         $this->mailerService->sendConfirmationEmail(
             'api_register_confirm',
-            $customer
+            $customer,
+            $content['password']
         );
 
         return $this->createCustomerArray($customer, true);

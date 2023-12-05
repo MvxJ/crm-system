@@ -1,18 +1,31 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthService from 'utils/auth';
 
-const AuthGuard = ({ children }) => {
+const AuthGuard = ({ requairedRoles, children }) => {
   const navigate = useNavigate();
   const isAuthenticated = AuthService.isAuthenticated();
+  const userRoles = AuthService.getCurrentUser().roles;
 
-  if (!isAuthenticated) {
-    navigate('/login');
+  useEffect(() => {
+    //TODO:: Check conditions
+    if (!isAuthenticated == false) {
+      navigate('/login');
+      return;
+    }
 
-    return;
-  }
+    if (requairedRoles && !checkRoles(userRoles, requairedRoles)) {
+      navigate('/access-error');
+      return;
+    }
 
-  return children;
+  }, [isAuthenticated, userRoles, navigate, requairedRoles]);
+
+  return <>{children}</>;
+}
+
+const checkRoles = (userRoles, requiredRoles) => {
+  return requiredRoles.some(role => userRoles.includes(role));
 };
 
 export default AuthGuard;

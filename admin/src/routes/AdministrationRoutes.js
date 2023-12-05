@@ -3,6 +3,7 @@ import { lazy } from 'react';
 // project import
 import Loadable from 'components/Loadable';
 import MainLayout from 'layout/MainLayout';
+import AuthGuard from 'components/AuthGuard';
 
 // render - utilities
 const UsersList = Loadable(lazy(() => import('pages/administration/users/UsersList')));
@@ -17,23 +18,23 @@ const AdministrationRoutes = {
   children: [
     {
       path: '/administration/settings',
-      element: <SystemSettingsPage />
+      element: (<AuthGuard requairedRoles={['Administrator']}><SystemSettingsPage /></AuthGuard>)
     },
     {
       path: '/administration/users',
-      element: <UsersList />
+      element: (<AuthGuard requairedRoles={['Administrator']}><UsersList /></AuthGuard>)
     },
     {
       path: '/administration/users/add',
-      element: <UserForm />
+      element: (<AuthGuard requairedRoles={['Administrator']}><UserForm /></AuthGuard>)
     },
     {
       path: '/administration/users/edit/:id',
-      element: <UserForm />
+      element: (<AuthGuard requairedRoles={['Administrator']}><UserForm /></AuthGuard>)
     },
     {
       path: '/administration/users/detail/:id',
-      element: <UserDetail />
+      element: (<AuthGuard requairedRoles={['Administrator']}><UserDetail /></AuthGuard>)
     }
   ]
 };

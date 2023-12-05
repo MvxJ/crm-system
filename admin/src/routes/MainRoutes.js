@@ -3,6 +3,7 @@ import { lazy } from 'react';
 // project import
 import Loadable from 'components/Loadable';
 import MainLayout from 'layout/MainLayout';
+import AuthGuard from 'components/AuthGuard';
 
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
 const CustomersList = Loadable(lazy(() => import('pages/main/customers/CustomersList')));
@@ -26,7 +27,7 @@ const MainRoutes = {
     },
     {
       path: '/customers/add',
-      element: <CustomerForm />
+      element: (<AuthGuard requairedRoles={['Administrator', 'Księgowość']}><CustomerForm /></AuthGuard>)
     },
     {
       path: '/customers/detail/:id',

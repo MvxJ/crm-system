@@ -2,6 +2,8 @@ import { lazy } from 'react';
 
 import Loadable from 'components/Loadable';
 import MainLayout from 'layout/MainLayout';
+import AuthService from 'utils/auth';
+import AuthGuard from 'components/AuthGuard';
 
 const PaymentsList = Loadable(lazy(() => import('pages/office/payments/PaymentsList')));
 const PaymentDetail = Loadable(lazy(() => import('pages/office/payments/PaymentDetail')));
@@ -16,76 +18,89 @@ const InvoicesList = Loadable(lazy(() => import('pages/office/invoices/InvoicesL
 const InvoiceDetail = Loadable(lazy(() => import('pages/office/invoices/InvoiceDetail')));
 const InvoiceForm = Loadable(lazy(() => import('pages/office/invoices/InvoiceForm')));
 
+const userRoles = AuthService.getCurrentUser().roles;
+var routes = [
+{
+  path: '/office/contracts',
+  element: <ContractsList />
+},
+{
+  path: '/office/contracts/detail/:id',
+  element: <ContractDetail />
+},
+{
+  path: '/office/contracts/add',
+  element: <ContractForm />
+},
+{
+  path: '/office/contracts/edit/:id',
+  element: <ContractForm />
+},
+{
+  path: '/office/offers',
+  element: <OffersList />
+},
+{
+  path: '/office/offers/detail/:id',
+  element: <OfferDetail />
+},
+{
+  path: '/office/offers/add',
+  element: <OfferForm />
+},
+{
+  path: '/office/offers/edit/:id',
+  element: <OfferForm />
+}
+]
+
+const paymentRoutes = [
+  {
+    path: '/office/payments',
+    element: (<AuthGuard requairedRoles={['Administrator', 'Księgowość']}><PaymentsList /></AuthGuard>)
+  },
+  {
+    path: '/office/payments/detail/:id',
+    element: (<AuthGuard requairedRoles={['Administrator', 'Księgowość']}><PaymentDetail /></AuthGuard>)
+  },
+  {
+    path: '/office/payments/add',
+    element: (<AuthGuard requairedRoles={['Administrator', 'Księgowość']}><PaymentForm /></AuthGuard>)
+  },
+  {
+    path: '/office/payments/edit/:id',
+    element: (<AuthGuard requairedRoles={['Administrator', 'Księgowość']}><PaymentForm /></AuthGuard>)
+  }
+]
+
+const invoiceRoutes = [
+  {
+    path: '/office/invoices',
+    element: (<AuthGuard requairedRoles={['Administrator', 'Księgowość']}><InvoicesList /></AuthGuard>)
+  },
+  {
+    path: '/office/invoices/detail/:id',
+    element: (<AuthGuard requairedRoles={['Administrator', 'Księgowość']}><InvoiceDetail /></AuthGuard>)
+  },
+  {
+    path: '/office/invoices/edit/:id',
+    element: (<AuthGuard requairedRoles={['Administrator', 'Księgowość']}><InvoiceForm /></AuthGuard>)
+  },
+  {
+    path: '/office/invoices/add',
+    element: (<AuthGuard requairedRoles={['Administrator', 'Księgowość']}><InvoiceForm /></AuthGuard>)
+  }
+]
+
+if (userRoles.includes('Administrator') || userRoles.includes('Księgowość')) {
+  routes = [...routes, ...invoiceRoutes];
+  routes = [...routes, ...paymentRoutes];
+}
 
 const AdministrationRoutes = {
   path: '/office',
   element: <MainLayout />,
-  children: [
-    {
-      path: '/office/payments',
-      element: <PaymentsList />
-    },
-    {
-      path: '/office/payments/detail/:id',
-      element: <PaymentDetail />
-    },
-    {
-      path: '/office/payments/add',
-      element: <PaymentForm />
-    },
-    {
-      path: '/office/payments/edit/:id',
-      element: <PaymentForm />
-    },
-    {
-      path: '/office/contracts',
-      element: <ContractsList />
-    },
-    {
-      path: '/office/contracts/detail/:id',
-      element: <ContractDetail />
-    },
-    {
-      path: '/office/contracts/add',
-      element: <ContractForm />
-    },
-    {
-      path: '/office/contracts/edit/:id',
-      element: <ContractForm />
-    },
-    {
-      path: '/office/offers',
-      element: <OffersList />
-    },
-    {
-      path: '/office/offers/detail/:id',
-      element: <OfferDetail />
-    },
-    {
-      path: '/office/offers/add',
-      element: <OfferForm />
-    },
-    {
-      path: '/office/offers/edit/:id',
-      element: <OfferForm />
-    },
-    {
-      path: '/office/invoices',
-      element: <InvoicesList />
-    },
-    {
-      path: '/office/invoices/detail/:id',
-      element: <InvoiceDetail />
-    },
-    {
-      path: '/office/invoices/edit/:id',
-      element: <InvoiceForm />
-    },
-    {
-      path: '/office/invoices/add',
-      element: <InvoiceForm />
-    }
-  ]
+  children: routes
 };
 
 export default AdministrationRoutes;

@@ -42,7 +42,7 @@ class MailerService
         $this->urlGenerator = $urlGenerator;
     }
 
-        public function sendConfirmationEmail(string $verifyEmailRouteName, Customer $customer)
+        public function sendConfirmationEmail(string $verifyEmailRouteName, Customer $customer, ?string $password = null)
     {
         $signatureComponents = $this->verifyEmailHelper->generateSignature(
             $verifyEmailRouteName,
@@ -54,6 +54,7 @@ class MailerService
             'Account Confirmation',
             [
                 'customer' => $customer,
+                'password' => $password,
                 'signedUrl' => $this->generateFeUrl($signatureComponents->getSignedUrl()),
                 'expiresAtMessageKey' => $signatureComponents->getExpirationMessageKey(),
                 'expiresAtMessageData' => $signatureComponents->getExpirationMessageData(),
