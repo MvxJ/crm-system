@@ -6,16 +6,11 @@ import './Customers.css';
 import { SettingOutlined, HomeOutlined, UserOutlined } from '@ant-design/icons';
 import CustomerSettingsForm from 'components/CustomerSettingsForm';
 import CustomerProfileForm from 'components/CustomerProfileForm';
+import CustomerAddressesEditPage from './CustomerAddressesEditPage';
 
 const EditCustomerForm = () => {
     const {id} = useParams();
     const navigate = useNavigate();
-    const [current, setCurrent] = useState(0);
-    const [customerId, setCustomerId] = useState(null);
-    const [customerEmail, setCustomerEmail] = useState(null);
-    const [phoneNumber, setPhoneNumber] = useState(null);
-    const [userAddresses, setUserAddresses] = useState(0);
-    const [addBillingAddress, setAddBillingAddress] = useState(false);
 
     const handleOpenCustomerPage = () => {
         navigate(`/customers/detail/${id}`);
@@ -40,7 +35,7 @@ const EditCustomerForm = () => {
               Addresses
             </span>
           ),
-          children: 'addresses',
+          children: (<CustomerAddressesEditPage customerId={id} />),
         },
         {
           key: 'settings',

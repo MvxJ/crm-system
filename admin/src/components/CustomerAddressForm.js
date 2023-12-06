@@ -11,6 +11,8 @@ import {
 } from "../../node_modules/antd/es/index";
 import "./SharedStyles.css";
 import instance from "utils/api";
+import { IconButton } from "../../node_modules/@mui/material/index";
+import { FormOutlined, DeleteOutlined, CloseCircleOutlined } from '@ant-design/icons';
 
 const CustomerAddressForm = ({
   customerId,
@@ -22,30 +24,34 @@ const CustomerAddressForm = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [disabled, setDisabled] = useState(false);
+  const [edit, setEdit] = useState(false);
   const [formData, setFormData] = useState({
-    type: type,
-    city: "",
-    zipCode: "",
-    address: "",
-    phoneNumber: phoneNumber,
-    emailAddress: email,
-    companyName: "",
-    taxId: "",
-    customer: "",
-    country: "",
+    type: address ? address.type : type,
+    city: address ? address.city : '',
+    zipCode: address ? address.zipCode : '',
+    address: address ? address.address : '',
+    phoneNumber: address ? address.phoneNumber : phoneNumber,
+    emailAddress: address ? address.emailAddress : email,
+    companyName: address ? address.companyName : '',
+    taxId: address ? address.taxId : '',
+    customer: address ? address.customerId : '',
+    country: address ? address.country : '',
   });
 
   const createRequetsObj = () => {
     const obj = {
-      type: formData.type,
+      type: parseInt(formData.type),
       city: formData.city,
       zipCode: formData.zipCode,
       address: formData.address,
       phoneNumber: formData.phoneNumber,
       emailAddress: formData.emailAddress,
-      customer: customerId,
       country: formData.country,
     };
+
+    if (!address) {
+      obj.customer = parseInt(customerId);
+    }
 
     if (formData.type == 0) {
       obj.taxId = formData.taxId;
@@ -55,7 +61,85 @@ const CustomerAddressForm = ({
     return obj;
   };
 
-  const saveAddress = () => {};
+  const saveAddress = async () => {
+    try {
+      setLoading(true);
+
+      const request = createRequetsObj();
+      const response = await instance.patch(`/customers/address/${address.id}/edit`, request);
+      
+      if (response.status != 200) {
+        setLoading(false);
+
+        notification.error({
+          message: "Can't update customer address.",
+          placement: "bottomRight",
+          type: "error"
+        })
+
+        return;
+      }
+
+      setLoading(false);
+      notification.success({
+        message: "Successfully updated customer adderss.",
+        type: "success",
+        placement: "bottomRight"
+      });
+      setEdit(false);
+    } catch (e) {
+      setLoading(false);
+      notification.error({
+        placement: "bottomRight",
+        message: "Can't save customer address.",
+        type: "error",
+        description: e.message
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteAddress = async () => {
+    try {
+      setLoading(true);
+
+      const response = await instance.delete(`/customers/address/${address.id}/delete`);
+
+      if (response.status != 200) {
+        setLoading(false);
+
+        notification.error({
+          type: "error",
+          placement: "bottomRight",
+          message: "Can't delete customer address."
+        });
+
+        return;
+      }
+
+      setLoading(false);
+      notification.success({
+        type: "success",
+        message: "Successfully deleted customer address.",
+        placement: "bottomRight"
+      });
+
+      if (onSuccessSaveFunction) {
+        onSuccessSaveFunction();
+      }
+    } catch (e) {
+      setLoading(false);
+      notification.error({
+        type: "error",
+        message: "Can't delete customer address.",
+        description: e.message,
+        placement: "bottomRight"
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const addAddress = async () => {
     try {
@@ -113,8 +197,35 @@ const CustomerAddressForm = ({
         <Form
           layout="vertical"
           style={{ width: 100 + "%" }}
-          disabled={disabled}
+          disabled={disabled || (address && !edit)}
         >
+          { address ?
+            <Row style={{display: 'flex', alignItems: 'center'}}>
+              <Col span={10} offset={1}>
+                <h4>{address.type == 0 ? 'Billing address ' : 'Contact Address '} #{address.id}</h4>
+              </Col>
+              <Col span={10} offset={2} style={{textAlign: 'right'}}>
+                  { !edit ?
+                  <>
+                    <IconButton 
+                      onClick={() => setEdit(true)}
+                      color="primary"
+                    >
+                      <FormOutlined />
+                    </IconButton>
+                    <IconButton color="error" onClick={deleteAddress}>
+                      <DeleteOutlined />
+                    </IconButton>
+                  </> : 
+                  <IconButton 
+                    color="error" 
+                    onClick={() => setEdit(false)}
+                  >
+                    <CloseCircleOutlined />
+                  </IconButton> }
+              </Col>
+            </Row>
+          : null }
           <Row>
             <Col span={10} offset={1}>
               <Form.Item
@@ -260,7 +371,7 @@ const CustomerAddressForm = ({
               </Form.Item>
             </Col>
           </Row>
-          {disabled == false ? (
+          {!address && disabled == false ? (
             <Row style={{ textAlign: "right" }}>
               <Col span={22} offset={1}>
                 <Button
@@ -272,7 +383,19 @@ const CustomerAddressForm = ({
                 </Button>
               </Col>
             </Row>
-          ) : null}
+          ) : edit && (
+            <Row style={{ textAlign: "right" }}>
+              <Col span={22} offset={1}>
+                <Button
+                  type="primary"
+                  onClick={saveAddress}
+                  style={{ marginBototm: "15px" }}
+                >
+                  Save Address
+                </Button>
+              </Col>
+            </Row>
+          )}
         </Form>
       </Spin>
     </>

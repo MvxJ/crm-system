@@ -78,7 +78,14 @@ const CustomerProfileForm = ({onSuccessSaveFunction, customerId}) => {
         try {
             setLoading(true);
 
-            const response = await instance.patch(``);
+            const response = await instance.patch(`/customers/${customerId}/edit`, {
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                secondName: formData.secondName,
+                birthDate: formData.birthDate,
+                phoneNumber: formData.phoneNumber,
+                email: formData.email
+            });
 
             if (response.status != 200) {
                 setLoading(false);
@@ -93,6 +100,11 @@ const CustomerProfileForm = ({onSuccessSaveFunction, customerId}) => {
             }
 
             setLoading(false);
+            notification.success({
+                message: "Successfully updated customer profile.",
+                type: "success",
+                placement: "bottomRight"
+            })
         } catch (e) {
             setLoading(false);
             notification.error({
@@ -202,6 +214,7 @@ const CustomerProfileForm = ({onSuccessSaveFunction, customerId}) => {
                                     show: true,
                                     max: 10,
                                 }}
+                                disabled={customerId ? true : false}
                                 placeholder="Please insert social security number" 
                                 name="socialSecurityNumber" 
                                 value={formData.socialSecurityNumber} onChange={handleInputChange} 
@@ -212,7 +225,7 @@ const CustomerProfileForm = ({onSuccessSaveFunction, customerId}) => {
                 <Row>
                     <Col span={10} offset={1}>
                         <Form.Item label="Birth Date">
-                            <DatePicker style={{width: '100%'}} name="birthDate" onChange={(value) => handleInputChange({ target: { name: "birthDate", value } })} />
+                            <DatePicker style={{width: '100%'}} name="birthDate" value={formData.birthDate} onChange={(value) => handleInputChange({ target: { name: "birthDate", value } })} />
                         </Form.Item>
                     </Col>
                     <Col span={10} offset={2}>
