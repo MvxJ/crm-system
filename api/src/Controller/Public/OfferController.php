@@ -8,7 +8,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Tag(name="Offers")
+ */
 #[Route('/api/public/offer', name: 'api_public_offer_')]
 class OfferController extends AbstractController
 {
@@ -19,7 +23,7 @@ class OfferController extends AbstractController
         $this->offerService = $offerService;
     }
 
-    #[Route('/{id}/detail', name: 'detail')]
+    #[Route('/{id}/detail', name: 'detail', methods: ['GET'])]
     public function getOffer(int $id, Request $request): JsonResponse
     {
         try {
@@ -53,7 +57,7 @@ class OfferController extends AbstractController
         }
     }
 
-    #[Route('/list', name: 'list')]
+    #[Route('/list', name: 'list', methods: ['GET'])]
     public function getOfferList(Request $request): JsonResponse
     {
         try {

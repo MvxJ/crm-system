@@ -35,7 +35,7 @@ class CustomerSettingsService
         /** @var Customer $customer */
         $customer = $this->customerRepository->findOneBy(['id' => $customerId]);
 
-        if (!$customer || !$this->canUserAccessSettings($customer, $userEmail)) {
+        if (!$customer || ($userEmail != null && !$this->canUserAccessSettings($customer, $userEmail))) {
             return null;
         }
 
@@ -110,8 +110,9 @@ class CustomerSettingsService
         return [
             'emailNotification' => $settings->getEmailNotifications(),
             'smsNotification' => $settings->isSmsNotifications(),
-            'contactAddressId' => $settings->getContactAddress()->getId(),
-            'billingAddressId' => $settings->getBillingAddress()->getId()
+            'contactAddressId' => $settings->getContactAddress()?->getId(),
+            'billingAddressId' => $settings->getBillingAddress()?->getId(),
+            'twoFactor' => $settings->getCustomer()->isEmailAuthEnabled()
         ];
     }
 }

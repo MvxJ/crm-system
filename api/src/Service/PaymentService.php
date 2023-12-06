@@ -163,7 +163,9 @@ class PaymentService
             'createdAt' => $payment->getCreatedAt(),
             'customer' => [
                 'id' => $payment->getCustomer()->getId(),
-                'email' => $payment->getCustomer()->getEmail()
+                'email' => $payment->getCustomer()->getEmail(),
+                'name' => $payment->getCustomer()->getFirstName(),
+                'surname' => $payment->getCustomer()->getLastName()
             ],
             'bill' => [
                 'number' => $payment->getBill()->getNumber(),

@@ -7,10 +7,8 @@ namespace App\Controller;
 use App\Entity\Customer;
 use App\Entity\CustomerSettings;
 use App\Entity\Role;
-use App\Entity\User;
 use App\Repository\CustomerRepository;
 use App\Repository\RoleRepository;
-use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
 use App\Service\MailerService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -97,6 +95,7 @@ class RegistrationController extends AbstractController
                 $customer
             );
         } catch (\Exception $exception) {
+            dd($exception);
             return new JsonResponse(
                 [
                     'message' => 'An error occurred during registration please try again'

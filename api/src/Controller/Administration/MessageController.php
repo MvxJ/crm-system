@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/api/message', name: 'api_message_')]
+#[Route('/api/messages', name: 'api_message_')]
 class MessageController extends AbstractController
 {
     private MessageService $messageService;
@@ -31,7 +31,41 @@ class MessageController extends AbstractController
             return new JsonResponse(
                 [
                     'status' => 'success',
-                    'messages' => $messages
+                    'results' => $messages
+                ],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $exception) {
+            return new JsonResponse(
+                [
+                    'status' => 'error',
+                    'message' => $exception->getMessage()
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    #[Route('/detail/{id}', name: 'detail', methods: ['GET'])]
+    public function getMessageDetails(int $id, Request $request): JsonResponse
+    {
+        try {
+            $message = $this->messageService->getMessage($id);
+
+            if (!$message) {
+                return new JsonResponse(
+                    [
+                        'status' => 'error',
+                        'message' => 'Bad request please try again.'
+                    ],
+                    Response::HTTP_INTERNAL_SERVER_ERROR
+                );
+            }
+
+            return new JsonResponse(
+                [
+                    'status' => 'success',
+                    'message' => $message
                 ],
                 Response::HTTP_OK
             );

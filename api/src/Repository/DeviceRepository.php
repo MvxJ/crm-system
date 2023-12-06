@@ -43,6 +43,7 @@ class DeviceRepository extends ServiceEntityRepository
         string $orderBy,
         string $order,
         string $status,
+        string $customerId
     ): array {
         $queryBuilder = $this->createQueryBuilder('d');
         $queryBuilder->setMaxResults($itemsPerPage)
@@ -54,10 +55,16 @@ class DeviceRepository extends ServiceEntityRepository
                     ->setParameter('status', (int)$status);
             }
 
+            if ($customerId != 'all' && !is_nan((int)$customerId)) {
+                $queryBuilder->innerJoin('d.user', 'c')
+                    ->where('c.id = :customerId')
+                    ->setParameter('customerId', (int)$customerId);
+            }
+
         return $queryBuilder->getQuery()->getResult();
     }
 
-    public function countDevices(string $status): int
+    public function countDevices(string $status, string $customerId): int
     {
         $queryBuilder = $this->createQueryBuilder('d')
             ->select('COUNT(d.id) as device_count');
@@ -67,8 +74,23 @@ class DeviceRepository extends ServiceEntityRepository
                 ->setParameter('status', (int)$status);
         }
 
+        if ($customerId != 'all' && !is_nan((int)$customerId)) {
+            $queryBuilder->innerJoin('d.user', 'c')
+                ->where('c.id = :customerId')
+                ->setParameter('customerId', (int)$customerId);
+        }
+
         $result = $queryBuilder->getQuery()->getSingleScalarResult();
 
         return (int)$result;
+    }
+
+    public function countDevicesByStatus(): array
+    {
+        $queryBuilder = $this->createQueryBuilder('d')
+            ->select('COUNT(d.id) as devicesCount, d.status')
+            ->groupBy('d.status');
+
+        return $queryBuilder->getQuery()->getResult();
     }
 }

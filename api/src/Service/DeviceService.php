@@ -53,7 +53,11 @@ class DeviceService
             'status' => $device->getStatus(),
             'boughtDate' => $device->getBoughtDate(),
             'soldDate' => $device->getSoldDate(),
-            'userId' => $device->getUser() ? $device->getUser()->getId() : null
+            'user' => $device->getUser() ? [
+                'id' => $device->getUser()->getId(),
+                'name' => $device->getUser()->getFirstName(),
+                'lastName' => $device->getUser()->getLastName()
+            ] : null
         ];
     }
 
@@ -62,21 +66,19 @@ class DeviceService
         $devicesArray = [];
         $page = $request->get('page', 1);
         $itemsPerPage = $request->get('items', 25);
-        $order = $request->get('order', 'id');
-        $orderBy = $request->get('orderBy', 'ASC');
+        $order = $request->get('order', 'ASC');
+        $orderBy = $request->get('orderBy', 'id');
         $status = $request->get('status', 'all');
-        $maxDevices = $this->deviceRepository->countDevices($status);
+        $customerId = $request->get('customerId', 'all');
+        $maxDevices = $this->deviceRepository->countDevices($status, $customerId);
         $devices = $this->deviceRepository->findDevicesWithPagination(
             (int)$page,
             (int)$itemsPerPage,
             $orderBy,
             $order,
             $status,
+            $customerId
         );
-
-        if (count($devices) == 0) {
-            return null;
-        }
 
         /** @var Device $device */
         foreach ($devices as $device) {
@@ -85,7 +87,8 @@ class DeviceService
                 'macAddress' => $device->getMacAddress(),
                 'serialNo' => $device->getSerialNumber(),
                 'status' => $device->getStatus(),
-                'type' => $device->getModel()->getType()
+                'type' => $device->getModel()->getType(),
+                'model' => $device->getModel()->getName()
             ];
         }
 

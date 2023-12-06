@@ -1,0 +1,24 @@
+.link {
+    color: #1677ff;
+}
+
+.link:hover {
+    cursor: pointer;
+}
+
+.wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 90vh !important;
+}
+
+.roleName {
+    font-style: italic;
+    color: #1677ff;
+}
+
+.text-container {
+    text-align: center;
+}

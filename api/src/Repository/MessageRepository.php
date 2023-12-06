@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Customer;
 use App\Entity\Message;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -81,7 +82,7 @@ class MessageRepository extends ServiceEntityRepository
         }
 
         if ($customerId != 'all' && !is_nan((int)$customerId)) {
-            $queryBuilder->innerJoin(Customer::class, 'c')
+            $queryBuilder->innerJoin('m.customer', 'c')
                 ->andWhere('c.id = :customerId')
                 ->setParameter('customerId', (int)$customerId);
         }
@@ -119,5 +120,26 @@ class MessageRepository extends ServiceEntityRepository
             ->setParameter('email', $userEMail);
 
         return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function countMessagesByDateAndType(): array
+    {
+        $sql = "
+            SELECT COUNT(m.id) as messageCount, m.type, DATE(m.created_date) as formattedDate
+            FROM message m
+            GROUP BY formattedDate, m.type
+        ";
+
+        $entityManager = $this->getEntityManager();
+
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('messageCount', 'messageCount');
+        $rsm->addScalarResult('type', 'type');
+        $rsm->addScalarResult('formattedDate', 'formattedDate');
+
+        $nativeQuery = $entityManager->createNativeQuery($sql, $rsm);
+        $result = $nativeQuery->getResult();
+
+        return $result;
     }
 }

@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/api/service/request', name: 'api_service_request_')]
+#[Route('/api/service-requests', name: 'api_service_request_')]
 class ServiceRequestController extends AbstractController
 {
     private JsonValidator $validator;

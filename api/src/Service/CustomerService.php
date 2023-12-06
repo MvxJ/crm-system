@@ -39,8 +39,9 @@ class CustomerService
     {
         $page = $request->get('page', 1);
         $itemsPerPage = $request->get('items', 25);
+        $searchQuery = $request->get('searchTerm', null);
         $totalItems = count($this->customerRepository->findAll());
-        $results = $this->customerRepository->getCustomersWithPagination((int)$itemsPerPage, (int)$page);
+        $results = $this->customerRepository->getCustomersWithPagination((int)$itemsPerPage, (int)$page, $searchQuery);
         $customers = [];
 
         /** @var Customer $customer */
@@ -102,7 +103,8 @@ class CustomerService
 
         $this->mailerService->sendConfirmationEmail(
             'api_register_confirm',
-            $customer
+            $customer,
+            $content['password']
         );
 
         return $this->createCustomerArray($customer, true);
@@ -195,16 +197,60 @@ class CustomerService
             'secondName' => $customer->getSecondName(),
             'lastName' => $customer->getLastName(),
             'email' => $customer->getEmail(),
-            'phoneNumber' => $customer->getPhoneNumber()
+            'phoneNumber' => $customer->getPhoneNumber(),
+            'isVerified' => (bool)$customer->isVerified(),
+            'isActive' => (bool)!$customer->isDisabled(),
+            'socialSecurityNumber' => $customer->getSocialSecurityNumber()
         ];
 
         if ($details) {
+            $customerArray['birthDate'] = $customer->getBirthDate();
+            $customerArray['twoFactorAuth'] = $customer->isEmailAuthEnabled();
+            $customerArray['smsNotification'] = $customer->getSettings() ? $customer->getSettings()->isSmsNotifications() : null;
+            $customerArray['emailNotification'] = $customer->getSettings() ? $customer->getSettings()->getEmailNotifications(): null;
             $customerArray['numberOfContracts'] = count($customer->getContracts());
             $customerArray['numberOfDevices'] = count($customer->getDevices());
             $customerArray['numberOfServiceRequests'] = count($customer->getServiceRequests());
             $customerArray['numberOfBills'] = count($customer->getBills());
             $customerArray['numberOfPayments'] = count($customer->getPayments());
+            $customerArray['numberOfMessages'] = count($customer->getMessages());
         }
+
+         if ($customer->getSettings() != null && $details) {
+            $customerSettings = $customer->getSettings();
+
+                if ($customerSettings->getContactAddress()) {
+                    $contactAddress  = $customer->getSettings()->getContactAddress();
+
+                    $customerArray['addresses']['contact'] = [
+                        "id" => $contactAddress->getId(),
+                        "country" => $contactAddress->getCountry(),
+                        "city" => $contactAddress->getCity(),
+                        "zipCode" => $contactAddress->getZipCode(),
+                        "address" => $contactAddress->getAddress(),
+                        "phoneNumber" => $contactAddress->getPhoneNumber(),
+                        "emailAddress" => $contactAddress->getEmailAddress(),
+                        "companyName" => $contactAddress->getCompanyName(),
+                        "taxId" => $contactAddress->getTaxId()
+                    ];
+                }
+
+                if ($customerSettings->getBillingAddress()) {
+                    $billingAddress  = $customer->getSettings()->getBillingAddress();
+
+                    $customerArray['addresses']['contact'] = [
+                        "id" => $billingAddress->getId(),
+                        "country" => $billingAddress->getCountry(),
+                        "city" => $billingAddress->getCity(),
+                        "zipCode" => $billingAddress->getZipCode(),
+                        "address" => $billingAddress->getAddress(),
+                        "phoneNumber" => $billingAddress->getPhoneNumber(),
+                        "emailAddress" => $billingAddress->getEmailAddress(),
+                        "companyName" => $billingAddress->getCompanyName(),
+                        "taxId" => $billingAddress->getTaxId()
+                    ];
+                }
+         }
 
         return  $customerArray;
     }

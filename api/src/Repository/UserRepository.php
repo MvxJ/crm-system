@@ -57,14 +57,35 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->save($user, true);
     }
 
-    public function getUsersWithPagination(int $limit = 25, int $page = 1)
+    public function getUsersWithPagination(int $limit = 25, int $page = 1, ?string $searchTerm = null)
     {
-        return $this->createQueryBuilder('u')
+        $queryBuilder = $this->createQueryBuilder('u')
             ->setMaxResults($limit)
             ->setFirstResult(($page - 1) * $limit)
-            ->orderBy('u.id', 'ASC')
-            ->getQuery()
+            ->orderBy('u.id', 'ASC');
+            
+        if ($searchTerm) {
+            $queryBuilder
+            ->andWhere(
+                 $queryBuilder->expr()->orX(
+                    $queryBuilder->expr()->like('u.name', ':searchTerm'),
+                    $queryBuilder->expr()->like('u.surname', ':searchTerm'),
+                    $queryBuilder->expr()->like('u.username', ':searchTerm')
+                )
+            )->setParameter('searchTerm', '%' . $searchTerm . '%');
+        }
+
+        return $queryBuilder->getQuery()
             ->getResult();
 
+    }
+
+    public function countActiveUsers(): int
+    {
+        $queryBuilder = $this->createQueryBuilder('u')
+            ->select('COUNT(u.id)')
+            ->where('u.isDeleted = false');
+
+        return (int)$queryBuilder->getQuery()->getSingleScalarResult();
     }
 }

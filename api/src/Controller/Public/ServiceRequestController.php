@@ -9,8 +9,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use OpenApi\Annotations as OA;
 
-#[Route('/api/public/service/request', name: 'api_public_service_request_')]
+/**
+ * @OA\Tag(name="Service Requests")
+ */
+#[Route('/api/public/service-requests', name: 'api_public_service_request_')]
 class ServiceRequestController extends AbstractController
 {
     private ServiceRequestService $serviceRequestService;

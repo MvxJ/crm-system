@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/api/payment', name: 'api_payment_')]
+#[Route('/api/payments', name: 'api_payment_')]
 class PaymentController extends AbstractController
 {
     private PaymentService $paymentService;

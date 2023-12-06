@@ -183,6 +183,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         return $this;
     }
 
+    public function clearRoles(): self
+    {
+        $this->roles = new ArrayCollection();
+
+        return $this;
+    }
+
     /**
      * @return bool
      */
@@ -440,7 +447,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         return $this;
     }
 
-    public function isIsDeleted(): ?bool
+    public function isDeleted(): ?bool
     {
         return $this->isDeleted;
     }

@@ -1,50 +1,56 @@
+{% include '/bill/pdf/_bill_header.html.twig' with { 'settings': settings } %}
 {% block pdf_bill %}
-    <div>
+    <div class="bill-body">
         <h4>Invoice NO: {{ bill.number }}</h4>
-        <div>
-            <h5>Customer: </h5>
-            {% if billingAddress.type == 0 %}
-                <p>Company: {{ billingAddress.companyName }}</p>
-                <p>City: {{ billingAddress.city }}</p>
-                <p>Address: {{ billingAddress.address }}</p>
-                <p>Zip-Code: {{ billingAddress.zipCode }}</p>
-                <p>TaxId: {{ billingAddress.taxId }}</p>
-            {% else %}
-                <p>Name: {{ customer.firstName }}</p>
-                <p>Surname: {{ customer.lastName }}</p>
-                <p>City: {{ billingAddress.city }}</p>
-                <p>Address: {{ billingAddress.address }}</p>
-                <p>Zip-Code: {{ billingAddress.zipCode }}</p>
-            {% endif %}
+        <div class="b2b-details">
+            <div class="customer-details">
+                <h5>Customer: </h5>
+                {% if billingAddress and billingAddress.type == 0 %}
+                    <p>Company: {{ billingAddress.companyName }}</p>
+                    <p>City: {{ billingAddress.city }}</p>
+                    <p>Address: {{ billingAddress.address }}</p>
+                    <p>Zip-Code: {{ billingAddress.zipCode }}</p>
+                    <p>TaxId: {{ billingAddress.taxId }}</p>
+                {% else %}
+                    <p>Name: {{ customer.firstName }}</p>
+                    <p>Surname: {{ customer.lastName }}</p>
+                    {% if billingAddress != null %}
+                        <p>City: {{ billingAddress.city }}</p>
+                        <p>Address: {{ billingAddress.address }}</p>
+                        <p>Zip-Code: {{ billingAddress.zipCode }}</p>
+                    {% endif %}
+                {% endif %}
+            </div>
+            <div class="seller-details">
+                <h5>Seller: </h5>
+                <p>{{ settings.companyName }}</p>
+                <p>{{ settings.companyAddress }}</p>
+            </div>
         </div>
-        <div>
-            <h5>Seller: </h5>
-            <p>Company name</p>
-            <p>Company city</p>
-            <p>Company address</p>
-            <p>Company taxId</p>
-        </div>
-        <H4>Invoice details:</H4>
-        <div>
-            <table style="border: 1px solid black;">
+
+        <h4>Invoice details:</h4>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Amount</th>
+                    <th>Price</th>
+                    <th>Total price</th>
+                </tr>
+            </thead>
+            <tbody>
                 {% for position in positions %}
                     <tr>
-                        <td>
-                            Name: {{ position.name }}
-                        </td>
-                        <td>
-                            Amount: {{ position.amount }}
-                        </td>
-                        <td>
-                            Price: {{ position.price }}
-                        </td>
-                        <td>
-                            Total price: {{ (position.price * position.amount) }}
-                        </td>
+                        <td>{{ position.name }}</td>
+                        <td>{{ position.amount }}</td>
+                        <td>{{ position.price }}</td>
+                        <td>{{ position.price * position.amount }}</td>
                     </tr>
                 {% endfor %}
-            </table>
-            <h5>Total amount: {{ bill.totalAmount }}</h5>
-        </div>
+            </tbody>
+        </table>
+
+        <h5>Total amount: {{ bill.totalAmount }}</h5>
     </div>
 {% endblock %}

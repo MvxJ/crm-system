@@ -45,14 +45,16 @@ class ServiceVisitService
         $orderBy = $request->get('orderBy', 'id');
         $user = $request->get('userId', 'all');
         $customer = $request->get('customerId', 'all');
-        $maxResults = $this->serviceVisitRepository->countServiceVisits($user, $customer);
+        $serviceRequestId = $request->get('serviceRequestId', 'all');
+        $maxResults = $this->serviceVisitRepository->countServiceVisits($user, $customer, $serviceRequestId);
         $serviceVisits = $this->serviceVisitRepository->getServiceVisitsWithPagination(
             (int)$page,
             (int)$itemsPerPage,
             $order,
             $orderBy,
             $user,
-            $customer
+            $customer,
+            $serviceRequestId
         );
 
         if (count($serviceVisits) == 0) {
@@ -246,9 +248,12 @@ class ServiceVisitService
             'date' => $serviceVisit->getDate(),
             'start' => $serviceVisit->getStartTime(),
             'end' => $serviceVisit->getEndTime(),
+            'color' => $serviceVisit->getColor(),
             'user' => [
                 'id' => $serviceVisit->getUser()->getId(),
-                'username' => $serviceVisit->getUser()->getUsername()
+                'username' => $serviceVisit->getUser()->getUsername(),
+                'name' => $serviceVisit->getUser()->getName(),
+                'surname' => $serviceVisit->getUser()->getSurname()
             ],
             'cancelled' => $serviceVisit->isCancelled()
         ];
@@ -257,7 +262,9 @@ class ServiceVisitService
             $serviceVisitArray['description'] = $serviceVisit->getDescription();
             $serviceVisitArray['customer'] = [
                 'id' => $serviceVisit->getCustomer()->getId(),
-                'email' => $serviceVisit->getCustomer()->getEmail()
+                'email' => $serviceVisit->getCustomer()->getEmail(),
+                'name' => $serviceVisit->getCustomer()->getFirstName(),
+                'surname' => $serviceVisit->getCustomer()->getLastName()
             ];
             $serviceVisitArray['createdAt'] = $serviceVisit->getCreatedDate();
             $serviceVisitArray['finished'] = $serviceVisit->getIsFinished();

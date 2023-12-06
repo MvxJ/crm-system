@@ -180,7 +180,7 @@ class CommentController extends AbstractController
             return new JsonResponse(
                 [
                     'status' => 'success',
-                    'comments' => $comments
+                    'data' => $comments
                 ],
                 Response::HTTP_OK
             );

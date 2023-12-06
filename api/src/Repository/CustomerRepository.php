@@ -39,14 +39,54 @@ class CustomerRepository extends ServiceEntityRepository
         }
     }
 
-    public function getCustomersWithPagination(int $limit = 25, int $page = 1)
+    public function getCustomersWithPagination(int $limit = 25, int $page = 1, ?string $searchTerm = null)
     {
-        return $this->createQueryBuilder('c')
+        $queryBuilder = $this->createQueryBuilder('c')
             ->setMaxResults($limit)
             ->setFirstResult(($page - 1) * $limit)
-            ->orderBy('c.id', 'ASC')
-            ->getQuery()
-            ->getResult();
+            ->orderBy('c.id', 'ASC');
 
+        if ($searchTerm) {
+            $queryBuilder
+                ->andWhere(
+                     $queryBuilder->expr()->orX(
+                        $queryBuilder->expr()->like('c.firstName', ':searchTerm'),
+                        $queryBuilder->expr()->like('c.lastName', ':searchTerm')
+                    )
+                )->setParameter('searchTerm', '%' . $searchTerm . '%');
+        }    
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function countActiveCustomers(): int
+    {
+        $queryBuilder = $this->createQueryBuilder('c')
+            ->select('COUNT(c.id)')
+            ->where('c.isDisabled = false');
+
+        return (int)$queryBuilder->getQuery()->getSingleScalarResult();
+    }
+
+    public function getCustomer2faCount(): array
+    {
+        $queryBuilder = $this->createQueryBuilder('c')
+            ->select('COUNT(c.id) as totalCustomers')
+            ->addSelect('SUM(CASE WHEN c.emailAuthEnabled = true THEN 1 ELSE 0 END) as enabled2FA')
+            ->addSelect('SUM(CASE WHEN c.emailAuthEnabled = false THEN 1 ELSE 0 END) as disabled2FA')
+            ->where('c.isDisabled = false');
+
+        return $queryBuilder->getQuery()->getSingleResult();
+    }
+
+    public function getCustomerAccountsConfirmedStatistics()
+    {
+        $queryBuilder = $this->createQueryBuilder('c')
+            ->select('COUNT(c.id) as totalCustomers')
+            ->addSelect('SUM(CASE WHEN c.authenticated = true THEN 1 ELSE 0 END) as authenticated')
+            ->addSelect('SUM(CASE WHEN c.authenticated = false THEN 1 ELSE 0 END) as notAuthenticated')
+            ->where('c.isDisabled = false');
+
+        return $queryBuilder->getQuery()->getSingleResult();
     }
 }

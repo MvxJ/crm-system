@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/api/device', name: 'api_device_')]
+#[Route('/api/devices', name: 'api_device_')]
 class DeviceController extends AbstractController
 {
     private JsonValidator $validator;

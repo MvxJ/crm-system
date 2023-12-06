@@ -1,0 +1,43 @@
+.badge {
+    border-radius: 15px;
+    padding: 5px;
+    text-align: center;
+    min-width: 75px;
+    max-width: 100px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.text-decoration-none {
+    color: #000;
+    text-decoration: none;
+}
+
+.tabLabel {
+    height: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.headerContainer {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+}
+
+.customerProfileIcon {
+    background-color: rgb(230, 247, 255);
+    border: 2px solid rgb(24, 144, 255);
+    color: rgb(24, 144, 255);
+    font-weight: bold;
+    font-size: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}

@@ -1,0 +1,64 @@
+{% block styles %}
+    <style>
+        * {
+            font-family: 'Your Desired Font', sans-serif;
+            font-size: 12px;
+        }
+
+        .bill-header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .company-details {
+            text-align: right;
+        }
+
+        .company-name {
+            font-weight: bold;
+        }
+
+        .b2b-details {
+            width: 100%; 
+        }
+
+        .b2b-details div {
+            max-width: 45%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .customer-details, .seller-details {
+            margin-bottom: 20px;
+        }
+    </style>
+{% endblock %}
+{% block bill_header %}
+    <div class="bill-header">
+        <div class="company-details">
+            <div class="company-name">
+                {{ settings.companyName }}
+            </div>
+            <div class="company-address">
+                {{ settings.companyAddress }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

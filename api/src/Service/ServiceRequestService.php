@@ -186,7 +186,11 @@ class ServiceRequestService
             return false;
         }
 
-        $this->entityManager->remove($serviceRequest);
+        $serviceRequest->setIsClosed(true);
+        $serviceRequest->setCloseDate(new \DateTime());
+        $serviceRequest->setStatus(ServiceRequest::STATUS_CLOSED);
+
+        $this->entityManager->persist($serviceRequest);
         $this->entityManager->flush();
 
         return true;
@@ -253,31 +257,41 @@ class ServiceRequestService
             'id' => $serviceRequest->getId(),
             'customer' => [
                 'id' => $serviceRequest->getCustomer()->getId(),
-                'email' => $serviceRequest->getCustomer()->getEmail()
+                'email' => $serviceRequest->getCustomer()->getEmail(),
+                'name' => $serviceRequest->getCustomer()->getFirstName(),
+                'surname' => $serviceRequest->getCustomer()->getLastName()
             ],
             'closed' => $serviceRequest->getIsClosed(),
             'createdDate' => $serviceRequest->getCreatedDate(),
             'status' => $serviceRequest->getStatus()
         ];
 
+        $serviceRequestArray['contract'] = [
+            'id' => $serviceRequest->getContract()->getId(),
+            'number' => $serviceRequest->getContract()->getNumber()
+        ];
+        
         if ($serviceRequest->getUser() != null) {
             $serviceRequestArray['user'] = [
                 'id' => $serviceRequest->getUser()->getId(),
-                'email' => $serviceRequest->getUser()->getEmail()
+                'email' => $serviceRequest->getUser()->getEmail(),
+                'name' => $serviceRequest->getUser()->getName(),
+                'surname' => $serviceRequest->getUser()->getSurname(),
+                'username' => $serviceRequest->getUser()->getUsername()
             ];
+        } else {
+            $serviceRequestArray['user'] = null;
         }
 
         if ($details) {
-            $serviceRequestArray['contract'] = [
-                'id' => $serviceRequest->getContract()->getId(),
-                'number' => $serviceRequest->getContract()->getNumber()
-            ];
             $serviceRequestArray['localization'] = [
                 'address' => $serviceRequest->getContract()->getAddress(),
                 'city' => $serviceRequest->getContract()->getCity(),
                 'zipCode' => $serviceRequest->getContract()->getZipCode()
             ];
             $serviceRequestArray['description'] = $serviceRequest->getDescription();
+            $serviceRequestArray['serviceVisits'] = count($serviceRequest->getServiceVisits());
+            $serviceRequestArray['comments'] = count($serviceRequest->getComments());
         }
 
         return $serviceRequestArray;

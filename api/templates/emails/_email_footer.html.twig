@@ -1,0 +1,26 @@
+{% block footer %}
+    <div class="email-footer">
+        <div class="terms-conditions">
+            {{ settings.termsAndConditions }}
+        </div>
+        <div class="bar">
+            <div class="address">
+                <h5>Address:</h5>
+                <p>{{ settings.companyAddress }}</p>
+            </div>
+            <div class="contact">
+                <h5>Contact:</h5>
+                <ul>
+                    <li>Office: {{ settings.companyPhoneNumber }}</li>
+                    <li>Technician: {{ settings.technicalSupportNumber }}</li>
+                    <li>Email: {{ settings.emailAddress }}</li>
+                    <li>Facebook: {{ settings.facebookUrl }}</li>
+                </ul>
+            </div>
+            <div class="privacy">
+                <h5>Privacy:</h5>
+                <p>{{ settings.privacyPolicy }}</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

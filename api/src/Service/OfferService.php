@@ -72,13 +72,15 @@ class OfferService
         $order = $request->get('order', 'asc');
         $orderBy = $request->get('orderBy', 'id');
         $type = $request->get('type', 'all');
-        $totalItems = $this->offerRepository->countOffers($type);
+        $searchTerm = $request->get('searchTerm', null);
+        $totalItems = $this->offerRepository->countOffers($type, $searchTerm);
         $results = $this->offerRepository->getOffersWithPagination(
             (int)$itemsPerPage,
             (int)$page,
             $order,
             $orderBy,
-            $type
+            $type,
+            $searchTerm
         );
         $offers = [];
 
@@ -101,7 +103,9 @@ class OfferService
             return false;
         }
 
-        $this->entityManager->remove($offer);
+        $offer->setDeleted(true);
+
+        $this->entityManager->persist($offer);
         $this->entityManager->flush();
 
         return true;
@@ -152,6 +156,8 @@ class OfferService
                     foreach ($models as $model) {
                         $offer->addDevice($model);
                     }
+                } elseif ($fieldName == 'validDue') {
+                    $offer->setValidDue(new \DateTime($fieldValue));
                 } elseif (method_exists($offer, $setterMethod)) {
                     $offer->$setterMethod($fieldValue);
                 }
@@ -177,7 +183,8 @@ class OfferService
             'discountType' => $offer->getDiscountType(),
             'forNewUsers' => $offer->isForNewUsers(),
             'forStudents' => $offer->isForStudents(),
-            'validDue' => $offer->getValidDue()
+            'validDue' => $offer->getValidDue(),
+            'isDeleted' => $offer->isDeleted()
         ];
 
         if (count($offer->getDevices()) > 0 && $details = true) {
@@ -186,8 +193,10 @@ class OfferService
             /** @var Model $device */
             foreach ($devices as $device) {
                 $offerArray['devices'][] = [
+                    'manufacturer' => $device->getManufacturer(),
                     'name' => $device->getName(),
-                    'id' => $device->getId()
+                    'id' => $device->getId(),
+                    'type' => $device->getType(),
                 ];
             }
         }

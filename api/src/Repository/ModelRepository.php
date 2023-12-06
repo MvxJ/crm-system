@@ -44,7 +44,8 @@ class ModelRepository extends ServiceEntityRepository
         int $itemsPerPage = 25,
         string $orderBy,
         string $order,
-        string $type
+        string $type,
+        ?string $searchTerm
     ): array {
         $queryBuilder = $this->createQueryBuilder('m');
         $queryBuilder->setMaxResults($itemsPerPage)
@@ -56,10 +57,22 @@ class ModelRepository extends ServiceEntityRepository
                 ->setParameter('type', (int)$type);
         }
 
+        if ($searchTerm) {
+            $queryBuilder->andWhere(
+                $queryBuilder->expr()->orX(
+                    $queryBuilder->expr()->like('m.manufacturer', ':manufacturer'),
+                    $queryBuilder->expr()->like('m.name', ':name')
+                )
+            )->setParameters([
+                'manufacturer' => '%' . $searchTerm . '%',
+                'name' => '%' . $searchTerm . '%',
+            ])->andWhere('m.isDeleted = false');
+        }
+
          return $queryBuilder->getQuery()->getResult();
     }
 
-    public function countModels(string $type): int
+    public function countModels(string $type, ?string $searchTerm): int
     {
         $queryBuilder = $this->createQueryBuilder('m')
             ->select('COUNT(m.id) as model_count');
@@ -67,6 +80,18 @@ class ModelRepository extends ServiceEntityRepository
         if ($type != 'all' && !is_nan((int)$type)) {
             $queryBuilder->where('m.type = :type')
                 ->setParameter('type', (int)$type);
+        }
+
+        if ($searchTerm) {
+            $queryBuilder->andWhere(
+                $queryBuilder->expr()->orX(
+                    $queryBuilder->expr()->like('m.manufacturer', ':manufacturer'),
+                    $queryBuilder->expr()->like('m.name', ':name')
+                )
+            )->setParameters([
+                'manufacturer' => '%' . $searchTerm . '%',
+                'name' => '%' . $searchTerm . '%',
+            ])->andWhere('m.isDeleted = false');
         }
 
         $result = $queryBuilder->getQuery()->getSingleScalarResult();

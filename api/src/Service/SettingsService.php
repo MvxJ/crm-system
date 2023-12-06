@@ -27,9 +27,9 @@ class SettingsService
         $this->slugger = $slugger;
     }
 
-    public function getSystemSettings(int $id): Settings
+    public function getSystemSettings(): Settings
     {
-        $settings = $this->settingsRepository->findOneBy(['id' => $id]);
+        $settings = $this->settingsRepository->findAll()[0];
 
         return $settings;
     }

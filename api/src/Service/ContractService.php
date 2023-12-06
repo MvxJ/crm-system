@@ -37,14 +37,16 @@ class ContractService
         $order = $request->get('order', 'asc');
         $orderBy = $request->get('orderBy', 'id');
         $status = $request->get('status', 'all');
+        $customerId = $request->get('customerId', 'all');
         $contracts = $this->contractRepository->findContractsWithPagination(
             (int)$page,
             (int)$itemsPerPage,
             $order,
             $orderBy,
-            $status
+            $status,
+            $customerId
         );
-        $maxResults = $this->contractRepository->countContracts($status);
+        $maxResults = $this->contractRepository->countContracts($status, $customerId);
 
         if (count($contracts) == 0) {
             return null;
@@ -150,7 +152,9 @@ class ContractService
             return false;
         }
 
-        $this->entityManager->remove($contract);
+        $contract->setStatus(Contract::CONTRACT_STATUS_CLOSED);
+        
+        $this->entityManager->persist($contract);
         $this->entityManager->flush();
 
         return true;
@@ -221,7 +225,9 @@ class ContractService
             'contractNumber' => $contract->getNumber(),
             'customer' => [
                 'id' => $contract->getUser()->getId(),
-                'email' => $contract->getUser()->getEmail()
+                'email' => $contract->getUser()->getEmail(),
+                'name' => $contract->getUser()->getFirstName(),
+                'surname' => $contract->getUser()->getLastName()
             ],
             'status' => $contract->getStatus(),
             'startDate' => $contract->getStartDate(),
@@ -236,6 +242,7 @@ class ContractService
         if ($details) {
             $contractArray['price'] = $contract->getPrice();
             $contractArray['discount'] = $contract->getDiscount();
+            $contractArray['description'] = $contract->getDescription();
             $contractArray['discountType'] = $contract->getDiscountType();
             $contractArray['offer'] = [
                 'id' => $contract->getOffer()->getId(),

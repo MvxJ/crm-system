@@ -1,0 +1,8 @@
+.countContainer {
+    text-align: center;
+}
+
+.countContainer .colHeader {
+    font-weight: 600;
+    font-size: 16px;
+}

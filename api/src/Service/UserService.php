@@ -35,8 +35,9 @@ class UserService
     {
         $page = $request->get('page', 1);
         $itemsPerPage = $request->get('items', 25);
+        $searchTerm = $request->get('searchTerm', null);
         $totalItems = count($this->userRepository->findAll());
-        $results = $this->userRepository->getUsersWithPagination((int)$itemsPerPage, (int)$page);
+        $results = $this->userRepository->getUsersWithPagination((int)$itemsPerPage, (int)$page, $searchTerm);
         $users = [];
 
         /** @var User $user */
@@ -89,8 +90,8 @@ class UserService
 
         $roleAdmin = $this->roleRepository->findOneBy(['role' => Role::ROLE_ACCESS_ADMIN_PANEL]);
         $user->addRole($roleAdmin);
-        $user->setEmailAuth(true);
         $user->setIsDeleted(false);
+        $user->setIsVerified(true);
 
         if (array_key_exists('phoneNumber', $content)) {
             $user->setPhoneNumber($content['phoneNumber']);
@@ -149,9 +150,25 @@ class UserService
         return true;
     }
 
+    public function getAvailableRoles(): array
+    {
+        $roles = $this->roleRepository->getUserRoles();
+        $rolesArray = [];
+
+        foreach ($roles as $role) {
+            $rolesArray[] = [
+                'id' => $role->getId(),
+                'role' => $role->getRole(),
+                'name' => $role->getName()
+            ];
+        }
+
+        return $rolesArray;
+    }
+
     public function editRoles(int $userId, Request $request): bool
     {
-        $user = $this->userRepository->findOneBy(['id' => $userId]);
+        $user = $this->roleRepository->findOneBy(['id' => $userId]);
         $content= json_decode($request->getContent(), true);
 
         if (!array_key_exists('rolesIds', $content)) {
@@ -193,15 +210,28 @@ class UserService
         foreach ($content as $fieldName => $fieldValue) {
             if (property_exists(User::class, $fieldName)) {
                 $setterMethod = 'set' . ucfirst($fieldName);
-
+    
                 if ($setterMethod == 'setPassword') {
+                    $repeatedPassword = $content['repeatedPassword'];
+
+                    if ($fieldValue != $repeatedPassword) {
+                        return null;
+                    }
+
                     $user->setPassword($this->userPasswordHasher->hashPassword($user, $fieldValue));
+                } elseif ($fieldName === 'roles' && is_array($fieldValue)) {
+                    $user->clearRoles();
+
+                    $roles = $this->roleRepository->findBy(['id' => $fieldValue]);
+                    foreach ($roles as $role) {
+                        $user->addRole($role);
+                    }
                 } elseif (method_exists($user, $setterMethod)) {
                     $user->$setterMethod($fieldValue);
                 }
             }
         }
-
+    
         return $user;
     }
 
@@ -213,7 +243,10 @@ class UserService
             'email' => $user->getEmail(),
             'name' => $user->getName(),
             'surname' => $user->getSurname(),
-            'phoneNumber' => $user->getPhoneNumber()
+            'phoneNumber' => $user->getPhoneNumber(),
+            'twoFactorAuth' => (bool)$user->isEmailAuthEnabled(),
+            'isVerified' => (bool)$user->isVerified(),
+            'isActive' => (bool)!$user->isDeleted()
         ];
 
         if ($details) {

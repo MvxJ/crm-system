@@ -60,7 +60,8 @@ class BillRepository extends ServiceEntityRepository
         int $itemsPerPage = 25,
         string $order,
         string $orderBy,
-        string $status
+        string $status,
+        string $customerId
     ): array {
         $queryBuilder = $this->createQueryBuilder('b');
         $queryBuilder->setMaxResults($itemsPerPage)
@@ -70,6 +71,11 @@ class BillRepository extends ServiceEntityRepository
         if ($status != 'all' && !is_nan((int)$status)) {
             $queryBuilder->where('b.status = :status')
                 ->setParameter('status', (int)$status);
+        }
+
+        if ($customerId != 'all' && !is_nan((int)$customerId)) {
+            $queryBuilder->innerJoin('b.customer', 'c')->where('c.id = :customerId')
+                ->setParameter('customerId', (int)$customerId);
         }
 
         return $queryBuilder->getQuery()->getResult();
@@ -102,6 +108,19 @@ class BillRepository extends ServiceEntityRepository
             ->innerJoin(Customer::class, 'c')
             ->where('c.email = :email')
             ->setParameter('email', $email);
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function countBillsByStatus(): array
+    {
+        $now = new \DateTime();
+        $queryBuilder = $this->createQueryBuilder('b')
+            ->select('COUNT(b.id) as billsCount, b.status')
+            ->where('MONTH(b.dateOfIssue) = :currentMonth AND YEAR(b.dateOfIssue) = :currentYear')
+            ->groupBy('b.status')
+            ->setParameter('currentMonth', $now->format('n'))
+            ->setParameter('currentYear', $now->format('Y'));
 
         return $queryBuilder->getQuery()->getResult();
     }

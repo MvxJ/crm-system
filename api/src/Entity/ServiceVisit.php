@@ -53,6 +53,9 @@ class ServiceVisit
     #[ORM\JoinColumn(nullable: false)]
     private ?Customer $customer = null;
 
+    #[ORM\Column(length: 32, nullable: true)]
+    private string $color = "#91d5ff";
+
     public function getId(): int
     {
         return $this->id;
@@ -198,5 +201,17 @@ class ServiceVisit
     public function isCancelled(): bool
     {
         return $this->cancelled;
+    }
+
+    public function getColor(): string
+    {
+        return $this->color;
+    }
+
+    public function setColor(string $color): static
+    {
+        $this->color = $color;
+
+        return $this;
     }
 }

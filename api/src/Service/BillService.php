@@ -40,13 +40,15 @@ class BillService
         $itemsPerPage = $request->get('items', 25);
         $order = $request->get('order', 'asc');
         $orderBy = $request->get('orderBy', 'id');
+        $customerId = $request->get('customerId', 'all');
         $status = $request->get('status', 'all');
         $bills = $this->billRepository->findBillsWithPagination(
             (int)$page,
             (int)$itemsPerPage,
             $order,
             $orderBy,
-            $status
+            $status,
+            $customerId
         );
         $maxResults = $this->billRepository->countBills($status);
 
@@ -154,7 +156,7 @@ class BillService
 
         $bill->setDateOfIssue(new \DateTime());
         $bill->setNumber($this->generateBillNumber($bill));
-        $bill->setFileName($this->generateBillNumber($bill) . '.pdf');
+        $bill->setFileName('');
         $bill->setTotalAmount($this->calculateBillAmount($bill));
 
         $this->entityManager->persist($bill);
@@ -239,13 +241,16 @@ class BillService
             'dateOfIssue' => $bill->getDateOfIssue(),
             'paymentDate' => $bill->getPaymentDate(),
             'payDue' => $bill->getPayDue(),
-            'updatedAt' => $bill->getUpdateDate()
+            'updatedAt' => $bill->getUpdateDate(),
+            'fileName' => $bill->getFileName()
         ];
 
         if ($details) {
             $billArray['customer'] = [
                 'id' => $bill->getCustomer()->getId(),
-                'username' => $bill->getCustomer()->getEmail()
+                'username' => $bill->getCustomer()->getEmail(),
+                'name' => $bill->getCustomer()->getFirstName(),
+                'surname' => $bill->getCustomer()->getLastName()
             ];
 
             if ($bill->getContract()) {
@@ -284,10 +289,10 @@ class BillService
         $contract = $bill->getContract();
 
         if ($bill->getContract()) {
-            $billNumber .= '/' . $contract->getNumber() . '/FV/';
+            $billNumber .= "-" . $contract->getNumber() . "-FV-";
         }
 
-        $billNumber .= $date->format('Y-m-d') . '/';
+        $billNumber .= $date->format('Y-m-d') . "-";
         $billNumber .= (string)($numberOfBills + 1);
 
         return $billNumber;

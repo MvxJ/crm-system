@@ -10,8 +10,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use OpenApi\Annotations as OA;
 
-#[Route('/api/public/model', name: 'api_public_model_')]
+/**
+ * @OA\Tag(name="Models")
+ */
+#[Route('/api/public/models', name: 'api_public_model_')]
 class ModelController extends AbstractController
 {
     private ModelService $modelService;

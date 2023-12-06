@@ -1,0 +1,15 @@
+{% include '/emails/_email_header.html.twig' with { 'logo': logoUrl, 'settings': crmSettings} %}
+{% block body %}
+<div class="body-container">
+    <div class="content">
+        <div class="status-container" style="background-color: {{type.color}}"> {{ type.name }} </div>
+        <div>
+            <h2>{{ subject }}</h2>
+        </div>
+        <p>
+            {{ message }}
+        </p>
+    </div>
+    </div>
+{% endblock %}
+{% include '/emails/_email_footer.html.twig' with { 'logo': logoUrl, 'settings': crmSettings} %}

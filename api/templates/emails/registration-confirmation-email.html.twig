@@ -1,12 +1,15 @@
+{% include '/emails/_email_header.html.twig' with { 'logo': logoUrl, 'settings': crmSettings} %}
 {% block body %}
-    {% if logoUrl != "" %}
-        <img src="{{ logoUrl }}" alt="Logo">
-    {% endif %}
-    <h1>Hi! Please confirm your email!</h1>
-
-    <p>
-        Please confirm your email address by clicking the following link: <br><br>
-        <a href="{{ signedUrl }}">Confirm my Email</a>.
-        This link will expire in {{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}.
-    </p>
+<div class="body-container">
+    <div class="content">
+        <h1>Hi! Please confirm your email!</h1>
+        <p>
+            Please confirm your email address by clicking the following link: <br><br>
+            {% if password %} Your generated password: {{password }}<br><br> {% endif %}
+            <a href="{{ signedUrl }}">Confirm my Email</a>.
+            This link will expire in {{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}.
+        </p>
+    </div>
+</div>
 {% endblock %}
+{% include '/emails/_email_footer.html.twig' with { 'logo': logoUrl, 'settings': crmSettings} %}

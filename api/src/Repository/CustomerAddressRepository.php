@@ -43,7 +43,7 @@ class CustomerAddressRepository extends ServiceEntityRepository
     public function findAddressesByCustomerId(string $customerId): array
     {
         $queryBuilder = $this->createQueryBuilder('a')
-            ->innerJoin(Customer::class, 'c');
+            ->innerJoin('a.customer', 'c');
 
         if ($customerId != 'all' && !is_nan((int)$customerId)) {
             $queryBuilder->where('c.id = :id')

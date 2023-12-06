@@ -8,8 +8,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use OpenApi\Annotations as OA;
 
-#[Route('/api/public/payment', name: 'api_public_payment_')]
+/**
+ * @OA\Tag(name="Payments")
+ */
+#[Route('/api/public/payments', name: 'api_public_payment_')]
 class PaymentController extends AbstractController
 {
     private PaymentService $paymentService;

@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Contract;
 use App\Entity\Customer;
+use App\Entity\Offer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -46,6 +47,7 @@ class ContractRepository extends ServiceEntityRepository
         string $order,
         string $orderBy,
         string $status,
+        string $customerId
     ): array {
         $queryBuilder = $this->createQueryBuilder('c');
         $queryBuilder->setMaxResults($itemsPerPage)
@@ -53,14 +55,20 @@ class ContractRepository extends ServiceEntityRepository
             ->orderBy('c.' . $orderBy, $order);
 
         if ($status != 'all' && !is_nan((int)$status)) {
-            $queryBuilder->where('c.status = :status')
+            $queryBuilder->andWhere('c.status = :status')
                 ->setParameter('status', (int)$status);
+        }
+
+        if ($customerId != 'all' && !is_nan((int)$customerId)) {
+            $queryBuilder->innerJoin('c.user', 'customer')
+                ->andWhere('customer.id = :customerId')
+                ->setParameter('customerId', (int)$customerId);
         }
 
         return $queryBuilder->getQuery()->getResult();
     }
 
-    public function countContracts(string $status): int
+    public function countContracts(string $status, string $customerId): int
     {
         $queryBuilder = $this->createQueryBuilder('c')
             ->select('COUNT(c.id) as device_count');
@@ -68,6 +76,11 @@ class ContractRepository extends ServiceEntityRepository
         if ($status != 'all' && !is_nan((int)$status)) {
             $queryBuilder->where('c.status = :status')
                 ->setParameter('status', (int)$status);
+        }
+
+        if ($customerId != 'all' && !is_nan((int)$customerId)) {
+            $queryBuilder->innerJoin('c.user', 'customer')->where('customer.id = :customerId')
+                ->setParameter('customerId', (int)$customerId);
         }
 
         $result = $queryBuilder->getQuery()->getSingleScalarResult();
@@ -81,6 +94,60 @@ class ContractRepository extends ServiceEntityRepository
             ->innerJoin(Customer::class, 'u')
             ->where('u.email = :email')
             ->setParameter('email', $userEmail);
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function countActiveContracts(): int
+    {
+        $queryBuilder = $this->createQueryBuilder('c')
+            ->select('COUNT(c.id)')
+            ->where('c.status = :status')
+            ->setParameter('status', Contract::CONTRACT_STATUS_ACTIVE);
+
+        return (int)$queryBuilder->getQuery()->getSingleScalarResult();
+    }
+
+    public function getContractsCountByType(): array
+    {
+        $queryBuilder = $this->createQueryBuilder('c')
+            ->select('COUNT(c.id) as contractCount, c.type')
+            ->groupBy('c.type');
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function getContractsCountByStatus(): array
+    {
+        $queryBuilder = $this->createQueryBuilder('c')
+            ->select('COUNT(c.id) as contractCount, c.status')
+            ->groupBy('c.status');
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function getAvgInternetSpeed(): array
+    {
+        $queryBuilder = $this->createQueryBuilder('c')
+            ->select('AVG(o.uploadSpeed) as avgUploadSpeed, AVG(o.downloadSpeed) as avgDownloadSpeed')
+            ->leftJoin('c.offer', 'o')
+            ->where('o.type IN (:offerTypes)')
+            ->andWhere('c.status != :statusClosed')
+            ->setParameter('offerTypes', [Offer::TYPE_INTERNET, Offer::TYPE_INTERNET_AND_TELEVISION])
+            ->setParameter('statusClosed', Contract::CONTRACT_STATUS_INACTIVE);
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function getAvgNumberOfCanals(): array
+    {
+        $queryBuilder = $this->createQueryBuilder('c')
+            ->select('AVG(o.numberOfCanals) as avgNumberOfCanals')
+            ->leftJoin('c.offer', 'o')
+            ->where('o.type IN (:offerTypes)')
+            ->andWhere('c.status != :statusClosed')
+            ->setParameter('offerTypes', [Offer::TYPE_TELEVISION, Offer::TYPE_INTERNET_AND_TELEVISION])
+            ->setParameter('statusClosed', Contract::CONTRACT_STATUS_INACTIVE);
 
         return $queryBuilder->getQuery()->getResult();
     }

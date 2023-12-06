@@ -66,6 +66,9 @@ class Offer
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $validDue = null;
 
+    #[ORM\Column(type: Types::BOOLEAN, nullable: false)]
+    private bool $deleted = false;
+
     public function __construct()
     {
         $this->devices = new ArrayCollection();
@@ -254,6 +257,18 @@ class Offer
     public function setValidDue(\DateTimeInterface $validDue): self
     {
         $this->validDue = $validDue;
+
+        return $this;
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->deleted;
+    }
+
+    public function setDeleted(bool $deleted): self
+    {
+        $this->deleted = $deleted;
 
         return $this;
     }
