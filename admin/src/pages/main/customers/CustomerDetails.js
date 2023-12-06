@@ -197,6 +197,10 @@ const CustomerDetails = () => {
     return `${day}-${month}-${year}`;
   }
 
+  const handleCustomerEdit = () => {
+    navigate(`/customers/edit/${id}`);
+  }
+
   const fetchCustomerData = async () => {
     try {
       setLoading(true);
@@ -264,7 +268,7 @@ const CustomerDetails = () => {
       <MainCard title={`Customer Details #${id}`}>
         <Row>
           <Col span={22} offset={1} style={{ textAlign: 'right' }}>
-            <Button type="primary">
+            <Button type="primary" onClick={handleCustomerEdit}>
               <EditOutlined /> Edit
             </Button>
             {customer.isActive ?

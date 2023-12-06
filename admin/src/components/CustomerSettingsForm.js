@@ -97,7 +97,9 @@ const CustomerSettingsForm = ({ customerId, onSuccessSaveFunction }) => {
                 type: "success",
                 placement: "bottomRight"
             })
-            onSuccessSaveFunction();
+            if (onSuccessSaveFunction) {
+                onSuccessSaveFunction();
+            }
         } catch (e) {
             setLoading(false);
             notification.error({
@@ -127,7 +129,13 @@ const CustomerSettingsForm = ({ customerId, onSuccessSaveFunction }) => {
                     <Row>
                         <Col span={10} offset={1}>
                             <Form.Item label="Contact Address">
-                                <Select style={{textAlign: 'left'}}>
+                                <Select 
+                                    style={{textAlign: 'left'}} 
+                                    value={formData.contactAddress}
+                                    onChange={(value) => {
+                                        setFormData((prevFormData) => ({ ...prevFormData, contactAddress: value }));
+                                    }}
+                                >
                                     {addresses.map((address) => (
                                         <Select.Option key={address.id} value={address.id}>
                                             {address.city}, {address.zipCode}, {address.address}, ({address.country}) {address.companyName ? '(' + address.companyName : null} {address.taxId ? address.taxId + ')' : null}
@@ -138,7 +146,13 @@ const CustomerSettingsForm = ({ customerId, onSuccessSaveFunction }) => {
                         </Col>
                         <Col span={10} offset={2}>
                             <Form.Item label="Billing Address">
-                                <Select style={{textAlign: 'left'}}>
+                                <Select 
+                                    style={{textAlign: 'left'}} 
+                                    value={formData.billingAddress} 
+                                    onChange={(value) => {
+                                        setFormData((prevFormData) => ({ ...prevFormData, billingAddress: value }));
+                                    }}
+                                >
                                     {addresses.map((address) => (
                                         <Select.Option key={address.id} value={address.id}>
                                             {address.city}, {address.zipCode}, {address.address}, ({address.country}) {address.companyName ? '(' + address.companyName : null} {address.taxId ? address.taxId + ')' : null}
@@ -180,7 +194,7 @@ const CustomerSettingsForm = ({ customerId, onSuccessSaveFunction }) => {
                     <Row style={{ textAlign: 'right' }}>
                         <Col span={22} offset={1}>
                             <Button type="primary" onClick={saveCustomerSettings}>
-                                Finish
+                                { onSuccessSaveFunction ? 'Finish' : 'Save' }
                             </Button>
                         </Col>
                     </Row>

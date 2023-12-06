@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Col, DatePicker, Form, Input, Row, Spin, notification } from '../../node_modules/antd/es/index';
 import './SharedStyles.css'
 import instance from 'utils/api';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc'
 
-const CustomerProfileForm = ({onSuccessSaveFunction}) => {
+
+const CustomerProfileForm = ({onSuccessSaveFunction, customerId}) => {
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         firstName: "",
@@ -16,6 +19,49 @@ const CustomerProfileForm = ({onSuccessSaveFunction}) => {
         password: ""
     });
 
+    const fetchCustomerData = async () => {
+        try {
+            if (customerId != null || customerId != undefined) {
+                setLoading(true);
+                dayjs.extend(utc);
+                const response = await instance.get(`/customers/${customerId}/detail`);
+
+                if (response.status != 200) {
+                    setLoading(false);
+                    notification.error({
+                        message: "Can't fetch user data.",
+                        type: "error",
+                        placement: "bottomRight"
+                    });
+
+                    return;
+                }
+
+                setFormData({
+                    firstName: response.data.customer.firstName,
+                    secondName: response.data.customer.secondName,
+                    lastName: response.data.customer.lastName,
+                    birthDate: dayjs.utc(response.data.customer.birthDate.date).local(),
+                    socialSecurityNumber: response.data.customer.socialSecurityNumber,
+                    phoneNumber: response.data.customer.phoneNumber,
+                    email: response.data.customer.email,
+                });
+
+                setLoading(false);
+            }
+        } catch (e) {
+            setLoading(false);
+            notification.error({
+                message: "Can't fetch user detail.",
+                description: e.message,
+                type: "error",
+                placement: "bottomRight"
+            })
+        } finally {
+            setLoading(false);
+        }
+    }
+
     const generateRandomPassword = (length = 12) => {
         const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         let password = '';
@@ -27,6 +73,38 @@ const CustomerProfileForm = ({onSuccessSaveFunction}) => {
       
         return password;
     };
+
+    const saveCustomer = async () => {
+        try {
+            setLoading(true);
+
+            const response = await instance.patch(``);
+
+            if (response.status != 200) {
+                setLoading(false);
+
+                notification.error({
+                    message: "Can't save customer profile.",
+                    type: "error",
+                    placement: "bottomRight"
+                });
+
+                return;
+            }
+
+            setLoading(false);
+        } catch (e) {
+            setLoading(false);
+            notification.error({
+                message: "Can't save customer profile.",
+                placement: "bottomRight",
+                type: "error",
+                description: e.message
+            });
+        } finally {
+            setLoading(false);
+        }
+    }
 
     const addCustomer = async () => {
         try {
@@ -78,6 +156,10 @@ const CustomerProfileForm = ({onSuccessSaveFunction}) => {
         const { name, value } = event.target;
         setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
       };
+
+    useEffect(() => {
+        fetchCustomerData();
+    }, [customerId])
 
     return (
         <>
@@ -162,8 +244,8 @@ const CustomerProfileForm = ({onSuccessSaveFunction}) => {
                 </Row>
                 <Row style={{textAlign: 'right'}}>
                     <Col span={22} offset={1}>
-                        <Button type="primary" onClick={addCustomer}>
-                            Next
+                        <Button type="primary" onClick={ customerId ? saveCustomer : addCustomer }>
+                            { customerId ? 'Save' : 'Next' }
                         </Button>
                     </Col>
                 </Row>

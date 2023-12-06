@@ -12,6 +12,7 @@ const CustomerForm = Loadable(lazy(() => import('pages/main/customers/CustomerFo
 const MessagesList = Loadable(lazy(() => import('pages/main/messages/MessagesList')));
 const MessageForm = Loadable(lazy(() => import('pages/main/messages/MessageForm')));
 const MessageDetails = Loadable(lazy(() => import('pages/main/messages/MessageDetails')));
+const EditCustomersForm = Loadable(lazy(() => import('pages/main/customers/EditCustomersForm')));
 
 const MainRoutes = {
   path: '/',
@@ -32,6 +33,10 @@ const MainRoutes = {
     {
       path: '/customers/detail/:id',
       element: <CustomerDetails />
+    },
+    {
+      path: '/customers/edit/:id',
+      element: <EditCustomersForm />
     },
     {
       path: '/messages',
