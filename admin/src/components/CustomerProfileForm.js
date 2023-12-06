@@ -115,7 +115,15 @@ const CustomerProfileForm = ({onSuccessSaveFunction}) => {
                             required
                             tooltip="This is a required field"
                         >
-                            <Input placeholder="Please insert social security number" name="socialSecurityNumber" value={formData.socialSecurityNumber} onChange={handleInputChange} />
+                            <Input
+                                count={{
+                                    show: true,
+                                    max: 10,
+                                }}
+                                placeholder="Please insert social security number" 
+                                name="socialSecurityNumber" 
+                                value={formData.socialSecurityNumber} onChange={handleInputChange} 
+                            />
                         </Form.Item>
                     </Col>
                 </Row>
@@ -141,6 +149,12 @@ const CustomerProfileForm = ({onSuccessSaveFunction}) => {
                             label="Email"
                             required
                             tooltip="This is a required field"
+                            rules={[
+                                {
+                                  type: "email",
+                                  message: "Please enter a valid email address",
+                                },
+                            ]}
                         >
                             <Input placeholder="john.doe@email.com" name="email" value={formData.email} onChange={handleInputChange} />
                         </Form.Item>
