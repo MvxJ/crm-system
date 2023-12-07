@@ -72,7 +72,7 @@ const PaymentForm = () => {
 
     if (!id) {
       obj.customer = selectedCustomer.value;
-      obj.bill = parseInt(formData.billId);
+      obj.bill = formData.billId;
       obj.paidBy = parseInt(formData.paidBy);
       obj.amount = parseFloat(formData.amount);
     }

@@ -46,7 +46,7 @@ const DeviceForm = () => {
 
       if (response.data.results.models) {
         return response.data.results.models.map((model) => ({
-          label: `#${model.id} ${model.manufacturer} - ${model.name} (${model.price})`,
+          label: `${model.manufacturer} - ${model.name} (${model.price})`,
           value: model.id,
         }));
       }
@@ -76,7 +76,7 @@ const DeviceForm = () => {
 
         if (response.data.device.model) {
           setSelectedModelId({
-            label: `#${response.data.device.model.id} ${response.data.device.model.manufacturer} - ${response.data.device.model.name} (${response.data.device.model.price})`,
+            label: `${response.data.device.model.manufacturer} - ${response.data.device.model.name} (${response.data.device.model.price})`,
             value: response.data.device.model.id,
           });
         }
@@ -108,7 +108,7 @@ const DeviceForm = () => {
       const device = {
         serialNumber: formData.serialNumber,
         macAddress: formData.macAddress,
-        model: parseInt(selectedModelId.value),
+        model: selectedModelId.value,
         status: parseInt(formData.status),
       }
 
@@ -159,7 +159,7 @@ const DeviceForm = () => {
         serialNumber: formData.serialNumber,
         macAddress: formData.macAddress,
         boughtDate: formData.boughtDate,
-        model: parseInt(selectedModelId.value),
+        model: selectedModelId.value,
         status: parseInt(formData.status)
       });
 

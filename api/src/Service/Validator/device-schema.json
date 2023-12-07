@@ -12,7 +12,7 @@
       "type": "string"
     },
     "model": {
-      "type": "integer"
+      "type": "string"
     },
     "status": {
       "type": "integer"
@@ -29,7 +29,7 @@
     "type.serialNumber": "Serial NO speed should be a string provide a valid number.",
     "type.macAddress": "Mac Address speed should be a string. Please provide a valid number.",
     "type.boughtDate": "Bought date should be a string. Please provide a valid value.",
-    "type.model": "Model should be a int. Please provide a valid value.",
+    "type.model": "Model should be a string. Please provide a valid value.",
     "type.status": "Status should be a int. Please provide a valid value.",
     "type.user": "User should be a int. Please provide a valid value.",
     "type.soldDate": "Sold date should be a string. Please provide a valid value."

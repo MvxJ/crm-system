@@ -3,10 +3,10 @@
   "type": "object",
   "properties": {
     "bill": {
-      "type": "integer"
+      "type": "string"
     },
     "customer": {
-      "type": "integer"
+      "type": "string"
     },
     "paidBy": {
       "type": "integer"
@@ -28,8 +28,8 @@
     "required.paidBy": "Paid By is required, Please provide value.",
     "required.amount": "Amount is required, Please provide value.",
     "required.status": "Status is required, Please provide value.",
-    "type.bill": "Bill should be a integer. provide a valid value.",
-    "type.customer": "Customer should be a integer. provide a valid value.",
+    "type.bill": "Bill should be a string. provide a valid value.",
+    "type.customer": "Customer should be a string. provide a valid value.",
     "type.paidBy": "Paid By should be a integer. provide a valid value.",
     "type.amount": "Amount By should be a number. provide a valid value.",
     "type.status": "Status should be a integer. provide a valid value.",

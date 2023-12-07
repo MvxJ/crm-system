@@ -29,7 +29,7 @@
       "type": "string"
     },
     "customer": {
-      "type": "integer"
+      "type": "string"
     },
     "country": {
       "type": "string"
@@ -53,7 +53,7 @@
     "type.emailAddress": "Email Address should be a string please provide a valid value.",
     "type.companyName": "Company name should be a string please provide a valid value.",
     "type.taxId": "Tax id should be a string please provide valid value.",
-    "type.customer": "Customer should be a int please provide a valid value.",
+    "type.customer": "Customer should be a string please provide a valid value.",
     "type.country": "Country should be a string, please provide a valid value."
   }
 }

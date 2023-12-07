@@ -194,7 +194,7 @@ class DeviceService
                 if (method_exists($device, $setterMethod)) {
 
                     if ($setterMethod == 'setModel') {
-                        $model = $this->modelRepository->findOneBy(['id' => (int)$fieldValue]);
+                        $model = $this->modelRepository->findOneBy(['id' => $fieldValue]);
 
                         if (!$model) {
                             return null;
@@ -202,7 +202,7 @@ class DeviceService
 
                         $device->$setterMethod($model);
                     } elseif ($setterMethod == 'setUser') {
-                        $customer = $this->customerRepository->findOneBy(['id' => (int)$fieldValue]);
+                        $customer = $this->customerRepository->findOneBy(['id' => $fieldValue]);
 
                         if (!$customer) {
                             return null;

@@ -3,7 +3,7 @@
   "type": "object",
   "properties": {
     "customer": {
-      "type": "integer"
+      "type": "string"
     },
     "startTime": {
       "type": "string"
@@ -21,7 +21,7 @@
       "type": "integer"
     },
     "user": {
-      "type": "integer"
+      "type": "string"
     },
     "title": {
       "type": "string"
@@ -41,7 +41,7 @@
     "required.startTime": "Start Time Request is required, Please provide value.",
     "required.endTime": "End Time Request is required, Please provide value.",
     "required.date": "Date Request is required, Please provide value.",
-    "type.customer": "Customer should be a integer. provide a valid number.",
+    "type.customer": "Customer should be a string. provide a valid number.",
     "type.serviceRequest": "Customer should be a integer. provide a valid number.",
     "type.title": "Title should be a string. Provide a valid string.",
     "type.startTime": "Start time should be a string. Provide a valid string.",

@@ -121,7 +121,7 @@ const PositionForm = ({ position, billId }) => {
       setLoading(true);
 
       const response = await instance.post(`/bill/position/add`, {
-        bill: parseInt(formData.bill), 
+        bill: formData.bill, 
         type: parseInt(formData.type),
         price: parseFloat(formData.price),
         amount: parseInt(formData.amount),

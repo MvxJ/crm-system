@@ -15,7 +15,7 @@
       "type": "boolean"
     },
     "model": {
-      "type": "integer"
+      "type": "string"
     }
   },
   "required": ["title", "isForClients"],
@@ -26,6 +26,6 @@
     "type.description": "Description should be a string. Please provide a valid number.",
     "type.content": "Content should be a string. Please provide a valid value.",
     "type.isForClients": "isForClients fields should be a boolean. Please provide a valid value.",
-    "type.model": "Model should be a int. Please provide a valid value."
+    "type.model": "Model should be a string. Please provide a valid value."
   }
 }

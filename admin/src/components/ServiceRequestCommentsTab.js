@@ -99,8 +99,8 @@ const ServiceRequestCommentsTab = ({ serviceRequestId }) => {
       }
 
       const response = await instance.post(`/comment/add`, {
-        user: parseInt(currentUser.id),
-        serviceRequest: parseInt(serviceRequestId),
+        user: currentUser.id,
+        serviceRequest: serviceRequestId,
         message: commentData.message,
         isHidden: false,
       });

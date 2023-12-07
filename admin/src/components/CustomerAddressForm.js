@@ -50,7 +50,7 @@ const CustomerAddressForm = ({
     };
 
     if (!address) {
-      obj.customer = parseInt(customerId);
+      obj.customer = customerId;
     }
 
     if (formData.type == 0) {

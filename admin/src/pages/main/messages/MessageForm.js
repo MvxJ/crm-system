@@ -54,7 +54,7 @@ const MessageForm = () => {
     try {
       setLoading(true);
       const request = {
-        customer: parseInt(selectedCustomerId.value),
+        customer: selectedCustomerId.value,
         message: formData.message,
         subject: formData.subject,
         type: parseInt(formData.type),

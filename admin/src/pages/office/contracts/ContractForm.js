@@ -143,8 +143,8 @@ const ContractForm = () => {
     }
 
     if (!id) {
-      obj.user = parseInt(selectedCustomer.value);
-      obj.offer = parseInt(selectedOffer.value);
+      obj.user = selectedCustomer.value;
+      obj.offer = selectedOffer.value;
     }
 
     if (formData.discountType != null) {
