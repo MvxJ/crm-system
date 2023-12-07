@@ -10,6 +10,7 @@ use App\Repository\ContractRepository;
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Uid\Uuid;
 
 class BillService
 {
@@ -67,7 +68,7 @@ class BillService
         ];
     }
 
-    public function getBillDetails(int $id): ?array
+    public function getBillDetails(Uuid $id): ?array
     {
         $bill = $this->billRepository->findOneBy(['id' => $id]);
 
@@ -120,7 +121,7 @@ class BillService
         ];
     }
 
-    public function editBill(int $id, Request $request): ?array
+    public function editBill(Uuid $id, Request $request): ?array
     {
         $bill = $this->billRepository->findOneBy(['id' => $id]);
 
@@ -165,7 +166,7 @@ class BillService
         return $this->createBillArray($bill, true);
     }
 
-    public function deleteBill(int $id): bool
+    public function deleteBill(Uuid $id): bool
     {
         $bill = $this->billRepository->findOneBy(['id' => $id]);
 
@@ -218,7 +219,7 @@ class BillService
         return $bill;
     }
 
-    public function generateBill(int $billId): bool
+    public function generateBill(Uuid $billId): bool
     {
         $bill = $this->billRepository->findOneBy(['id' => $billId]);
 

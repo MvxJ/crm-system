@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\CustomerAddressRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: CustomerAddressRepository::class)]
 class CustomerAddress
@@ -13,9 +15,10 @@ class CustomerAddress
     public const ADDRESS_TYPE_CONTACT = 1;
 
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private int $id;
+    #[ORM\Column(type: UuidType::NAME, unique: true)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    private Uuid $id;
 
     #[ORM\Column(type: Types::SMALLINT)]
     private int $type = 1;
@@ -47,7 +50,7 @@ class CustomerAddress
     #[ORM\Column(length: 255)]
     private string $country;
 
-    public function getId(): int
+    public function getId(): Uuid
     {
         return $this->id;
     }

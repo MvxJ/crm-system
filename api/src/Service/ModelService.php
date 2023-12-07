@@ -9,6 +9,7 @@ use App\Entity\Model;
 use App\Repository\ModelRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Uid\Uuid;
 
 class ModelService
 {
@@ -131,7 +132,7 @@ class ModelService
         return true;
     }
 
-    public function getModelDetails(int $modelId): ?array
+    public function getModelDetails(Uuid $modelId): ?array
     {
         $model = $this->modelRepository->findOneBy(['id' => $modelId]);
 

@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Uid\Uuid;
 
 #[Route('/api/bill/position', name: 'api_bill_position_')]
 class BillPositionController extends AbstractController
@@ -69,7 +70,7 @@ class BillPositionController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'edit', methods: ['PATCH'])]
-    public function editPosition(int $id, Request $request): JsonResponse
+    public function editPosition(Uuid $id, Request $request): JsonResponse
     {
         try {
             $position = $this->billPositionService->editPosition($id, $request);
@@ -103,7 +104,7 @@ class BillPositionController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'delete', methods: ['DELETE'])]
-    public function deletePosition(int $id): JsonResponse
+    public function deletePosition(Uuid $id): JsonResponse
     {
         try {
             $status = $this->billPositionService->deletePosition($id);
@@ -136,7 +137,7 @@ class BillPositionController extends AbstractController
     }
 
     #[Route('/{billId}/list', name: 'list', methods: ['GET'])]
-    public function getPositions(int $billId, Request $request): JsonResponse
+    public function getPositions(Uuid $billId, Request $request): JsonResponse
     {
         try {
             $positions = $this->billPositionService->getPositionListsByBill($billId, $request);

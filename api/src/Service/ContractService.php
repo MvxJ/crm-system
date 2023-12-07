@@ -9,6 +9,7 @@ use App\Repository\CustomerRepository;
 use App\Repository\OfferRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Uid\Uuid;
 
 class ContractService
 {
@@ -63,7 +64,7 @@ class ContractService
         ];
     }
 
-    public function getContractDetails(int $contractId): ?array
+    public function getContractDetails(Uuid $contractId): ?array
     {
         $contract = $this->contractRepository->findOneBy(['id' => $contractId]);
 
@@ -121,7 +122,7 @@ class ContractService
         return $this->createContractArray($contract, true);
     }
 
-    public function editContract(int $contractId, Request $request): ?array
+    public function editContract(Uuid $contractId, Request $request): ?array
     {
         $contract = $this->contractRepository->findOneBy(['id' => $contractId]);
 
@@ -144,7 +145,7 @@ class ContractService
         return $this->createContractArray($contract, true);
     }
 
-    public function deleteContract(int $contractId): bool
+    public function deleteContract(Uuid $contractId): bool
     {
         $contract = $this->contractRepository->findOneBy(['id' => $contractId]);
 
