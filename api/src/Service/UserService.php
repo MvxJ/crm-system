@@ -11,6 +11,7 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Uid\Uuid;
 
 class UserService
 {
@@ -51,7 +52,7 @@ class UserService
         ];
     }
 
-    public function getUser(int $userId): ?array
+    public function getUser(Uuid $userId): ?array
     {
         $user  = $this->userRepository->findOneBy(['id' => $userId]);
 
@@ -62,7 +63,7 @@ class UserService
         return $this->createUserArray($user, true);
     }
 
-    public function deleteUser(int $userId): bool
+    public function deleteUser(Uuid $userId): bool
     {
         $user = $this->userRepository->findOneBy(['id' => $userId]);
 
@@ -103,7 +104,7 @@ class UserService
         return $this->createUserArray($user, true);
     }
 
-    public function editUser(int $userId, Request $request): ?array
+    public function editUser(Uuid $userId, Request $request): ?array
     {
         $user = $this->userRepository->findOneBy(['id' => $userId]);
 
@@ -124,7 +125,7 @@ class UserService
         return $this->createUserArray($user, true);
     }
 
-    public function changePassword(int $userId, Request $request): bool
+    public function changePassword(Uuid $userId, Request $request): bool
     {
         $user = $this->userRepository->findOneBy(['id' => $userId]);
 
@@ -166,7 +167,7 @@ class UserService
         return $rolesArray;
     }
 
-    public function editRoles(int $userId, Request $request): bool
+    public function editRoles(Uuid $userId, Request $request): bool
     {
         $user = $this->roleRepository->findOneBy(['id' => $userId]);
         $content= json_decode($request->getContent(), true);

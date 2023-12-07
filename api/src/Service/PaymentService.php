@@ -9,6 +9,7 @@ use App\Repository\CustomerRepository;
 use App\Repository\PaymentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Uid\Uuid;
 
 class PaymentService
 {
@@ -49,7 +50,7 @@ class PaymentService
         return $this->getPaymentArray($payment);
     }
 
-    public function editPayment(int $paymentId, Request $request): ?array
+    public function editPayment(Uuid $paymentId, Request $request): ?array
     {
         $payment = $this->paymentRepository->findOneBy(['id' => $paymentId]);
 
@@ -72,7 +73,7 @@ class PaymentService
         return $this->getPaymentArray($payment);
     }
 
-    public function getPayment(int $paymentId): ?array
+    public function getPayment(Uuid $paymentId): ?array
     {
         $payment = $this->paymentRepository->findOneBy(['id' => $paymentId]);
 

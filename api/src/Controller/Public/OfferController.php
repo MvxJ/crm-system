@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Annotations as OA;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @OA\Tag(name="Offers")
@@ -24,7 +25,7 @@ class OfferController extends AbstractController
     }
 
     #[Route('/{id}/detail', name: 'detail', methods: ['GET'])]
-    public function getOffer(int $id, Request $request): JsonResponse
+    public function getOffer(Uuid $id, Request $request): JsonResponse
     {
         try {
             $offer = $this->offerService->getOffer($id);

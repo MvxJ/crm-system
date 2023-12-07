@@ -79,7 +79,7 @@ class BillService
         return $this->createBillArray($bill, true);
     }
 
-    public function getCustomerBillDetails(int $id, string $customerEmail): ?array
+    public function getCustomerBillDetails(Uuid $id, string $customerEmail): ?array
     {
         $bill = $this->billRepository->findOneBy(['id' => $id]);
 

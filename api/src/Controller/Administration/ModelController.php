@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Uid\Uuid;
 
 #[Route('/api/models', name: 'api_model_')]
 class ModelController extends  AbstractController
@@ -50,7 +51,7 @@ class ModelController extends  AbstractController
 
     #[Route('/{id}', name: 'details', methods: ['GET'])]
 
-    public function getModelDetails(int $id, Request $request): JsonResponse
+    public function getModelDetails(Uuid $id, Request $request): JsonResponse
     {
         try {
             $model = $this->modelService->getModelDetails($id);
@@ -119,7 +120,7 @@ class ModelController extends  AbstractController
     }
 
     #[Route('/{id}/edit', name: 'edit', methods: ['PATCH'])]
-    public function editModel(int $id, Request $request): JsonResponse
+    public function editModel(Uuid $id, Request $request): JsonResponse
     {
         try {
             $model = $this->modelService->editModel($id, $request);
@@ -153,7 +154,7 @@ class ModelController extends  AbstractController
     }
 
     #[Route('/{id}/delete', name: 'delete', methods: ['DELETE'])]
-    public function deleteModel(int $id, Request $request): JsonResponse
+    public function deleteModel(Uuid $id, Request $request): JsonResponse
     {
         try {
             $success = $this->modelService->deleteModel($id);
@@ -187,7 +188,7 @@ class ModelController extends  AbstractController
     }
 
     #[Route('/{id}/devices', name: 'devices', methods: ['GET'])]
-    public function getModelDevices(int $id, Request $request): JsonResponse
+    public function getModelDevices(Uuid $id, Request $request): JsonResponse
     {
         try {
             $devices = $this->modelService->getModelDevices($id, $request);

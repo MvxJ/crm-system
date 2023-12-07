@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Annotations as OA;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @OA\Tag(name="Addresses")
@@ -100,7 +101,7 @@ class CustomerAddressController extends AbstractController
     }
 
     #[Route("/{id}/edit", name: "edit", methods: ['PATCH'])]
-    public function editAddress(int $id, Request $request): JsonResponse
+    public function editAddress(Uuid $id, Request $request): JsonResponse
     {
         try {
             $customer  = $this->getUser();
@@ -135,7 +136,7 @@ class CustomerAddressController extends AbstractController
     }
 
     #[Route("/{id}/details", name: "details", methods: ['GET'])]
-    public function addressDetail(int $id): JsonResponse
+    public function addressDetail(Uuid $id): JsonResponse
     {
         try {
             $customer = $this->getUser();
@@ -170,7 +171,7 @@ class CustomerAddressController extends AbstractController
     }
 
     #[Route("/{id}/delete", name: "delete", methods: ['DELETE'])]
-    public function deleteAddress(int $id): JsonResponse
+    public function deleteAddress(Uuid $id): JsonResponse
     {
         try {
             $customer  = $this->getUser();

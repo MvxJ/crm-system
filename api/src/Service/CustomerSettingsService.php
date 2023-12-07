@@ -10,6 +10,7 @@ use App\Repository\CustomerRepository;
 use App\Repository\CustomerSettingsRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Uid\Uuid;
 
 class CustomerSettingsService
 {
@@ -30,7 +31,7 @@ class CustomerSettingsService
         $this->customerRepository = $customerRepository;
     }
 
-    public function editSettings(int $customerId, Request $request, ?string $userEmail = null): ?array
+    public function editSettings(Uuid $customerId, Request $request, ?string $userEmail = null): ?array
     {
         /** @var Customer $customer */
         $customer = $this->customerRepository->findOneBy(['id' => $customerId]);
@@ -62,7 +63,7 @@ class CustomerSettingsService
         return $this->createSettingsArray($settings);
     }
 
-    public function getCustomerSettings(int $customerId, ?string $customerEmail = null): ?array
+    public function getCustomerSettings(Uuid $customerId, ?string $customerEmail = null): ?array
     {
         $customer = $this->customerRepository->findOneBy(['id' => $customerId]);
 

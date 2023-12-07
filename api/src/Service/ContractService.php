@@ -91,7 +91,7 @@ class ContractService
         return $contractsArray;
     }
 
-    public function getCustomerContractDetails(int $contractId, string $userEmail): ?array
+    public function getCustomerContractDetails(Uuid $contractId, string $userEmail): ?array
     {
         $contract = $this->contractRepository->findOneBy(['id' => $contractId]);
 

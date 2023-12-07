@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Uid\Uuid;
 
 #[Route('/api/service/visit', name: 'api_service_visit_')]
 class ServiceVisitController extends AbstractController
@@ -70,7 +71,7 @@ class ServiceVisitController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'edit', methods: ['PATCH'])]
-    public function editServiceVisit(int $id, Request $request): JsonResponse
+    public function editServiceVisit(Uuid $id, Request $request): JsonResponse
     {
         try {
             $serviceVisit = $this->serviceVisitService->editServiceVisit($id, $request);
@@ -128,7 +129,7 @@ class ServiceVisitController extends AbstractController
     }
 
     #[Route('/{id}/detail', name: 'detail', methods: ['GET'])]
-    public function getServiceVisitDetails(int $id, Request $request): JsonResponse
+    public function getServiceVisitDetails(Uuid $id, Request $request): JsonResponse
     {
         try {
             $serviceVisit = $this->serviceVisitService->getServiceVisitDetail($id);
@@ -162,7 +163,7 @@ class ServiceVisitController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'delete', methods: ['DELETE'])]
-    public function deleteServiceVisit(int $id, Request $request): JsonResponse
+    public function deleteServiceVisit(Uuid $id, Request $request): JsonResponse
     {
         try {
             $status = $this->serviceVisitService->deleteServiceVisit($id);

@@ -9,6 +9,7 @@ use App\Repository\ServiceRequestRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Uid\Uuid;
 
 class ServiceRequestService
 {
@@ -68,7 +69,7 @@ class ServiceRequestService
         ];
     }
 
-    public function getServiceRequestDetails(int $serviceRequestId): ?array
+    public function getServiceRequestDetails(Uuid $serviceRequestId): ?array
     {
         $serviceRequest = $this->serviceRequestRepository->findOneBy(['id' => $serviceRequestId]);
 
@@ -100,7 +101,7 @@ class ServiceRequestService
         ];
     }
 
-    public function getCustomerServiceRequestDetails(int $serviceRequestId, string $customerEmail): ?array
+    public function getCustomerServiceRequestDetails(Uuid $serviceRequestId, string $customerEmail): ?array
     {
         $serviceRequest = $this->serviceRequestRepository->findOneBy(['id' => $serviceRequestId]);
 
@@ -146,7 +147,7 @@ class ServiceRequestService
         return $this->createServiceRequestArray($serviceRequest, true);
     }
 
-    public function editServiceRequest(int $serviceRequestId, Request $request): ?array
+    public function editServiceRequest(Uuid $serviceRequestId, Request $request): ?array
     {
         $serviceRequest = $this->serviceRequestRepository->findOneBy(['id' => $serviceRequestId]);
 
@@ -163,7 +164,7 @@ class ServiceRequestService
         return $this->createServiceRequestArray($serviceRequest, true);
     }
 
-    public function cancelServiceRequestByCustomer(int $serviceRequestId, string $userEmail): bool
+    public function cancelServiceRequestByCustomer(Uuid $serviceRequestId, string $userEmail): bool
     {
         $serviceRequest = $this->serviceRequestRepository->findOneBy(['id' => $serviceRequestId]);
 
@@ -178,7 +179,7 @@ class ServiceRequestService
         return true;
     }
 
-    public function deleteServiceRequest(int $serviceRequestId): bool
+    public function deleteServiceRequest(Uuid $serviceRequestId): bool
     {
         $serviceRequest = $this->serviceRequestRepository->findOneBy(['id' => $serviceRequestId]);
 

@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Uid\Uuid;
 
 #[Route('/api/devices', name: 'api_device_')]
 class DeviceController extends AbstractController
@@ -49,7 +50,7 @@ class DeviceController extends AbstractController
     }
 
     #[Route('/{id}', name: 'detail', methods: ['GET'])]
-    public function getDeviceDetails(int $id, Request $request): JsonResponse
+    public function getDeviceDetails(Uuid $id, Request $request): JsonResponse
     {
         try {
             $device = $this->deviceService->getDeviceDetails($id);
@@ -130,7 +131,7 @@ class DeviceController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'delete', methods: ['DELETE'])]
-    public function deleteDevice(int $id, Request $request): JsonResponse
+    public function deleteDevice(Uuid $id, Request $request): JsonResponse
     {
         try {
             $status = $this->deviceService->deleteDevice($id);
@@ -164,7 +165,7 @@ class DeviceController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'edit', methods: ['PATCH'])]
-    public function editDevice(int $id, Request $request): JsonResponse
+    public function editDevice(Uuid $id, Request $request): JsonResponse
     {
         try {
             $device = $this->deviceService->editDevice($id, $request);

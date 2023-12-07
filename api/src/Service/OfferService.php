@@ -11,6 +11,7 @@ use App\Repository\OfferRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Uid\Uuid;
 
 class OfferService
 {
@@ -44,7 +45,7 @@ class OfferService
         return null;
     }
 
-    public function editOffer(int $id, Request $request): ?array
+    public function editOffer(Uuid $id, Request $request): ?array
     {
         $offer = $this->offerRepository->findOneBy(['id' => $id]);
 
@@ -95,7 +96,7 @@ class OfferService
         ];
     }
 
-    public function deleteOffer(int $offerId): bool
+    public function deleteOffer(Uuid $offerId): bool
     {
         $offer = $this->offerRepository->findOneBy(['id' => $offerId]);
 
@@ -111,7 +112,7 @@ class OfferService
         return true;
     }
 
-    public function getOffer(int $id): ?array
+    public function getOffer(Uuid $id): ?array
     {
         $offer = $this->offerRepository->findOneBy(['id' => $id]);
 
@@ -122,7 +123,7 @@ class OfferService
         return $this->createOfferArray($offer, true);
     }
 
-    public function removeOfferDevice(int $offerId, int $deviceId): ?array
+    public function removeOfferDevice(Uuid $offerId, Uuid $deviceId): ?array
     {
         $offer = $this->offerRepository->findOneBy(['id' => $offerId]);
 

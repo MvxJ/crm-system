@@ -65,7 +65,7 @@ class ModelService
         ];
     }
 
-    public function editModel(int $modelId, Request $request): ?array
+    public function editModel(Uuid $modelId, Request $request): ?array
     {
         $model = $this->modelRepository->findOneBy(['id' => $modelId]);
 
@@ -112,7 +112,7 @@ class ModelService
         ];
     }
 
-    public function deleteModel(int $modelId): bool
+    public function deleteModel(Uuid $modelId): bool
     {
         $model = $this->modelRepository->findOneBy(['id' => $modelId]);
 
@@ -153,7 +153,7 @@ class ModelService
         ];
     }
 
-    public function getModelDevices(int $modelId, Request $request): ?array
+    public function getModelDevices(Uuid $modelId, Request $request): ?array
     {
         $model = $this->modelRepository->findOneBy(['id' => $modelId]);
 

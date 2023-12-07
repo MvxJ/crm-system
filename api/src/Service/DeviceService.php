@@ -11,6 +11,7 @@ use App\Repository\DeviceRepository;
 use App\Repository\ModelRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Uid\Uuid;
 
 class DeviceService
 {
@@ -31,7 +32,7 @@ class DeviceService
         $this->modelRepository = $modelRepository;
     }
 
-    public function getDeviceDetails(int $deviceId): ?array
+    public function getDeviceDetails(Uuid $deviceId): ?array
     {
         $device = $this->deviceRepository->findOneBy(['id' => $deviceId]);
 
@@ -129,7 +130,7 @@ class DeviceService
         ];
     }
 
-    public function editDevice(int $deviceId, Request $request): ?array
+    public function editDevice(Uuid $deviceId, Request $request): ?array
     {
         $device = $this->deviceRepository->findOneBy(['id' => $deviceId]);
 
@@ -164,7 +165,7 @@ class DeviceService
         ];
     }
 
-    public function deleteDevice(int $deviceId): bool
+    public function deleteDevice(Uuid $deviceId): bool
     {
         $device = $this->deviceRepository->findOneBy(['id' => $deviceId]);
 

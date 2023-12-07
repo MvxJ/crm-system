@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Annotations as OA;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @OA\Tag(name="Invoices")
@@ -49,7 +50,7 @@ class BillController extends AbstractController
     }
 
     #[Route('/{id}/detail', name: 'detail', methods: ['GET'])]
-    public function getBillDetail(int $id, Request $request): JsonResponse
+    public function getBillDetail(Uuid $id, Request $request): JsonResponse
     {
         try {
             $customer = $this->getUser();
