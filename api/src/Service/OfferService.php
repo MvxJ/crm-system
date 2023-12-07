@@ -151,7 +151,11 @@ class OfferService
                 $setterMethod = 'set' . ucfirst($fieldName);
 
                 if ($fieldName == 'devices') {
-                    $models = $this->modelRepository->findBy(['id' => $fieldValue]);
+                    $models = [];
+
+                    foreach ($fieldValue as $uuid) {
+                        $models[] = $this->modelRepository->findOneBy(['id' => $uuid]);
+                    }
 
                     /** @var Model $model */
                     foreach ($models as $model) {

@@ -7,6 +7,7 @@ use App\Entity\Payment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<Payment>
@@ -57,9 +58,10 @@ class PaymentRepository extends ServiceEntityRepository
                 ->setParameter('paidBy', (int)$paidBy);
         }
 
-        if ($customer != 'all' && !is_nan((int)$customer)) {
+        if ($customer != 'all') {
+            $id = new Uuid($customer);
             $queryBuilder->andWhere('c.id = :customerId')
-                ->setParameter('customerId', (int)$customer);
+                ->setParameter('customerId', $id->toBinary());
         }
 
         $result = $queryBuilder->getQuery()->getSingleScalarResult();
@@ -92,10 +94,11 @@ class PaymentRepository extends ServiceEntityRepository
                 ->setParameter('paidBy', (int)$paidBy);
         }
 
-        if ($customer != 'all' && !is_nan((int)$customer)) {
+        if ($customer != 'all') {
+            $id = new Uuid($customer);
             $queryBuilder->innerJoin(Customer::class, 'c')
                 ->andWhere('c.id = :customerId')
-                ->setParameter('customerId', (int)$customer);
+                ->setParameter('customerId', $id->toBinary());
         }
 
         return $queryBuilder->getQuery()->getResult();

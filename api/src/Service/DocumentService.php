@@ -159,7 +159,7 @@ class DocumentService
 
                 if (method_exists($document, $setterMethod)) {
                     if ($setterMethod == 'setModel') {
-                        $model = $this->modelRepository->findOneBy(['id' => (int)$fieldValue]);
+                        $model = $this->modelRepository->findOneBy(['id' => $fieldValue]);
 
                         if (!$model) {
                             return null;

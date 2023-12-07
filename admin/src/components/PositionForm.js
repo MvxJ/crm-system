@@ -20,7 +20,7 @@ const PositionForm = ({ position, billId }) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     bill: billId, 
-    type: position?.type,
+    type: position ? position.type : 0,
     price: position?.price,
     amount: position?.amount,
     name: position?.name,
@@ -199,7 +199,7 @@ const PositionForm = ({ position, billId }) => {
                   setFormData((prevFormData) => ({ ...prevFormData, type: value }));
                 }}
                 disabled={position && !edit}
-                defaultValue={position?.type ? position.type : 0}
+                value={formData.type}
                 options={[
                   { value: 0, label: "Contract" },
                   { value: 1, label: "Service" },

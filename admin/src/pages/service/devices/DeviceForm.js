@@ -113,7 +113,7 @@ const DeviceForm = () => {
       }
 
       if (selectedUserId != null) {
-        device.user = parseInt(selectedUserId.value);
+        device.user = selectedUserId.value;
       }
 
       if (formData.soldDate != null) {

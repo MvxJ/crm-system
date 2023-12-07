@@ -46,7 +46,7 @@ class CommentRepository extends ServiceEntityRepository
             ->select('COUNT(c.id) as device_count')
             ->innerJoin('c.serviceRequest', 's')
             ->where('s.id = :serviceRequestId')
-            ->setParameter('serviceRequestId', $serviceRequestId);
+            ->setParameter('serviceRequestId', $serviceRequestId->toBinary());
 
         $result = $queryBuilder->getQuery()->getSingleScalarResult();
 
@@ -64,7 +64,7 @@ class CommentRepository extends ServiceEntityRepository
         $queryBuilder->setMaxResults($itemsPerPage)
             ->innerJoin('c.serviceRequest', 's')
             ->where('s.id = :serviceRequestId')
-            ->setParameter('serviceRequestId', $serviceRequestId)
+            ->setParameter('serviceRequestId', $serviceRequestId->toBinary())
             ->setFirstResult(($page - 1) * $itemsPerPage)
             ->orderBy('c.' . $orderBy, $order);
 

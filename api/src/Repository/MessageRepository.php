@@ -7,6 +7,7 @@ use App\Entity\Message;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<Message>
@@ -47,9 +48,10 @@ class MessageRepository extends ServiceEntityRepository
             ->select('COUNT(m.id) as payments_count')
             ->innerJoin('m.customer', 'c');
 
-        if ($customerId != 'all' && !is_nan((int)$customerId)) {
+        if ($customerId != 'all') {
+            $id = new Uuid($customerId);
             $queryBuilder->andWhere('c.id = :id')
-                ->setParameter('id', (int)$customerId);
+                ->setParameter('id', $id->toBinary());
         }
 
         if ($type != 'all' && !is_nan((int)$type)) {
@@ -81,10 +83,11 @@ class MessageRepository extends ServiceEntityRepository
                 ->setParameter('type', (int)$type);
         }
 
-        if ($customerId != 'all' && !is_nan((int)$customerId)) {
+        if ($customerId != 'all') {
+            $id = new Uuid($customerId);
             $queryBuilder->innerJoin('m.customer', 'c')
                 ->andWhere('c.id = :customerId')
-                ->setParameter('customerId', (int)$customerId);
+                ->setParameter('customerId', $id->toBinary());
         }
 
         return $queryBuilder->getQuery()->getResult();

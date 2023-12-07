@@ -222,8 +222,12 @@ class UserService
                     $user->setPassword($this->userPasswordHasher->hashPassword($user, $fieldValue));
                 } elseif ($fieldName === 'roles' && is_array($fieldValue)) {
                     $user->clearRoles();
+                    $roles  = [];
 
-                    $roles = $this->roleRepository->findBy(['id' => $fieldValue]);
+                    foreach ($fieldValue as $uuid) {
+                        $roles[] = $this->roleRepository->findOneBy(['id' => $uuid]);
+                    }
+
                     foreach ($roles as $role) {
                         $user->addRole($role);
                     }

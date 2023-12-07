@@ -7,6 +7,7 @@ use App\Entity\ServiceVisit;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<ServiceVisit>
@@ -55,22 +56,25 @@ class ServiceVisitRepository extends ServiceEntityRepository
             ->setFirstResult(($page - 1) * $itemsPerPage)
             ->orderBy('s.' . $orderBy, $order);
 
-        if ($customerId != 'all' && !is_nan((int)$customerId)) {
+        if ($customerId != 'all') {
+            $id = new Uuid($customerId);
             $queryBuilder->innerJoin('s.customer', 'c')
                 ->andWhere('c.id = :customerId')
-                ->setParameter('customerId', (int)$customerId);
+                ->setParameter('customerId', $id->toBinary());
         }
 
-        if ($userId != 'all' && !is_nan((int)$userId)) {
+        if ($userId != 'all') {
+            $id = new Uuid($userId);
             $queryBuilder->innerJoin('s.user', 'u')
                 ->andWhere('u.id = :userId')
-                ->setParameter('userId', (int)$userId);
+                ->setParameter('userId', $id->toBinary());
         }
 
-        if ($serviceRequestId != 'all' && !is_nan((int)$serviceRequestId)) {
+        if ($serviceRequestId != 'all') {
+            $id = new Uuid($serviceRequestId);
             $queryBuilder->innerJoin('s.serviceRequest', 'r')
                 ->andWhere('r.id = :requestId')
-                ->setParameter('requestId', (int)$serviceRequestId);
+                ->setParameter('requestId', $id->toBinary());
         }
 
         return $queryBuilder->getQuery()->getResult();
@@ -81,22 +85,25 @@ class ServiceVisitRepository extends ServiceEntityRepository
         $queryBuilder = $this->createQueryBuilder('s')
             ->select('COUNT(s.id) as service_request_count');
 
-        if ($customerId != 'all' && !is_nan((int)$customerId)) {
+        if ($customerId != 'all') {
+            $id = new Uuid($customerId);
             $queryBuilder->innerJoin('s.customer', 'c')
                 ->andWhere('c.id = :customerId')
-                ->setParameter('customerId', (int)$customerId);
+                ->setParameter('customerId', $id->toBinary());
         }
 
-        if ($userId != 'all' && !is_nan((int)$userId)) {
+        if ($userId != 'all') {
+            $id = new Uuid($userId);
             $queryBuilder->innerJoin('s.user', 'u')
                 ->andWhere('u.id = :userId')
-                ->setParameter('userId', (int)$userId);
+                ->setParameter('userId', $id->toBinary());
         }
 
-        if ($serviceRequestId != 'all' && !is_nan((int)$serviceRequestId)) {
+        if ($serviceRequestId != 'all') {
+            $id = new Uuid($serviceRequestId);
             $queryBuilder->innerJoin('s.serviceRequest', 'r')
                 ->andWhere('r.id = :requestId')
-                ->setParameter('requestId', (int)$serviceRequestId);
+                ->setParameter('requestId', $id->toBinary());
         }
 
         $result = $queryBuilder->getQuery()->getSingleScalarResult();
