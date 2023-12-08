@@ -2,3 +2,4 @@
 /admin/node_modules
 /.idea
 /api/public/
+/rabbitmq/

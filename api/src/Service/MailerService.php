@@ -1,13 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
 use App\Entity\Customer;
+use App\Entity\Message;
 use App\Entity\User;
+use App\Repository\CustomerRepository;
 use App\Repository\SettingsRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Scheb\TwoFactorBundle\Model\Email\TwoFactorInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Messenger\Bridge\Amqp\Transport\AmqpStamp;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Part\DataPart;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -16,105 +23,87 @@ use Twig\Environment;
 
 class MailerService
 {
-    private string $uploadDir;
     private string $clientVerifyAddress;
-    private MailerInterface $mailer;
-    private SettingsRepository $settingsRepository;
-    private Environment $twig;
     private VerifyEmailHelperInterface $verifyEmailHelper;
-    private UrlGeneratorInterface $urlGenerator;
+    private MessageBusInterface $bus;
+    private EntityManagerInterface $entityManager;
+    private CustomerRepository $customerRepository;
 
     public function __construct(
-        string $uploadDir,
         string $clientVerifyAddress,
-        MailerInterface $mailer,
-        SettingsRepository $settingsRepository,
-        Environment $twig,
         VerifyEmailHelperInterface $verifyEmailHelper,
-        UrlGeneratorInterface $urlGenerator
+        MessageBusInterface $bus,
+        EntityManagerInterface $entityManager,
+        CustomerRepository $customerRepository
     ) {
-        $this->uploadDir = $uploadDir;
         $this->clientVerifyAddress = $clientVerifyAddress;
-        $this->mailer = $mailer;
-        $this->settingsRepository = $settingsRepository;
-        $this->twig = $twig;
         $this->verifyEmailHelper = $verifyEmailHelper;
-        $this->urlGenerator = $urlGenerator;
+        $this->bus = $bus;
+        $this->entityManager = $entityManager;
+        $this->customerRepository = $customerRepository;
     }
 
         public function sendConfirmationEmail(string $verifyEmailRouteName, Customer $customer, ?string $password = null)
     {
         $signatureComponents = $this->verifyEmailHelper->generateSignature(
             $verifyEmailRouteName,
-            $customer->getId(),
+            $customer->getId()->toBinary(),
             $customer->getEmail()
         );
 
-        $email = $this->createEmailMessage(
-            'Account Confirmation',
+//        'expiresAtMessageKey' => $signatureComponents->getExpirationMessageKey()
+//        'expiresAtMessageData' => $signatureComponents->getExpirationMessageData()
+
+        $message = new Message();
+        $message->setSubject('Account Confirmation');
+        $message->setEmail($customer->getEmail());
+        $message->setCreatedDate(new \DateTime());
+        $message->setCustomer($customer);
+        $message->setType(Message::TYPE_ACCOUNT_CONFIRMATION);
+        $message->setMessage('<p>
+            Please confirm your email address by clicking the following link: <br><br>
+            ' . $password ? 'Your generated password:' . $password .'<br><br>' : null .
+            '<a href="' . $this->generateFeUrl($signatureComponents->getSignedUrl()) . '">Confirm my Email</a>.
+            </p>');
+
+        $this->entityManager->persist($message);
+        $this->entityManager->flush();
+
+        $this->bus->dispatch(
+            $message,
             [
-                'customer' => $customer,
-                'password' => $password,
-                'signedUrl' => $this->generateFeUrl($signatureComponents->getSignedUrl()),
-                'expiresAtMessageKey' => $signatureComponents->getExpirationMessageKey(),
-                'expiresAtMessageData' => $signatureComponents->getExpirationMessageData(),
-            ],
-            'emails/registration-confirmation-email.html.twig',
-            $customer->getEmail()
+                new AmqpStamp(null, AMQP_MANDATORY, ['priority' => 9])
+            ]
         );
-
-        $this->mailer->send($email);
     }
 
     public function sendTwoFactorAuthenticationEmail(TwoFactorInterface $user)
     {
-        $email = $this->createEmailMessage(
-            'Two-Factor Authentication',
-            [
-                'authCode' => $user->getEmailAuthCode(),
-            ],
-            'emails/authentication-code-email.html.twig',
-            $user->getEmailAuthRecipient()
-        );
+        $customer = $this->customerRepository->findOneBy(['email' => $user->getEmailAuthRecipient()]);
 
-        $this->mailer->send($email);
-    }
-
-
-    private function createEmailMessage(
-        string $subject,
-        array $context,
-        string $template,
-        string $recipient
-    ): TemplatedEmail {
-        $settings = $this->settingsRepository->findOneBy(['id' => 1]);
-
-        $email = (new TemplatedEmail())
-            ->from(new Address($settings->getMailerAddress(), $settings->getMailerName()))
-            ->to($recipient)
-            ->subject($subject)
-            ->htmlTemplate($template);
-
-        $context['crmSettings'] = $settings;
-
-        if ($settings->getLogoUrl()) {
-            $logoPath = $this->uploadDir . '/' . $settings->getLogoUrl();
-            $email->addPart((new DataPart(fopen($logoPath, 'r'), 'logo', 'image/png'))->asInline());
-            $context['logoUrl'] = $this->urlGenerator->generate(
-                'api_file_display',
-                [
-                    'fileName' => $settings->getLogoUrl()
-                ],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            );
-        } else {
-            $context['logoUrl'] = '';
+        if (!$customer) {
+            throw new \Exception("Couldn't find the customer.");
         }
 
-        $email->context($context);
+        $message = new Message();
+        $message->setSubject('Two-Factor Authentication');
+        $message->setEmail($user->getEmailAuthRecipient());
+        $message->setCreatedDate(new \DateTime());
+        $message->setType(Message::TWO_FACTOR_CODE);
+        $message->setCustomer($customer);
+        $message->setMessage('<p>Your verification code is: ' . $user->getEmailAuthCode() . '</p>');
 
-        return $email;
+        $this->entityManager->persist($message);
+        $this->entityManager->flush();
+
+        $this->bus->dispatch(
+            $message,
+            [
+                new AmqpStamp(null, AMQP_MANDATORY, ['priority' => 9])
+            ]
+        );
     }
+
 
     private function generateFeUrl(string $verifyUrl):string
     {

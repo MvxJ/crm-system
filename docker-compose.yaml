@@ -14,6 +14,8 @@ services:
       - /app/node_modules
     ports:
       - 80:3000
+    networks:
+      - crm_network
 
   api:
     container_name: symfony_api
@@ -28,6 +30,8 @@ services:
       - ./config/vhost.conf:/etc/apache2/sites-enabled/000-default.conf
       - cache:/var/www/html/api/var/cache
       - log:/var/www/html/api/var/log
+    networks:
+      - crm_network
 
   database:
     container_name: database
@@ -44,12 +48,16 @@ services:
       - ./config/vhost.conf:/etc/apache2/sites-available/000-default.conf
       - cache:/var/www/html/api/var/cache
       - log:/var/www/html/api/log
+    networks:
+      - crm_network
 
   adminer:
     container_name: database_adminer
     image: adminer
     ports:
       - '8001:8080'
+    networks:
+      - crm_network
 
   mailhog:
     container_name: mailhog
@@ -59,7 +67,24 @@ services:
     ports:
       - "8002:8025"
       - "1025:1025"
+    networks:
+      - crm_network
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./rabbitmq/data/:/var/lib/rabbitmq/
+      - ./rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - crm_network
 
 volumes:
   cache:
   log:
+
+networks:
+  crm_network:

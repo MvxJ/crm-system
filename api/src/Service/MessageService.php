@@ -1,14 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
 use App\Entity\Message;
-use App\Helper\MessageHelper;
 use App\Repository\CustomerRepository;
 use App\Repository\MessageRepository;
 use App\Repository\ServiceRequestRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Messenger\Bridge\Amqp\Transport\AmqpStamp;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
 class MessageService
@@ -17,20 +20,20 @@ class MessageService
     private EntityManagerInterface $entityManager;
     private CustomerRepository $customerRepository;
     private ServiceRequestRepository $serviceRequestRepository;
-    private MessageHelper $messageHelper;
+    private MessageBusInterface $bus;
 
     public function __construct(
         MessageRepository $messageRepository,
         EntityManagerInterface $entityManager,
         CustomerRepository $customerRepository,
         ServiceRequestRepository $serviceRequestRepository,
-        MessageHelper $messageHelper
+        MessageBusInterface $bus
     ) {
         $this->messageRepository = $messageRepository;
         $this->entityManager = $entityManager;
         $this->customerRepository = $customerRepository;
         $this->serviceRequestRepository = $serviceRequestRepository;
-        $this->messageHelper = $messageHelper;
+        $this->bus = $bus;
     }
 
     public function createMessage(Request $request): ?array
@@ -117,7 +120,12 @@ class MessageService
 
     private function sendMessage(Message $message): void
     {
-        $this->messageHelper->sendMessageToCustomer($message);
+        $this->bus->dispatch(
+            $message,
+            [
+                new AmqpStamp(null, AMQP_MANDATORY, ['priority' => 9])
+            ]
+        );
     }
 
     private function objectCreator(Message $message, array $content): ?Message

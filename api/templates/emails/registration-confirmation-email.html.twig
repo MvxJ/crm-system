@@ -4,10 +4,7 @@
     <div class="content">
         <h1>Hi! Please confirm your email!</h1>
         <p>
-            Please confirm your email address by clicking the following link: <br><br>
-            {% if password %} Your generated password: {{password }}<br><br> {% endif %}
-            <a href="{{ signedUrl }}">Confirm my Email</a>.
-            This link will expire in {{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}.
+            {{ message|raw }}
         </p>
     </div>
 </div>

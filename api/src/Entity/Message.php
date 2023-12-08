@@ -14,6 +14,8 @@ class Message
     public const TYPE_NOTIFICATION = 0;
     public const TYPE_REMINDER = 1;
     public const TYPE_MESSAGE = 2;
+    public const TYPE_ACCOUNT_CONFIRMATION = 3;
+    public const TWO_FACTOR_CODE = 4;
 
     #[ORM\Id]
     #[ORM\Column(type: UuidType::NAME, unique: true)]
@@ -45,6 +47,12 @@ class Message
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $subject = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $attachmentPatch = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $attachmentName = null;
 
     public function getId(): Uuid
     {
@@ -143,6 +151,30 @@ class Message
     public function setSubject(?string $subject): static
     {
         $this->subject = $subject;
+
+        return $this;
+    }
+
+    public function getAttachmentPatch(): ?string
+    {
+        return $this->attachmentPatch;
+    }
+
+    public function setAttachmentPatch(?string $attachmentPatch): static
+    {
+        $this->attachmentPatch = $attachmentPatch;
+
+        return $this;
+    }
+
+    public function getAttachmentName(): ?string
+    {
+        return $this->attachmentName;
+    }
+
+    public function setAttachmentName(?string $attachmentName): static
+    {
+        $this->attachmentName = $attachmentName;
 
         return $this;
     }
