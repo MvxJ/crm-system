@@ -40,7 +40,7 @@ const OfferForm = () => {
       
       if (response.data.results.models) {
         return response.data.results.models.map((model) => ({
-          label: `#${model.id} ${model.manufacturer} - ${model.name} (${model.price})`,
+          label: `${model.manufacturer} - ${model.name} (${model.price})`,
           value: model.id,
         }));
       }
@@ -82,7 +82,7 @@ const OfferForm = () => {
 
           response.data.offer.devices.forEach(device => {
             const deviceObj = {
-              label: `#${device.id} ${device.manufacturer} - ${device.name} (${FormatUtils.getDeviceType(device.type)})`,
+              label: `${device.manufacturer} - ${device.name} (${FormatUtils.getDeviceType(device.type)})`,
               value: device.id,
             }
 

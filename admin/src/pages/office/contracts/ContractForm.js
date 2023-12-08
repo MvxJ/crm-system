@@ -118,7 +118,7 @@ const ContractForm = () => {
 
       if (response.data.results.offers) {
         return response.data.results.offers.map((offer) => ({
-          label: `#${offer.id} ${offer.title}`,
+          label: `${offer.title}`,
           value: offer.id,
         }));
       }
@@ -161,7 +161,7 @@ const ContractForm = () => {
 
       if (response.data.results.customers) {
         return response.data.results.customers.map((customer) => ({
-          label: `#${customer.id} ${customer.firstName} ${customer.lastName} (${customer.socialSecurityNumber ? customer.socialSecurityNumber : 'empty'})`,
+          label: `${customer.firstName} ${customer.lastName} (${customer.socialSecurityNumber ? customer.socialSecurityNumber : 'empty'})`,
           value: customer.id,
         }));
       }

@@ -29,7 +29,7 @@ const DeviceForm = () => {
 
       if (response.data.results.customers) {
         return response.data.results.customers.map((customer) => ({
-          label: `#${customer.id} ${customer.firstName} ${customer.lastName} (${customer.socialSecurityNumber ? customer.socialSecurityNumber : 'empty'})`,
+          label: `${customer.firstName} ${customer.lastName} (${customer.socialSecurityNumber ? customer.socialSecurityNumber : 'empty'})`,
           value: customer.id,
         }));
       }
@@ -83,7 +83,7 @@ const DeviceForm = () => {
 
         if (response.data.device.user) {
           setSelectedUserId({
-            label: `#${response.data.device.user.id} ${response.data.device.user.firstName} ${response.data.device.user.lastName} (${response.data.device.user.socialSecurityNumber ? response.data.device.user.socialSecurityNumber : 'empty'})`,
+            label: `${response.data.device.user.name} ${response.data.device.user.lastName}`,
             value: response.data.device.user.id,
           });
           setLoading(false);

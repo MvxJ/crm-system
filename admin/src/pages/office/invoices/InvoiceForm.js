@@ -65,7 +65,7 @@ const InvoiceForm = () => {
 
         setSelectedCustomer({
           value: response.data.bill.customer.id,
-          label: `#${response.data.bill.customer.id} ${response.data.bill.customer.name} ${response.data.bill.customer.surname} (${response.data.bill.customer.email})`,
+          label: `${response.data.bill.customer.name} ${response.data.bill.customer.surname} (${response.data.bill.customer.email})`,
         });
 
         setContracts([response.data.bill.contract]);
@@ -97,7 +97,7 @@ const InvoiceForm = () => {
 
       if (response.data.results.customers) {
         return response.data.results.customers.map((customer) => ({
-          label: `#${customer.id} ${customer.firstName} ${customer.lastName} (${
+          label: `${customer.firstName} ${customer.lastName} (${
             customer.socialSecurityNumber
               ? customer.socialSecurityNumber
               : "empty"
