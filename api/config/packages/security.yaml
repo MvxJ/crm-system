@@ -70,19 +70,28 @@ security:
         - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
         - { path: ^/api/settings, roles: ROLE_ACCESS_ADMIN_PANEL }
         - { path: ^/api/users, roles: ROLE_ACCESS_ADMIN_PANEL }
+        - { path: ^/api/statistics, roles: ROLE_ACCESS_ADMIN_PANEL }
         - { path: ^/api/comment, roles: ROLE_ACCESS_ADMIN_PANEL }
+        - { path: ^/api/models/add, roles: [ ROLE_ADMIN, ROLE_SERVICE ] }
+        - { path: ^/api/models/\w+\edit, roles: [ ROLE_ADMIN, ROLE_SERVICE ] }
         - { path: ^/api/models, roles: ROLE_ACCESS_ADMIN_PANEL }
         - { path: ^/api/public/models, roles: PUBLIC_ACCESS }
+        - { path: ^/api/devices/add, roles: [ ROLE_ADMIN, ROLE_SERVICE ] }
+        - { path: ^/api/devices/\w+/edit, roles: [ ROLE_ADMIN, ROLE_SERVICE ] }
         - { path: ^/api/devices, roles: ROLE_ACCESS_ADMIN_PANEL }
         - { path: ^/api/document, roles: ROLE_ACCESS_ADMIN_PANEL }
         - { path: ^/api/public/document, roles: [IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER] }
-        - { path: ^/api/contracts, roles: ROLE_ACCESS_ADMIN_PANEL }
-        - { path: ^/api/public/contracts, roles: [IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER] }
-        - { path: ^/api/bill, roles: ROLE_ACCESS_ADMIN_PANEL }
+        - { path: ^/api/contracts/add, roles: [ ROLE_ADMIN, ROLE_ACCOUNTMENT ] }
+        - { path: ^/api/contracts/\w+/edit, roles: [ ROLE_ADMIN, ROLE_ACCOUNTMENT ] }
+        - { path: ^/api/contracts/\w+/delete, roles: [ ROLE_ADMIN, ROLE_ACCOUNTMENT ] }
+        - { path: ^/api/contracts/\w+/details, roles: ROLE_ACCESS_ADMIN_PANEL }
+        - { path: ^/api/contracts/list, roles: ROLE_ACCESS_ADMIN_PANEL }
+        - { path: ^/api/public/contracts, roles: [ IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER ] }
+        - { path: ^/api/bill, roles: [ ROLE_ADMIN, ROLE_ACCOUNTMENT ] }
         - { path: ^/api/public/bill, roles: [ IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER ] }
         - { path: ^/api/messages, roles: ROLE_ACCESS_ADMIN_PANEL }
         - { path: ^/api/public/messages, roles: [ IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER ] }
-        - { path: ^/api/payments, roles: ROLE_ACCESS_ADMIN_PANEL }
+        - { path: ^/api/payments, roles: [ ROLE_ADMIN, ROLE_ACCOUNTMENT ] }
         - { path: ^/api/public/payments, roles: [ IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER ] }
         - { path: ^/api/service-requests, roles: ROLE_ACCESS_ADMIN_PANEL }
         - { path: ^/api/public/service-requests, roles: [IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER] }
@@ -90,8 +99,11 @@ security:
         - { path: ^/api/public/service/visit, roles: [ IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER ] }
         - { path: ^/api/customers/address, roles: [ ROLE_ACCESS_ADMIN_PANEL ] }
         - { path: ^/api/public/customers/address, roles: [ IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER ] }
+        - { path: ^/api/customers/settings/\w+/edit, roles: [ ROLE_ADMIN, ROLE_ACCOUNTMENT, ROLE_MARKETING ] }
         - { path: ^/api/customers/settings, roles: [ ROLE_ACCESS_ADMIN_PANEL ] }
         - { path: ^/api/public/customers/settings, roles: [ IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER ] }
+        - { path: ^/api/customers/add, roles: [ ROLE_ADMIN, ROLE_ACCOUNTMENT, ROLE_MARKETING  ] }
+        - { path: ^/api/customers/\w+/edit, roles: [ ROLE_ADMIN, ROLE_ACCOUNTMENT, ROLE_MARKETING  ] }
         - { path: ^/api/customers, roles: [ ROLE_ACCESS_ADMIN_PANEL ] }
         - { path: ^/api/public/profile, roles: [ IS_AUTHENTICATED_FULLY, ROLE_CUSTOMER ] }
         - { path: ^/api/offer, roles: ROLE_ACCESS_ADMIN_PANEL }
