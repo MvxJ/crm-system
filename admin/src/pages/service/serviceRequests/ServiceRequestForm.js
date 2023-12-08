@@ -35,7 +35,7 @@ const ServiceRequestForm = () => {
 
       if (response.data.results.customers) {
         return response.data.results.customers.map((customer) => ({
-          label: `#${customer.id} ${customer.firstName} ${customer.lastName} (${customer.socialSecurityNumber ? customer.socialSecurityNumber : 'empty'})`,
+          label: `${customer.firstName} ${customer.lastName} (${customer.socialSecurityNumber ? customer.socialSecurityNumber : 'empty'})`,
           value: customer.id,
         }));
       }
@@ -52,7 +52,7 @@ const ServiceRequestForm = () => {
 
       if (response.data.results.users) {
         return response.data.results.users.map((user) => ({
-          label: `#${user.id} ${user.name} ${user.surname} (${user.username})`,
+          label: `${user.name} ${user.surname} (${user.username})`,
           value: user.id,
         }));
       }
@@ -215,7 +215,7 @@ const ServiceRequestForm = () => {
 
         if (response.data.serviceRequest.user) {
           setSelectedUser({
-            label: `#${response.data.serviceRequest.user.id} ${response.data.serviceRequest.user.name} ${response.data.serviceRequest.user.surname} (${response.data.serviceRequest.user.username})`,
+            label: `${response.data.serviceRequest.user.name} ${response.data.serviceRequest.user.surname} (${response.data.serviceRequest.user.username})`,
             value: response.data.serviceRequest.user.id,
           });
         }

@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Comment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<Comment>
@@ -39,13 +40,13 @@ class CommentRepository extends ServiceEntityRepository
         }
     }
 
-    public function countCommentsByServiceRequestId(int $serviceRequestId): int
+    public function countCommentsByServiceRequestId(Uuid $serviceRequestId): int
     {
         $queryBuilder = $this->createQueryBuilder('c')
             ->select('COUNT(c.id) as device_count')
             ->innerJoin('c.serviceRequest', 's')
             ->where('s.id = :serviceRequestId')
-            ->setParameter('serviceRequestId', $serviceRequestId);
+            ->setParameter('serviceRequestId', $serviceRequestId->toBinary());
 
         $result = $queryBuilder->getQuery()->getSingleScalarResult();
 
@@ -53,7 +54,7 @@ class CommentRepository extends ServiceEntityRepository
     }
 
     public function getCommentsByServiceRequestId(
-        int $serviceRequestId,
+        Uuid $serviceRequestId,
         int $page = 0,
         int $itemsPerPage = 25,
         string $order,
@@ -63,7 +64,7 @@ class CommentRepository extends ServiceEntityRepository
         $queryBuilder->setMaxResults($itemsPerPage)
             ->innerJoin('c.serviceRequest', 's')
             ->where('s.id = :serviceRequestId')
-            ->setParameter('serviceRequestId', $serviceRequestId)
+            ->setParameter('serviceRequestId', $serviceRequestId->toBinary())
             ->setFirstResult(($page - 1) * $itemsPerPage)
             ->orderBy('c.' . $orderBy, $order);
 

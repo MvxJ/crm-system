@@ -7,6 +7,7 @@ use App\Entity\Customer;
 use App\Entity\Offer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<Contract>
@@ -59,10 +60,11 @@ class ContractRepository extends ServiceEntityRepository
                 ->setParameter('status', (int)$status);
         }
 
-        if ($customerId != 'all' && !is_nan((int)$customerId)) {
+        if ($customerId != 'all') {
+            $id = new Uuid($customerId);
             $queryBuilder->innerJoin('c.user', 'customer')
                 ->andWhere('customer.id = :customerId')
-                ->setParameter('customerId', (int)$customerId);
+                ->setParameter('customerId', $id->toBinary());
         }
 
         return $queryBuilder->getQuery()->getResult();
@@ -78,9 +80,10 @@ class ContractRepository extends ServiceEntityRepository
                 ->setParameter('status', (int)$status);
         }
 
-        if ($customerId != 'all' && !is_nan((int)$customerId)) {
+        if ($customerId != 'all') {
+            $id = new Uuid($customerId);
             $queryBuilder->innerJoin('c.user', 'customer')->where('customer.id = :customerId')
-                ->setParameter('customerId', (int)$customerId);
+                ->setParameter('customerId', $id->toBinary());
         }
 
         $result = $queryBuilder->getQuery()->getSingleScalarResult();

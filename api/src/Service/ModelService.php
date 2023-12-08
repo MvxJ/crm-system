@@ -9,6 +9,7 @@ use App\Entity\Model;
 use App\Repository\ModelRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Uid\Uuid;
 
 class ModelService
 {
@@ -64,7 +65,7 @@ class ModelService
         ];
     }
 
-    public function editModel(int $modelId, Request $request): ?array
+    public function editModel(Uuid $modelId, Request $request): ?array
     {
         $model = $this->modelRepository->findOneBy(['id' => $modelId]);
 
@@ -111,7 +112,7 @@ class ModelService
         ];
     }
 
-    public function deleteModel(int $modelId): bool
+    public function deleteModel(Uuid $modelId): bool
     {
         $model = $this->modelRepository->findOneBy(['id' => $modelId]);
 
@@ -131,7 +132,7 @@ class ModelService
         return true;
     }
 
-    public function getModelDetails(int $modelId): ?array
+    public function getModelDetails(Uuid $modelId): ?array
     {
         $model = $this->modelRepository->findOneBy(['id' => $modelId]);
 
@@ -152,7 +153,7 @@ class ModelService
         ];
     }
 
-    public function getModelDevices(int $modelId, Request $request): ?array
+    public function getModelDevices(Uuid $modelId, Request $request): ?array
     {
         $model = $this->modelRepository->findOneBy(['id' => $modelId]);
 

@@ -96,13 +96,13 @@ const VisitsList = () => {
 
       if (response.data.serviceVisit.user) {
         setSelectedUser({
-          label: `#${response.data.serviceVisit.user.id} ${response.data.serviceVisit.user.name} ${response.data.serviceVisit.user.surname} (${response.data.serviceVisit.user.username})`,
+          label: `${response.data.serviceVisit.user.name} ${response.data.serviceVisit.user.surname} (${response.data.serviceVisit.user.username})`,
           value: response.data.serviceVisit.user.id,
         });
       }
         
       setSelectedCustomer({
-        label: `#${response.data.serviceVisit.customer.id} ${response.data.serviceVisit.customer.name} ${response.data.serviceVisit.customer.surname} (${response.data.serviceVisit.customer.email ? response.data.serviceVisit.customer.email : 'empty'})`,
+        label: `${response.data.serviceVisit.customer.name} ${response.data.serviceVisit.customer.surname} (${response.data.serviceVisit.customer.email ? response.data.serviceVisit.customer.email : 'empty'})`,
         value: response.data.serviceVisit.customer.id,
       });
     } catch (e) {
@@ -191,7 +191,7 @@ const VisitsList = () => {
 
       if (response.data.results.customers) {
         return response.data.results.customers.map((customer) => ({
-          label: `#${customer.id} ${customer.firstName} ${customer.lastName} (${customer.socialSecurityNumber ? customer.socialSecurityNumber : 'empty'})`,
+          label: `${customer.firstName} ${customer.lastName} (${customer.socialSecurityNumber ? customer.socialSecurityNumber : 'empty'})`,
           value: customer.id,
         }));
       }
@@ -208,7 +208,7 @@ const VisitsList = () => {
 
       if (response.data.results.users) {
         return response.data.results.users.map((user) => ({
-          label: `#${user.id} ${user.name} ${user.surname} (${user.username})`,
+          label: `${user.name} ${user.surname} (${user.username})`,
           value: user.id,
         }));
       }

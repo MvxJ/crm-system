@@ -6,6 +6,7 @@ use App\Entity\Customer;
 use App\Entity\CustomerAddress;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<CustomerAddress>
@@ -45,9 +46,10 @@ class CustomerAddressRepository extends ServiceEntityRepository
         $queryBuilder = $this->createQueryBuilder('a')
             ->innerJoin('a.customer', 'c');
 
-        if ($customerId != 'all' && !is_nan((int)$customerId)) {
+        if ($customerId != 'all') {
+            $id = new Uuid($customerId);
             $queryBuilder->where('c.id = :id')
-                ->setParameter('id', (int)$customerId);
+                ->setParameter('id', $id->toBinary());
         }
 
         return $queryBuilder->getQuery()->getResult();

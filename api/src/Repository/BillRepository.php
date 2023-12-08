@@ -6,6 +6,7 @@ use App\Entity\Bill;
 use App\Entity\Customer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<Bill>
@@ -73,9 +74,10 @@ class BillRepository extends ServiceEntityRepository
                 ->setParameter('status', (int)$status);
         }
 
-        if ($customerId != 'all' && !is_nan((int)$customerId)) {
+        if ($customerId != 'all') {
+            $id = new Uuid($customerId);
             $queryBuilder->innerJoin('b.customer', 'c')->where('c.id = :customerId')
-                ->setParameter('customerId', (int)$customerId);
+                ->setParameter('customerId', $id->toBinary());
         }
 
         return $queryBuilder->getQuery()->getResult();

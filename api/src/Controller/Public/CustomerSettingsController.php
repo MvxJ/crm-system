@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Annotations as OA;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @OA\Tag(name="Settings")
@@ -27,7 +28,7 @@ class CustomerSettingsController extends AbstractController
     }
 
     #[Route("/{customerId}/detail", name: "detail", methods: ['GET'])]
-    public function getCustomerSettings(int $customerId, Request $request): JsonResponse
+    public function getCustomerSettings(Uuid $customerId, Request $request): JsonResponse
     {
         try {
             $customer = $this->getUser();
@@ -65,7 +66,7 @@ class CustomerSettingsController extends AbstractController
     }
 
     #[Route("/{customerId}/edit", name: "edit", methods: ['PUT'])]
-    public function editSettings(int $customerId, Request $request): JsonResponse
+    public function editSettings(Uuid $customerId, Request $request): JsonResponse
     {
         try {
             $errors = $this->validator->validateRequest('customer-settings-schema.json');

@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Uid\Uuid;
 
 #[Route('/api/service-requests', name: 'api_service_request_')]
 class ServiceRequestController extends AbstractController
@@ -47,7 +48,7 @@ class ServiceRequestController extends AbstractController
     }
 
     #[Route('/{id}/detail', name: 'detail', methods: ['GET'])]
-    public function getServiceRequestDetails($id, Request $request): JsonResponse
+    public function getServiceRequestDetails(Uuid $id, Request $request): JsonResponse
     {
         try {
             $serviceRequest = $this->serviceRequestService->getServiceRequestDetails($id);
@@ -128,7 +129,7 @@ class ServiceRequestController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'edit', methods: ['PATCH'])]
-    public function editServiceRequest(int $id, Request $request): JsonResponse
+    public function editServiceRequest(Uuid $id, Request $request): JsonResponse
     {
         try {
             $serviceRequest  = $this->serviceRequestService->editServiceRequest($id, $request);
@@ -162,7 +163,7 @@ class ServiceRequestController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'delete', methods: ['DELETE'])]
-    public function deleteServiceRequest(int $id): JsonResponse
+    public function deleteServiceRequest(Uuid $id): JsonResponse
     {
         try {
             $status = $this->serviceRequestService->deleteServiceRequest($id);

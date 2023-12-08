@@ -207,8 +207,12 @@ const RequestsList = () => {
       page += 1;
 
       const response = await instance.get(`/service-requests/list?page=${page}&items=${pageSize}`);
-      setData(response.data.results.serviceRequests);
-      setTotalRows(response.data.results.maxResults);
+
+      if (response.data.results != null) {
+        setData(response.data.results.serviceRequests);
+        setTotalRows(response.data.results.maxResults);
+      }
+
       setLoading(false);
     } catch (error) {
       setLoading(false);

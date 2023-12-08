@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use OpenApi\Annotations as OA;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @OA\Tag(name="Models")
@@ -50,7 +51,7 @@ class ModelController extends AbstractController
     }
 
     #[Route('/{id}/detail', name: 'detail', methods: ['GET'])]
-    public function getDetails(int $id, Request $request): JsonResponse
+    public function getDetails(Uuid $id, Request $request): JsonResponse
     {
         try {
             $model = $this->modelService->getModelDetails($id);

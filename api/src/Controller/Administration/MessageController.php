@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Uid\Uuid;
 
 #[Route('/api/messages', name: 'api_message_')]
 class MessageController extends AbstractController
@@ -47,7 +48,7 @@ class MessageController extends AbstractController
     }
 
     #[Route('/detail/{id}', name: 'detail', methods: ['GET'])]
-    public function getMessageDetails(int $id, Request $request): JsonResponse
+    public function getMessageDetails(Uuid $id, Request $request): JsonResponse
     {
         try {
             $message = $this->messageService->getMessage($id);

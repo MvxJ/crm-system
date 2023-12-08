@@ -9,6 +9,7 @@ use App\Repository\MessageRepository;
 use App\Repository\ServiceRequestRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Uid\Uuid;
 
 class MessageService
 {
@@ -52,7 +53,7 @@ class MessageService
         return $this->createMessageArray($message);
     }
 
-    public function getMessage(int $id): ?array
+    public function getMessage(Uuid $id): ?array
     {
         $message = $this->messageRepository->findOneBy(['id' => $id]);
 

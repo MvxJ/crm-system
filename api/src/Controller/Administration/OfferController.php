@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Uid\Uuid;
 
 #[Route('/api/offer', name: 'api_offer_')]
 class OfferController extends AbstractController
@@ -87,7 +88,7 @@ class OfferController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'edit', methods: ['PATCH'])]
-    public function editOffer(int $id, Request $request): JsonResponse
+    public function editOffer(Uuid $id, Request $request): JsonResponse
     {
         try {
             $offer = $this->offerService->editOffer($id, $request);
@@ -120,7 +121,7 @@ class OfferController extends AbstractController
     }
 
     #[Route('/{id}/detail', name: 'detail', methods: ['GET'])]
-    public function getOfferDetail(int $id): JsonResponse
+    public function getOfferDetail(Uuid $id): JsonResponse
     {
         try {
             $offer = $this->offerService->getOffer($id);
@@ -153,7 +154,7 @@ class OfferController extends AbstractController
     }
 
     #[Route('/{offerId}/device/{deviceId}/remove', name: '', methods: ['DELETE'])]
-    public function deleteOfferDevice(int $offerId, int $deviceId, Request $request): JsonResponse
+    public function deleteOfferDevice(Uuid $offerId, Uuid $deviceId, Request $request): JsonResponse
     {
         try {
             $offer = $this->offerService->removeOfferDevice($offerId, $deviceId);
@@ -187,7 +188,7 @@ class OfferController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'delete', methods: ['DELETE'])]
-    public function deleteOffer(int $id): JsonResponse
+    public function deleteOffer(Uuid $id): JsonResponse
     {
         try {
             $status = $this->offerService->deleteOffer($id);

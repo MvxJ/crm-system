@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Uid\Uuid;
 
 #[Route("/api/customers", name: "api_customers_")]
 class CustomerController extends AbstractController
@@ -71,7 +72,7 @@ class CustomerController extends AbstractController
     }
 
     #[Route("/{customerId}/edit", name: "edit", methods: ["PATCH"])]
-    public function editCustomer(int $customerId, Request $request): JsonResponse
+    public function editCustomer(Uuid $customerId, Request $request): JsonResponse
     {
         try {
             $customer  = $this->customerService->editCustomer($customerId, $request);
@@ -105,7 +106,7 @@ class CustomerController extends AbstractController
     }
 
     #[Route("/{customerId}/delete", name: "delete", methods: ["DELETE"])]
-    public function deleteCustomer(int $customerId): JsonResponse
+    public function deleteCustomer(Uuid $customerId): JsonResponse
     {
         try {
             $status = $this->customerService->deleteCustomer($customerId);
@@ -139,7 +140,7 @@ class CustomerController extends AbstractController
     }
 
     #[Route("/{customerId}/detail", name: "detail", methods: ["GET"])]
-    public function getCustomerDetail(int $customerId): JsonResponse
+    public function getCustomerDetail(Uuid $customerId): JsonResponse
     {
         try {
             $customer = $this->customerService->getCustomer($customerId);

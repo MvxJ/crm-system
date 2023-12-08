@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Device;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<Device>
@@ -55,10 +56,11 @@ class DeviceRepository extends ServiceEntityRepository
                     ->setParameter('status', (int)$status);
             }
 
-            if ($customerId != 'all' && !is_nan((int)$customerId)) {
+            if ($customerId != 'all') {
+                $id = new Uuid($customerId);
                 $queryBuilder->innerJoin('d.user', 'c')
                     ->where('c.id = :customerId')
-                    ->setParameter('customerId', (int)$customerId);
+                    ->setParameter('customerId', $id->toBinary());
             }
 
         return $queryBuilder->getQuery()->getResult();
@@ -74,10 +76,11 @@ class DeviceRepository extends ServiceEntityRepository
                 ->setParameter('status', (int)$status);
         }
 
-        if ($customerId != 'all' && !is_nan((int)$customerId)) {
+        if ($customerId != 'all') {
+            $id = new Uuid($customerId);
             $queryBuilder->innerJoin('d.user', 'c')
                 ->where('c.id = :customerId')
-                ->setParameter('customerId', (int)$customerId);
+                ->setParameter('customerId', $id->toBinary());
         }
 
         $result = $queryBuilder->getQuery()->getSingleScalarResult();

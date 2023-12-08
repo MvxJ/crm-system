@@ -8,6 +8,7 @@ use App\Repository\ServiceRequestRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Uid\Uuid;
 
 class CommentService
 {
@@ -47,7 +48,7 @@ class CommentService
         return $this->createCommentArray($comment);
     }
 
-    public function editComment(int $commentId, Request $request): ?array
+    public function editComment(Uuid $commentId, Request $request): ?array
     {
         $comment = $this->commentRepository->findOneBy(['id' => $commentId]);
 
@@ -70,7 +71,7 @@ class CommentService
         return $this->createCommentArray($comment);
     }
 
-    public function deleteComment(int $commentId): bool
+    public function deleteComment(Uuid $commentId): bool
     {
         $comment = $this->commentRepository->findOneBy(['id' => $commentId]);
 
@@ -84,12 +85,11 @@ class CommentService
         return true;
     }
 
-    public function hideComment(int $commentId, string $userEmail): bool
+    public function hideComment(Uuid $commentId, string $userEmail): bool
     {
         $comment = $this->commentRepository->findOneBy(['id' => $commentId]);
 
         if (!$comment || $comment->getUser()->getUsername() != $userEmail) {
-            dd($comment, $userEmail);
             return false;
         }
 
@@ -102,7 +102,7 @@ class CommentService
         return true;
     }
 
-    public function getCommentsByServiceRequest(int $serviceRequestId, Request $request): ?array
+    public function getCommentsByServiceRequest(Uuid $serviceRequestId, Request $request): ?array
     {
         $commentsArray = [];
         $page = $request->get('page', 1);

@@ -9,13 +9,13 @@
       "type": "string"
     },
     "customer": {
-      "type": "integer"
+      "type": "string"
     },
     "user": {
-      "type": "integer"
+      "type": "string"
     },
     "contract": {
-      "type": "integer"
+      "type": "string"
     },
     "status": {
       "type": "integer"
@@ -25,11 +25,11 @@
   "errorMessage": {
     "required.customer": "Customer is required, Please provide value.",
     "required.contract": "Contract is required, Please provide value.",
-    "type.customer": "Customer should be a integer. provide a valid number.",
-    "type.contract": "Contract should be a integer. provide a valid number.",
+    "type.customer": "Customer should be a string. provide a valid uuid.",
+    "type.contract": "Contract should be a string. provide a valid uuid.",
     "type.isClosed": "Is Closed should be a bool. provide a valid number.",
     "type.description": "Description should be a string. provide a valid string.",
-    "type.user": "User should be a integer. provide a valid number.",
+    "type.user": "User should be a string. provide a valid uuid.",
     "type.status": "Status should be a integer. Provide a valid int value."
   }
 }

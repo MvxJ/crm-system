@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Uid\Uuid;
 
 #[Route('/api/document', name: 'api_document_')]
 class DocumentController extends AbstractController
@@ -49,7 +50,7 @@ class DocumentController extends AbstractController
     }
 
     #[Route('/{id}/detail', name: 'detail', methods: ['GET'])]
-    public function getDocumentDetails(int $id, Request $request): JsonResponse
+    public function getDocumentDetails(Uuid $id, Request $request): JsonResponse
     {
         try {
             $document = $this->documentService->getDocument($id);
@@ -132,7 +133,7 @@ class DocumentController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'edit', methods: ['PATCH'])]
-    public function editDocument(int $id, Request $request): JsonResponse
+    public function editDocument(Uuid $id, Request $request): JsonResponse
     {
         try {
             $document = $this->documentService->editDocument($id, $request, $this->getUser());
@@ -166,7 +167,7 @@ class DocumentController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'delete', methods: ['DELETE'])]
-    public function deleteDocument(int $id, Request $request): JsonResponse
+    public function deleteDocument(Uuid $id, Request $request): JsonResponse
     {
         try {
             $success = $this->documentService->deleteDocument($id);

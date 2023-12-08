@@ -72,7 +72,7 @@ const PaymentForm = () => {
 
     if (!id) {
       obj.customer = selectedCustomer.value;
-      obj.bill = parseInt(formData.billId);
+      obj.bill = formData.billId;
       obj.paidBy = parseInt(formData.paidBy);
       obj.amount = parseFloat(formData.amount);
     }
@@ -162,7 +162,7 @@ const PaymentForm = () => {
 
       if (response.data.results.customers) {
         return response.data.results.customers.map((customer) => ({
-          label: `#${customer.id} ${customer.firstName} ${customer.lastName} (${customer.socialSecurityNumber ? customer.socialSecurityNumber : 'empty'})`,
+          label: `${customer.firstName} ${customer.lastName} (${customer.socialSecurityNumber ? customer.socialSecurityNumber : 'empty'})`,
           value: customer.id,
         }));
       }

@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Uid\Uuid;
 
 #[Route('/api/bill', name: 'api_bill_')]
 class BillController extends AbstractController
@@ -47,7 +48,7 @@ class BillController extends AbstractController
     }
 
     #[Route('/{id}/detail', name: 'detail', methods: ['GET'])]
-    public function getBillDetail(int $id, Request $request): JsonResponse
+    public function getBillDetail(Uuid $id, Request $request): JsonResponse
     {
         try {
             $bill = $this->billService->getBillDetails($id);
@@ -128,7 +129,7 @@ class BillController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'edit', methods: ['PATCH'])]
-    public function editBill(int $id, Request $request): JsonResponse
+    public function editBill(Uuid $id, Request $request): JsonResponse
     {
         try {
             $bill = $this->billService->editBill($id, $request);
@@ -162,7 +163,7 @@ class BillController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'delete', methods: ['DELETE'])]
-    public function deleteBill(int $id): JsonResponse
+    public function deleteBill(Uuid $id): JsonResponse
     {
         try {
             $status  = $this->billService->deleteBill($id);
@@ -196,7 +197,7 @@ class BillController extends AbstractController
     }
 
     #[Route('/{id}/generatePdfFile', name: 'generate_pdf_file', methods: ['POST'])]
-    public function generatePdfFile(int $id): JsonResponse
+    public function generatePdfFile(Uuid $id): JsonResponse
     {
         try {
             $status = $this->billService->generateBill($id);

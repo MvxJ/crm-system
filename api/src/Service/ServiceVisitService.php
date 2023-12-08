@@ -13,6 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Uid\Uuid;
 
 class ServiceVisitService
 {
@@ -72,7 +73,7 @@ class ServiceVisitService
         ];
     }
 
-    public function getServiceVisitDetail(int $id): ?array
+    public function getServiceVisitDetail(Uuid $id): ?array
     {
         $serviceVisit  = $this->serviceVisitRepository->findOneBy(['id' => $id]);
 
@@ -104,7 +105,7 @@ class ServiceVisitService
         ];
     }
 
-    public function getCustomerServiceVisitDetail(int $id, string $customerEmail): ?array
+    public function getCustomerServiceVisitDetail(Uuid $id, string $customerEmail): ?array
     {
         $serviceVisit  = $this->serviceVisitRepository->findOneBy(['id' => $id]);
 
@@ -133,7 +134,7 @@ class ServiceVisitService
         return $this->createServiceVisitArray($serviceVisit, true);
     }
 
-    public function editServiceVisit(int $id, Request $request): ?array
+    public function editServiceVisit(Uuid $id, Request $request): ?array
     {
         $serviceVisit = $this->serviceVisitRepository->findOneBy(['id' => $id]);
 
@@ -156,7 +157,7 @@ class ServiceVisitService
         return $this->createServiceVisitArray($serviceVisit, true);
     }
 
-    public function deleteServiceVisit(int $id): bool
+    public function deleteServiceVisit(Uuid $id): bool
     {
         $serviceVisit  = $this->serviceVisitRepository->findOneBy(['id' => $id]);
 
@@ -170,7 +171,7 @@ class ServiceVisitService
         return true;
     }
 
-    public function cancelServiceVisit(int $id, string $userEmail): bool
+    public function cancelServiceVisit(Uuid $id, string $userEmail): bool
     {
         $serviceVisit  = $this->serviceVisitRepository->findOneBy(['id' => $id]);
 

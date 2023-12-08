@@ -28,7 +28,7 @@ const MessageForm = () => {
       
       if (response.data.results.customers) {
         return response.data.results.customers.map((customer) => ({
-          label: `#${customer.id} ${customer.firstName} ${customer.lastName} (${customer.socialSecurityNumber ? customer.socialSecurityNumber : 'empty'})`,
+          label: `${customer.firstName} ${customer.lastName} (${customer.socialSecurityNumber ? customer.socialSecurityNumber : 'empty'})`,
           value: customer.id,
         }));
       }
@@ -54,7 +54,7 @@ const MessageForm = () => {
     try {
       setLoading(true);
       const request = {
-        customer: parseInt(selectedCustomerId.value),
+        customer: selectedCustomerId.value,
         message: formData.message,
         subject: formData.subject,
         type: parseInt(formData.type),

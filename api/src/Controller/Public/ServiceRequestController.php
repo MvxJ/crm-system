@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Annotations as OA;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @OA\Tag(name="Service Requests")
@@ -55,7 +56,7 @@ class ServiceRequestController extends AbstractController
     }
 
     #[Route('/{id}/detail', name: 'detail', methods: ['GET'])]
-    public function getServiceRequestDetails(int $id, Request $request): JsonResponse
+    public function getServiceRequestDetails(Uuid $id, Request $request): JsonResponse
     {
         try {
             $user = $this->getUser();
@@ -93,7 +94,7 @@ class ServiceRequestController extends AbstractController
     }
 
     #[Route('/{id}/cancel', name: 'delete', methods: ['DELETE'])]
-    public function cancelServiceRequest(int $id, Request $request): JsonResponse
+    public function cancelServiceRequest(Uuid $id, Request $request): JsonResponse
     {
         try {
             $user = $this->getUser();

@@ -8,6 +8,7 @@ use App\Repository\BillPositionRepository;
 use App\Repository\BillRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Uid\Uuid;
 
 class BillPositionService
 {
@@ -49,7 +50,7 @@ class BillPositionService
         return $this->createPositionArray($position);
     }
 
-    public function editPosition(int $positionId, Request $request): ?array
+    public function editPosition(Uuid $positionId, Request $request): ?array
     {
         $position = $this->positionRepository->findOneBy(['id' => $positionId]);
 
@@ -78,7 +79,7 @@ class BillPositionService
         return $this->createPositionArray($position);
     }
 
-    public function deletePosition(int $positionId): bool
+    public function deletePosition(Uuid $positionId): bool
     {
         $position = $this->positionRepository->findOneBy(['id' => $positionId]);
 
@@ -100,7 +101,7 @@ class BillPositionService
         return true;
     }
 
-    public function getPositionListsByBill(int $billId, Request $request): ?array
+    public function getPositionListsByBill(Uuid $billId, Request $request): ?array
     {
         $bill = $this->billRepository->findOneBy(['id' => $billId]);
 

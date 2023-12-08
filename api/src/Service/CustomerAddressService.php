@@ -7,6 +7,7 @@ use App\Repository\CustomerAddressRepository;
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Uid\Uuid;
 
 class CustomerAddressService
 {
@@ -40,7 +41,7 @@ class CustomerAddressService
         return $this->createAddressArray($address);
     }
 
-    public function editAddress(int $addressId, Request $request, ?string $userEmail = null): ?array
+    public function editAddress(Uuid $addressId, Request $request, ?string $userEmail = null): ?array
     {
         $address = $this->addressRepository->findOneBy(['id' => $addressId]);
 
@@ -61,7 +62,7 @@ class CustomerAddressService
         return $this->createAddressArray($address);
     }
 
-    public function deleteAddress(int $id): bool
+    public function deleteAddress(Uuid $id): bool
     {
         $address = $this->addressRepository->findOneBy(['id' => $id]);
 
@@ -75,7 +76,7 @@ class CustomerAddressService
         return true;
     }
 
-    public function deleteAddressByCustomer(int $id, string $email): bool
+    public function deleteAddressByCustomer(Uuid $id, string $email): bool
     {
         $address = $this->addressRepository->findOneBy(['id' => $id]);
 
@@ -89,7 +90,7 @@ class CustomerAddressService
         return true;
     }
 
-    public function getAddress(int $addressId, ?string $customerEmail = null): ?array
+    public function getAddress(Uuid $addressId, ?string $customerEmail = null): ?array
     {
         $address = $this->addressRepository->findOneBy(['id' => $addressId]);
 

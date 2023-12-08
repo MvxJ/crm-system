@@ -12,6 +12,7 @@ use App\Repository\RoleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Uid\Uuid;
 
 class CustomerService
 {
@@ -55,7 +56,7 @@ class CustomerService
         ];
     }
 
-    public function getCustomer(int $customerId): ?array
+    public function getCustomer(Uuid $customerId): ?array
     {
         $customer  = $this->customerRepository->findOneBy(['id' => $customerId]);
 
@@ -66,7 +67,7 @@ class CustomerService
         return $this->createCustomerArray($customer, true);
     }
 
-    public function deleteCustomer(int $customerId): bool
+    public function deleteCustomer(Uuid $customerId): bool
     {
         $customer = $this->customerRepository->findOneBy(['id' => $customerId]);
 
@@ -110,7 +111,7 @@ class CustomerService
         return $this->createCustomerArray($customer, true);
     }
 
-    public function editCustomer(int $customerId, Request $request): ?array
+    public function editCustomer(Uuid $customerId, Request $request): ?array
     {
         $customer = $this->customerRepository->findOneBy(['id' => $customerId]);
 

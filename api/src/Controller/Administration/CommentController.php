@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Uid\Uuid;
 
 #[Route('/api/comment', name: 'api_comment_')]
 class CommentController extends AbstractController
@@ -70,7 +71,7 @@ class CommentController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'edit', methods: ['PATCH'])]
-    public function editComment(int $id, Request $request): JsonResponse
+    public function editComment(Uuid $id, Request $request): JsonResponse
     {
         try {
             $comment = $this->commentService->editComment($id, $request);
@@ -104,7 +105,7 @@ class CommentController extends AbstractController
     }
 
     #[Route('/{id}/hide', name: 'hide', methods: ['POST'])]
-    public function hideComment(int $id, Request $request): JsonResponse
+    public function hideComment(Uuid $id, Request $request): JsonResponse
     {
         try {
             $user = $this->getUser();
@@ -139,7 +140,7 @@ class CommentController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'delete', methods: ['DELETE'])]
-    public function deleteComment(int $id, Request $request): JsonResponse
+    public function deleteComment(Uuid $id, Request $request): JsonResponse
     {
         try {
             $status = $this->commentService->deleteComment($id);
@@ -172,7 +173,7 @@ class CommentController extends AbstractController
     }
 
     #[Route('/{serviceRequestId}/list', name: 'list', methods: ['GET'])]
-    public function getComments(int $serviceRequestId, Request $request): JsonResponse
+    public function getComments(Uuid $serviceRequestId, Request $request): JsonResponse
     {
         try {
             $comments = $this->commentService->getCommentsByServiceRequest($serviceRequestId, $request);

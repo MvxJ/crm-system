@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Uid\Uuid;
 
 #[Route("/api/customers/settings", name: "api_customers_settings_")]
 class CustomerSettingsController extends AbstractController
@@ -23,7 +24,7 @@ class CustomerSettingsController extends AbstractController
     }
 
     #[Route("/{customerId}/detail", name: "detail", methods: ['GET'])]
-    public function getCustomerSettings(int $customerId, Request $request): JsonResponse
+    public function getCustomerSettings(Uuid $customerId, Request $request): JsonResponse
     {
         try {
             $settings = $this->customerSettingsService->getCustomerSettings($customerId);
@@ -57,7 +58,7 @@ class CustomerSettingsController extends AbstractController
     }
 
     #[Route("/{customerId}/edit", name: "edit", methods: ['PUT'])]
-    public function editCustomerSettings(int $customerId, Request $request): JsonResponse
+    public function editCustomerSettings(Uuid $customerId, Request $request): JsonResponse
     {
         try {
             $errors = $this->validator->validateRequest('customer-settings-schema.json');

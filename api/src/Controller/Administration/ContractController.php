@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Uid\Uuid;
 
 #[Route('/api/contracts', name: 'api_contract_')]
 class ContractController extends AbstractController
@@ -47,7 +48,7 @@ class ContractController extends AbstractController
     }
 
     #[Route('/{id}/details', name: 'details', methods: ['GET'])]
-    public function getContractDetails(int $id, Request  $request): JsonResponse
+    public function getContractDetails(Uuid $id, Request  $request): JsonResponse
     {
         try {
             $contract = $this->contractService->getContractDetails($id);
@@ -128,7 +129,7 @@ class ContractController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'edit', methods: ['PATCH'])]
-    public function editContract(int $id, Request $request): JsonResponse
+    public function editContract(Uuid $id, Request $request): JsonResponse
     {
         try {
             $contract = $this->contractService->editContract($id, $request);
@@ -162,7 +163,7 @@ class ContractController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'delete', methods: ['DELETE'])]
-    public function deleteContract(int $id): JsonResponse
+    public function deleteContract(Uuid $id): JsonResponse
     {
         try {
             $success = $this->contractService->deleteContract($id);

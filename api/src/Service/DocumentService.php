@@ -9,6 +9,7 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Uid\Uuid;
 
 class DocumentService
 {
@@ -29,7 +30,7 @@ class DocumentService
         $this->modelRepository = $modelRepository;
     }
 
-    public function getDocument(int $id, bool $isCustomer = false): ?array
+    public function getDocument(Uuid $id, bool $isCustomer = false): ?array
     {
         $document = $this->documentRepository->findOneBy(['id' => $id]);
 
@@ -83,7 +84,7 @@ class DocumentService
         ];
     }
 
-    public function deleteDocument(int $id): bool
+    public function deleteDocument(Uuid $id): bool
     {
         $document = $this->documentRepository->findOneBy(['id' => $id]);
 
@@ -113,7 +114,7 @@ class DocumentService
         return $this->parseObjectToArray($document);
     }
 
-    public function editDocument(int $id, Request $request, UserInterface $userInterface): ?array
+    public function editDocument(Uuid $id, Request $request, UserInterface $userInterface): ?array
     {
         $document = $this->documentRepository->findOneBy(['id' => $id]);
         $user = $this->userRepository->findOneBy(['email' => $userInterface->getUserIdentifier()]);
@@ -158,7 +159,7 @@ class DocumentService
 
                 if (method_exists($document, $setterMethod)) {
                     if ($setterMethod == 'setModel') {
-                        $model = $this->modelRepository->findOneBy(['id' => (int)$fieldValue]);
+                        $model = $this->modelRepository->findOneBy(['id' => $fieldValue]);
 
                         if (!$model) {
                             return null;

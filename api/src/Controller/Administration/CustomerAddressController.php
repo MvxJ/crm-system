@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Uid\Uuid;
 
 #[Route("/api/customers/address", name: "api_customers_address_")]
 class CustomerAddressController extends AbstractController
@@ -70,7 +71,7 @@ class CustomerAddressController extends AbstractController
     }
 
     #[Route("/{id}/edit", name: "edit", methods: ['PATCH'])]
-    public function editAddress(int $id, Request $request): JsonResponse
+    public function editAddress(Uuid $id, Request $request): JsonResponse
     {
         try {
             $address = $this->customerAddressService->editAddress($id, $request);
@@ -104,7 +105,7 @@ class CustomerAddressController extends AbstractController
     }
 
     #[Route("/{id}/delete", name: "delete", methods: ['DELETE'])]
-    public function deleteAddress(int $id): JsonResponse
+    public function deleteAddress(Uuid $id): JsonResponse
     {
         try {
             $status = $this->customerAddressService->deleteAddress($id);

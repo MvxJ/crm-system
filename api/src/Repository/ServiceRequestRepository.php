@@ -7,6 +7,7 @@ use App\Entity\ServiceRequest;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<ServiceRequest>
@@ -61,16 +62,18 @@ class ServiceRequestRepository extends ServiceEntityRepository
                 ->setParameter('status', (int)$status);
         }
 
-        if ($customerId != 'all' && !is_nan((int)$customerId)) {
+        if ($customerId != 'all') {
+            $id = new Uuid($customerId);
             $queryBuilder->innerJoin('s.customer', 'c')
                 ->andWhere('c.id = :customerId')
-                ->setParameter('customerId', (int)$customerId);
+                ->setParameter('customerId', $id->toBinary());
         }
 
-        if ($userId != 'all' && !is_nan((int)$userId)) {
+        if ($userId != 'all') {
+            $id = new Uuid($userId);
             $queryBuilder->innerJoin('s.user', 'u')
                 ->andWhere('u.id = :userId')
-                ->setParameter('userId', (int)$userId);
+                ->setParameter('userId', $id->toBinary());
         }
 
         return $queryBuilder->getQuery()->getResult();
@@ -86,16 +89,18 @@ class ServiceRequestRepository extends ServiceEntityRepository
                 ->setParameter('status', (int)$status);
         }
 
-        if ($customerId != 'all' && !is_nan((int)$customerId)) {
+        if ($customerId != 'all') {
+            $id = new Uuid($customerId);
             $queryBuilder->innerJoin('s.customer', 'c')
                 ->andWhere('c.id = :customerId')
-                ->setParameter('customerId', (int)$customerId);
+                ->setParameter('customerId', $id->toBinary());
         }
 
-        if ($userId != 'all' && !is_nan((int)$userId)) {
+        if ($userId != 'all') {
+            $id = new Uuid($userId);
             $queryBuilder->innerJoin('s.user', 'u')
                 ->andWhere('u.id = :userId')
-                ->setParameter('userId', (int)$userId);
+                ->setParameter('userId', $id->toBinary());
         }
 
         $result = $queryBuilder->getQuery()->getSingleScalarResult();

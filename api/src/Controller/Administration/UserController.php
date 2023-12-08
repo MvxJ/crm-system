@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Uid\Uuid;
 
 #[Route('/api/users', name: 'api_users_')]
 class UserController extends AbstractController
@@ -52,7 +53,7 @@ class UserController extends AbstractController
     }
 
     #[Route("/{userId}/password/change", name: "password_change", methods: ["POST"])]
-    public function changePassword(int $userId, Request $request): JsonResponse
+    public function changePassword(Uuid $userId, Request $request): JsonResponse
     {
         try {
             $status = $this->userService->changePassword($userId, $request);
@@ -86,7 +87,7 @@ class UserController extends AbstractController
     }
 
     #[Route("/{userId}/roles/edit", name: "roles_edit", methods: ["POST"])]
-    public function editRoles(int $userId, Request $request): JsonResponse
+    public function editRoles(Uuid $userId, Request $request): JsonResponse
     {
         try {
             $status = $this->userService->editRoles($userId, $request);
@@ -166,7 +167,7 @@ class UserController extends AbstractController
     }
 
     #[Route("/{userId}/delete", name: "delete", methods: ["DELETE"])]
-    public function deleteUser(int $userId): JsonResponse
+    public function deleteUser(Uuid $userId): JsonResponse
     {
         try {
             $status = $this->userService->deleteUser($userId);
@@ -200,7 +201,7 @@ class UserController extends AbstractController
     }
 
     #[Route("/{userId}/edit", name: "edit", methods: ["PATCH"])]
-    public function editUser(int $userId, Request $request): JsonResponse
+    public function editUser(Uuid $userId, Request $request): JsonResponse
     {
         try {
             $user  = $this->userService->editUser($userId, $request);
@@ -234,7 +235,7 @@ class UserController extends AbstractController
     }
 
     #[Route("/{userId}/detail", name: "detail", methods: ["GET"])]
-    public function getUserDetail(int $userId): JsonResponse
+    public function getUserDetail(Uuid $userId): JsonResponse
     {
         try {
             $user = $this->userService->getUser($userId);

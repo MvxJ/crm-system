@@ -3,10 +3,10 @@
   "type": "object",
   "properties": {
     "contactAddress": {
-      "type": "integer"
+      "type": "string"
     },
     "billingAddress": {
-      "type": "integer"
+      "type": "string"
     },
     "smsNotifications": {
       "type": "boolean"
@@ -19,8 +19,8 @@
     }
   },
   "errorMessage": {
-    "type.contactAddress": "Contact address be a int, PLease provide valid int.",
-    "type.billingAddress": "Billing address should be a int, PLease provide valid string.",
+    "type.contactAddress": "Contact address be a string, PLease provide valid uuid.",
+    "type.billingAddress": "Billing address should be a string, PLease provide valid uuid.",
     "type.smsNotifications": "Sms notifications should be bool, please provide valid string",
     "type.emailNotifications": "Email notifications should be bool, Please provide valid string",
     "type.2fa": "2FA should be bool. Please provide a valid string"

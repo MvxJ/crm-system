@@ -70,8 +70,12 @@ const InvoicesList = () => {
       page += 1;
 
       const response = await instance.get(`/bill/list?page=${page}&items=${pageSize}&order=DESC&orderBy=dateOfIssue`);
-      setData(response.data.results.bills);
-      setTotalRows(response.data.results.maxResults);
+
+      if (response.data.results != null) {
+        setData(response.data.results.bills);
+        setTotalRows(response.data.results.maxResults);
+      }
+
       setLoading(false);
     } catch (error) {
       setLoading(false);

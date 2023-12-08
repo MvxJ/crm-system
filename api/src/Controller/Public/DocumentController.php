@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Annotations as OA;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @OA\Tag(name="Documents")
@@ -50,7 +51,7 @@ class DocumentController extends AbstractController
     }
 
     #[Route('/{id}/detail', name: 'detail', methods: ['GET'])]
-    public function getDocumentDetails(int $id, Request $request): JsonResponse
+    public function getDocumentDetails(Uuid $id, Request $request): JsonResponse
     {
         try {
             $document = $this->documentService->getDocument($id, true);

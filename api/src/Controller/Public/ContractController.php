@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Annotations as OA;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @OA\Tag(name="Contracts")
@@ -49,7 +50,7 @@ class ContractController extends AbstractController
     }
 
     #[Route('/{id}/details', name: 'details', methods: ['GET'])]
-    public function getContractDetails(int $id, Request $request): JsonResponse
+    public function getContractDetails(Uuid $id, Request $request): JsonResponse
     {
         try {
             $user = $this->getUser();
