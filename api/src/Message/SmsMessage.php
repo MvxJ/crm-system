@@ -17,11 +17,20 @@ class SmsMessage implements MessageInterface
 
     public function sendMessage(Message $message): void
     {
-        $sms = new Sms(
-            $message->getPhoneNumber(),
-            $message->getMessage()
-        );
+        try {
+            if (!$message->getPhoneNumber()) {
+                $phoneNumber = $message->getCustomer()->getPhoneNumber();
+            } else {
+                $phoneNumber = $message->getPhoneNumber();
+            }
 
-        $result = $this->texter->send($sms);
+            $sms = new Sms(
+                $phoneNumber,
+                strip_tags($message->getMessage())
+            );
+
+            $result = $this->texter->send($sms);
+        } catch (\Exception $exception) {
+        }
     }
 }

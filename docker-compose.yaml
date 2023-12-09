@@ -1,6 +1,18 @@
 version: '3.4'
 
 services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./rabbitmq/data/:/var/lib/rabbitmq/
+      - ./rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - crm_network
+
   admin:
     container_name: crm_admin
     build:
@@ -32,6 +44,8 @@ services:
       - log:/var/www/html/api/var/log
     networks:
       - crm_network
+    depends_on:
+      - rabbitmq
 
   database:
     container_name: database
@@ -67,18 +81,6 @@ services:
     ports:
       - "8002:8025"
       - "1025:1025"
-    networks:
-      - crm_network
-
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: 'rabbitmq'
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    volumes:
-      - ./rabbitmq/data/:/var/lib/rabbitmq/
-      - ./rabbitmq/log/:/var/log/rabbitmq
     networks:
       - crm_network
 

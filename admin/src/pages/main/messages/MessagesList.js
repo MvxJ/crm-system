@@ -116,6 +116,14 @@ const MessagesList = () => {
         typeObj.text = 'Message';
         typeObj.color = '#e6f7ff';
         break;
+      case 3:
+        typeObj.text = 'Confirmation';
+        typeObj.color = '#91d5ff';
+        break;
+      case 4:
+        typeObj.text = 'Two-Factor';
+        typeObj.color = '#91d5ff';
+        break;
       default:
         typeObj.text = 'Uknown type'
         typeObj.color = '#f5222d'

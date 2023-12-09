@@ -11,20 +11,11 @@ use Symfony\Component\Mime\Address;
 
 class TwoFactorCodeMailer implements AuthCodeMailerInterface
 {
-    private string $noReplyAddress;
-    private string $mailerName;
-    private MailerInterface $mailer;
     private MailerService $mailerService;
 
     public function __construct(
-        string $noReplyAddress,
-        string $mailerName,
-        MailerInterface $mailer,
         MailerService $mailerService
     ) {
-        $this->noReplyAddress = $noReplyAddress;
-        $this->mailerName = $mailerName;
-        $this->mailer = $mailer;
         $this->mailerService = $mailerService;
     }
 

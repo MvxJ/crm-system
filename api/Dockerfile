@@ -1,5 +1,8 @@
 FROM php:8.2-apache
 
+COPY wait-for-it.sh /usr/local/bin/wait-for-it
+RUN chmod +x /usr/local/bin/wait-for-it
+
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
     && apt-get update && apt-get install -y git libzip-dev unzip \
     && docker-php-ext-install zip pdo pdo_mysql \
@@ -15,3 +18,5 @@ RUN curl -sS https://get.symfony.com/cli/installer | bash \
 COPY . /var/www/html
 
 WORKDIR /var/www/html/api
+#
+#CMD ["wait-for-it", "rabbitmq:5672", "--", "php", "bin/console", "messenger:consume", "amqp_messages"]

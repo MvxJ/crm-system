@@ -38,7 +38,9 @@ class MessageHandler
                 throw new \Exception('Customer settings not found.');
             }
 
-            if ($customerSettings[0]['smsNotifications'] === true) {
+            if ($customerSettings[0]['smsNotifications'] === true &&
+                $message->getType() != Message::TYPE_ACCOUNT_CONFIRMATION
+            ) {
                 $this->smsMessage->sendMessage($message);
             }
 

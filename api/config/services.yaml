@@ -24,10 +24,6 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    App\Security\TwoFactorCodeMailer:
-        arguments:
-            $noReplyAddress: '%app.no_reply_address%'
-            $mailerName: '%app.mailer_name%'
     App\Service\SettingsService:
         arguments:
             $uploadDir: '%app.upload_directory%/system'

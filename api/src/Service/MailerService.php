@@ -62,7 +62,8 @@ class MailerService
         $message->setType(Message::TYPE_ACCOUNT_CONFIRMATION);
         $message->setMessage('<p>
             Please confirm your email address by clicking the following link: <br><br>
-            ' . $password ? 'Your generated password:' . $password .'<br><br>' : null .
+            ' . $password ? 'Your generated password:' . $password .'<br><br>' . '<a href="' . $this->generateFeUrl($signatureComponents->getSignedUrl()) . '">Confirm my Email</a>.
+            </p>' : ' ' .
             '<a href="' . $this->generateFeUrl($signatureComponents->getSignedUrl()) . '">Confirm my Email</a>.
             </p>');
 
@@ -91,7 +92,7 @@ class MailerService
         $message->setCreatedDate(new \DateTime());
         $message->setType(Message::TWO_FACTOR_CODE);
         $message->setCustomer($customer);
-        $message->setMessage('<p>Your verification code is: ' . $user->getEmailAuthCode() . '</p>');
+        $message->setMessage('<p>Your verification code is: ' . $user->getEmailAuthCode() . ' </p>');
 
         $this->entityManager->persist($message);
         $this->entityManager->flush();

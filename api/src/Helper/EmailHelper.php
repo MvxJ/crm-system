@@ -38,18 +38,13 @@ class EmailHelper
         ];
         $template = $this->createTemplatedEmail($message, $settings);
 
-        if ($settings->getLogoUrl() != null) {
+        if ($settings->getLogoUrl()) {
             $logoPath = $this->uploadDir . '/' . $settings->getLogoUrl();
-            $template->addPart(
-                    (new DataPart(
-                        fopen($logoPath, 'r'), 'logo', 'image/png'
-                    )
-                )->asInline());
-
+            $template->addPart((new DataPart(fopen($logoPath, 'r'), 'logo', 'image/png'))->asInline());
             $context['logoUrl'] = $this->urlGenerator->generate(
                 'api_file_display',
                 [
-                    'fileName' => $settings->getLogoUrl(),
+                    'fileName' => $settings->getLogoUrl()
                 ],
                 UrlGeneratorInterface::ABSOLUTE_URL
             );
@@ -79,8 +74,14 @@ class EmailHelper
             throw new \Exception('Invalid mailer configuration please check system settings.');
         }
 
+        if (!$message->getEmail()) {
+            $emailAddress = $message->getCustomer()->getEmail();
+        } else {
+            $emailAddress = $message->getEmail();
+        }
+
         $templatedEmail = (new TemplatedEmail())->from(new Address($mailerAddress, $mailerName))
-            ->to($message->getEmail())
+            ->to($emailAddress)
             ->subject($message->getSubject())
             ->htmlTemplate(
                 $this->getEmailTemplateName($message)
@@ -119,14 +120,20 @@ class EmailHelper
         $typeArray = ['name' => 'Unknown', 'color' => '#f5f5f5'];
 
         switch ($type) {
-            case 0:
+            case Message::TYPE_NOTIFICATION:
                 $typeArray = ['name' => 'Notification', 'color' => '#91d5ff'];
                 break;
-            case 1:
+            case Message::TYPE_REMINDER:
                 $typeArray = ['name' => 'Reminder', 'color' => '#ffd666'];
                 break;
-            case 2:
+            case Message::TYPE_MESSAGE:
                 $typeArray = ['name' => 'Message', 'color' => '#91d5ff'];
+                break;
+            case Message::TYPE_ACCOUNT_CONFIRMATION:
+                $typeArray = ['name' => 'Account COnfirmation', 'color' => '#f5f5f5'];
+                break;
+            case Message::TWO_FACTOR_CODE:
+                $typeArray = ['name' => 'Two Factor Authentication', 'color' => '#f5f5f5'];
                 break;
             default:
                 $typeArray = ['name' => 'Unknown', 'color' => '#f5f5f5'];

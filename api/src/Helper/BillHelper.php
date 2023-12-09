@@ -70,12 +70,12 @@ class BillHelper
         file_put_contents($pdfPath, $pdfOutput);
 
         $customerPhoneNumber = $bill->getCustomer()->getSettings()?->getBillingAddress() ?
-            $bill->getCustomer()->getSettings()?->getBillingAddress()->getPhoneNumber() :
-            $bill->getCustomer()->getSettings()?->getContactAddress()->getPhoneNumber();
+            $bill->getCustomer()->getSettings()?->getBillingAddress()?->getPhoneNumber() :
+            $bill->getCustomer()->getSettings()?->getContactAddress()?->getPhoneNumber();
 
         $customerEmail = $bill->getCustomer()->getSettings()?->getBillingAddress() ?
-            $bill->getCustomer()->getSettings()?->getBillingAddress()->getEmailAddress() :
-            $bill->getCustomer()->getSettings()?->getContactAddress()->getEmailAddress();
+            $bill->getCustomer()->getSettings()?->getBillingAddress()?->getEmailAddress() :
+            $bill->getCustomer()->getSettings()?->getContactAddress()?->getEmailAddress();
 
         $message = new Message();
         $message->setCustomer($bill->getCustomer());

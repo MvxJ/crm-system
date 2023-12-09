@@ -19,8 +19,11 @@ class EmailMessage implements MessageInterface
 
     public function sendMessage(Message $message): void
     {
-        $email = $this->emailHelper->getEmailTemplate($message);
+        try {
+            $email = $this->emailHelper->getEmailTemplate($message);
 
-        $this->mailer->send($email);
+            $this->mailer->send($email);
+        } catch (\Exception $exception) {
+        }
     }
 }

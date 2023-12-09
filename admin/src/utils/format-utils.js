@@ -59,6 +59,14 @@ const getMessageBadgeObj = (type) => {
       obj.text = 'Message';
       obj.color = '#e6f7ff';
       break;
+    case 3:
+      obj.text = 'Account Confirmation';
+      obj.color = '#91d5ff';
+      break;
+    case 4:
+      obj.text = 'Two-Factor Authentication';
+      obj.color = '#91d5ff';
+      break;
   }
 
   return obj;
