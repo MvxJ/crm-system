@@ -18,5 +18,9 @@ RUN curl -sS https://get.symfony.com/cli/installer | bash \
 COPY . /var/www/html
 
 WORKDIR /var/www/html/api
-#
-#CMD ["wait-for-it", "rabbitmq:5672", "--", "php", "bin/console", "messenger:consume", "amqp_messages"]
+
+RUN apt-get install -y supervisor
+
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

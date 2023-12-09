@@ -3,3 +3,5 @@
 /.idea
 /api/public/
 /rabbitmq/
+/api/supervisord.log
+/api/supervisord.pid
