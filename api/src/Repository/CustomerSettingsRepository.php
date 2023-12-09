@@ -4,7 +4,9 @@ namespace App\Repository;
 
 use App\Entity\CustomerSettings;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<CustomerSettings>
@@ -49,5 +51,16 @@ class CustomerSettingsRepository extends ServiceEntityRepository
             ->addSelect('SUM(CASE WHEN c.emailNotifications = false AND c.smsNotifications = false THEN 1 ELSE 0 END) as noneNotifications');
 
         return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function getCustomerSettings(Uuid $customerId)
+    {
+        return $this->createQueryBuilder('c')
+            ->select('c.smsNotifications, c.emailNotifications')
+            ->join('c.customer', 'customer')
+            ->where('customer.id = :id')
+            ->setParameter('id', $customerId->toBinary())
+            ->getQuery()
+            ->getResult();
     }
 }

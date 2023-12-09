@@ -2,3 +2,6 @@
 /admin/node_modules
 /.idea
 /api/public/
+/rabbitmq/
+/api/supervisord.log
+/api/supervisord.pid

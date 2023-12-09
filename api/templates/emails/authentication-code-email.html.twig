@@ -1,10 +1,10 @@
-{% include '/emails/_email_header.html.twig', with { 'logo': logoUrl, 'settings': crmSettings} %}
+{% include '/emails/_email_header.html.twig' with { 'logo': logoUrl, 'settings': crmSettings} %}
 {% block body %}
 <div class="body-container">
     <div class="content">
         <h1>Your Verification Code!</h1>
-        <p>Your verification code is: {{ authCode }}</p>
+        {{ message|raw }}
     </div>
 </div>
 {% endblock %}
-{% include '/emails/_email_footer.html.twig'. with { 'logo': logoUrl, 'settings': crmSettings} %}
+{% include '/emails/_email_footer.html.twig' with { 'logo': logoUrl, 'settings': crmSettings} %}

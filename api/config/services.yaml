@@ -24,18 +24,13 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    App\Security\TwoFactorCodeMailer:
-        arguments:
-            $noReplyAddress: '%app.no_reply_address%'
-            $mailerName: '%app.mailer_name%'
     App\Service\SettingsService:
         arguments:
             $uploadDir: '%app.upload_directory%/system'
     App\Service\MailerService:
         arguments:
-            $uploadDir: '%app.upload_directory%/system'
             $clientVerifyAddress: '%app.client_verify_address%'
-    App\Helper\MessageHelper:
+    App\Helper\EmailHelper:
         arguments:
             $uploadDir: '%app.upload_directory%/system'
     # add more service definitions when explicit configuration is needed

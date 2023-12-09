@@ -9,28 +9,30 @@ use Doctrine\ORM\EntityManagerInterface;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Messenger\Bridge\Amqp\Transport\AmqpStamp;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Twig\Environment;
 
 class BillHelper
 {
-    private MessageHelper $messageHelper;
     private Environment $twig;
     private KernelInterface $kernel;
     private EntityManagerInterface $entityManager;
     private SettingsRepository $settingsRepository;
+    private MessageBusInterface $bus;
 
     public function __construct (
-        MessageHelper $messageHelper,
         Environment $twig,
         KernelInterface $kernel,
         EntityManagerInterface $entityManager,
         SettingsRepository $settingsRepository,
+        MessageBusInterface $bus
     ) {
-        $this->messageHelper = $messageHelper;
         $this->twig = $twig;
         $this->kernel = $kernel;
         $this->entityManager = $entityManager;
         $this->settingsRepository = $settingsRepository;
+        $this->bus = $bus;
     }
 
     public function generateBillPdf(Bill $bill): void
@@ -68,18 +70,20 @@ class BillHelper
         file_put_contents($pdfPath, $pdfOutput);
 
         $customerPhoneNumber = $bill->getCustomer()->getSettings()?->getBillingAddress() ?
-            $bill->getCustomer()->getSettings()?->getBillingAddress()->getPhoneNumber() :
-            $bill->getCustomer()->getSettings()?->getContactAddress()->getPhoneNumber();
+            $bill->getCustomer()->getSettings()?->getBillingAddress()?->getPhoneNumber() :
+            $bill->getCustomer()->getSettings()?->getContactAddress()?->getPhoneNumber();
 
         $customerEmail = $bill->getCustomer()->getSettings()?->getBillingAddress() ?
-            $bill->getCustomer()->getSettings()?->getBillingAddress()->getEmailAddress() :
-            $bill->getCustomer()->getSettings()?->getContactAddress()->getEmailAddress();
+            $bill->getCustomer()->getSettings()?->getBillingAddress()?->getEmailAddress() :
+            $bill->getCustomer()->getSettings()?->getContactAddress()?->getEmailAddress();
 
         $message = new Message();
         $message->setCustomer($bill->getCustomer());
         $message->setCreatedDate(new \DateTime());
         $message->setType(Message::TYPE_NOTIFICATION);
         $message->setPhoneNumber($customerPhoneNumber);
+        $message->setAttachmentPatch($pdfPath);
+        $message->setAttachmentName($bill->getNumber() . '.pdf');
         $message->setEmail($customerEmail);
         $message->setSubject('New invoice issued');
         $message->setMessage(
@@ -92,9 +96,11 @@ class BillHelper
         $this->entityManager->persist($message);
         $this->entityManager->flush();
 
-        $this->messageHelper->sendMessageToCustomer(
+        $this->bus->dispatch(
             $message,
-            $pdfPath
+            [
+                new AmqpStamp(null, AMQP_MANDATORY, ['priority' => 9])
+            ]
         );
     }
 }
