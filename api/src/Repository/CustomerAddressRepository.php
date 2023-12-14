@@ -58,7 +58,7 @@ class CustomerAddressRepository extends ServiceEntityRepository
     public function findCustomerAddresses(string $userEmail): array
     {
         $queryBuilder = $this->createQueryBuilder('a')
-            ->innerJoin(Customer::class, 'c')
+            ->innerJoin('a.customer', 'c')
             ->where('c.email = :email')
             ->setParameter('email', $userEmail);
 
