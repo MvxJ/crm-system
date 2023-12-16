@@ -95,7 +95,6 @@ class RegistrationController extends AbstractController
                 $customer
             );
         } catch (\Exception $exception) {
-            dd($exception);
             return new JsonResponse(
                 [
                     'message' => 'An error occurred during registration please try again'

@@ -105,7 +105,6 @@ class MailerService
         );
     }
 
-
     private function generateFeUrl(string $verifyUrl):string
     {
         return $this->clientVerifyAddress . substr($verifyUrl, strpos($verifyUrl, '?'));

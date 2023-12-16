@@ -25,7 +25,7 @@ class EmailVerifier
      */
     public function handleEmailConfirmation(Request $request, Customer $customer): void
     {
-        $this->verifyEmailHelper->validateEmailConfirmation($request->getUri(), $customer->getId(), $customer->getEmail());
+        $this->verifyEmailHelper->validateEmailConfirmation($request->getUri(), $customer->getId()->toBinary(), $customer->getEmail());
 
         $customer->setAuthenticated(true);
 
