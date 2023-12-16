@@ -61,11 +61,10 @@ class MailerService
         $message->setCustomer($customer);
         $message->setType(Message::TYPE_ACCOUNT_CONFIRMATION);
         $message->setMessage('<p>
-            Please confirm your email address by clicking the following link: <br><br>
-            ' . $password ? 'Your generated password:' . $password .'<br><br>' . '<a href="' . $this->generateFeUrl($signatureComponents->getSignedUrl()) . '">Confirm my Email</a>.
-            </p>' : ' ' .
-            '<a href="' . $this->generateFeUrl($signatureComponents->getSignedUrl()) . '">Confirm my Email</a>.
-            </p>');
+        Please confirm your email address by clicking the following link: <br><br>' .
+        ($password !== null ? 'Your generated password: ' . $password . '<br><br>' : '') .
+        '<a href="' . $this->generateFeUrl($signatureComponents->getSignedUrl()) . '">Confirm my Email</a>.
+    </p>');
 
         $this->entityManager->persist($message);
         $this->entityManager->flush();
