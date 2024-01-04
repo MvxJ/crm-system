@@ -107,7 +107,7 @@ class BillRepository extends ServiceEntityRepository
         $queryBuilder->setMaxResults($itemsPerPage)
             ->setFirstResult(($page - 1) * $itemsPerPage)
             ->orderBy('b.' . $orderBy, $order)
-            ->innerJoin(Customer::class, 'c')
+            ->innerJoin('b.customer', 'c')
             ->where('c.email = :email')
             ->setParameter('email', $email);
 
