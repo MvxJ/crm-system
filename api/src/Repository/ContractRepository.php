@@ -94,7 +94,7 @@ class ContractRepository extends ServiceEntityRepository
     public function getUserContracts(string $userEmail): array
     {
         $queryBuilder = $this->createQueryBuilder('c')
-            ->innerJoin(Customer::class, 'u')
+            ->innerJoin('c.user', 'u')
             ->where('u.email = :email')
             ->setParameter('email', $userEmail);
 
