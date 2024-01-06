@@ -118,7 +118,7 @@ class MessageRepository extends ServiceEntityRepository
         $queryBuilder->setMaxResults($itemsPerPage)
             ->setFirstResult(($page - 1) * $itemsPerPage)
             ->orderBy('m.' . $orderBy, $order)
-            ->innerJoin(Customer::class, 'c')
+            ->innerJoin('m.customer', 'c')
             ->where('c.email = :email')
             ->setParameter('email', $userEMail);
 
