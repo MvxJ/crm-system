@@ -109,7 +109,7 @@ class PaymentRepository extends ServiceEntityRepository
         $queryBuilder = $this->createQueryBuilder('p');
         $queryBuilder->setMaxResults(24)
             ->orderBy('p.createdAt', 'desc')
-            ->innerJoin(Customer::class, 'c')
+            ->innerJoin('p.customer', 'c')
             ->where('c.email = :email')
             ->setParameter('email', $customerEmail);
 
